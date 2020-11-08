@@ -1,0 +1,24 @@
+Notes mouvement :
+L'algorithme SD doit mettre en evidence les pixels en mouvement ou
+appartenant à une région en mouvement
+
+Trouver comment tester le mouvement, pour l'instant, c'est pas fou
+
+TIMER_LINUX defini pour utiliser dtime
+
+CHRONO =>
+
+DEBUG =>
+BENCH =>
+Obtenir la performance de notre programme avec un timer
+Metrique à utiliser :
+    - temps de traitement en ms de chaque operateur et de la
+    chaine complete
+    - cpp, cycle par point
+    - débit, pixels par seconde
+
+Penser à varier la taille des images de manière à tester des images
+assez petites pour tenir dans les caches et des images trop grandes
+pour tenir dans les caches 
+
+On veut un timer de haute resolution permettant d'analyser
