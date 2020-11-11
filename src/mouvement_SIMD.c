@@ -1,4 +1,4 @@
-#include "mouvement.h"
+#include "mouvement_SIMD.h"
 
 // t : instant de temps courant, servant à indicer les images
 // It : image source en niveau de gris à l’instant t
@@ -12,7 +12,7 @@
 
 
 //Premiere étape de l'algorithme SigmaDelta
-void SigmaDelta_step0(uint8** Io, uint8** Mt_1, uint8** Vt_1, \
+void SigmaDelta_step0(vuint8** Io, vuint8** Mt_1, vuint8** Vt_1, \
     int* nrl, int* nrh, \
     int* ncl, int* nch){
     printf("Initialisation\n");
@@ -26,6 +26,19 @@ void SigmaDelta_step0(uint8** Io, uint8** Mt_1, uint8** Vt_1, \
     }
     printf("Fin du step0\n");
 
+    //Initialisation d'un vecteur à 0
+    // void zero_vui8vector(vuint8 *v, int j0, int j1)
+    // /* ----------------------------------------- */
+    // {
+    //     int j;
+    //     //vuint8 z = vec_splat_u8(0); // AV
+    //     vuint8 z = init_vuint8(0);
+    //
+    //     for(j=j0; j<=j1; j++) {
+    //         //vec_st(z, 0, &v[j]);
+    //         _mm_store_si128(&v[j], z);
+    //     }
+    // }
 }
 
 //Etapes suivantes de l'algorithme SigmaDelta

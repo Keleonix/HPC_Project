@@ -19,6 +19,18 @@ Metrique à utiliser :
 
 Penser à varier la taille des images de manière à tester des images
 assez petites pour tenir dans les caches et des images trop grandes
-pour tenir dans les caches 
+pour tenir dans les caches
 
 On veut un timer de haute resolution permettant d'analyser
+
+SIMD =>
+Traiter le problème en SIMD, on utilise des vector uint8 ou vuint8
+qui correpondent à des __m128i (32, 32, 32, 32) FAUX
+Est-ce que pour charger l'image, il faut prendre une rangée, diviser le nombre de
+pixels par 4 pour obtenir le nombre de vecteurs par rangée ? Et ensuite, traiter
+les pixels avec un loop unrolling d'ordre 4
+Ou bien aplatir l'image, avec une seule dimension ?
+
+vu que c'est m128i, on a donc 128bit dans le vecteur, et un uint8 veut 8bits donc un vecteur
+contient 16 uint8, on a donc 16 pixels par vecteur
+On utilise LoadPGM_ui8matrix pour charger l'image

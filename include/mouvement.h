@@ -18,17 +18,22 @@
 #define MAX(X, Y) (((X) > (Y)) ? (X) : (Y))
 
 //Allocation des matrices
-void alloc_ui8matrixes();
+void alloc_ui8matrixes(uint8** Mt_1, uint8** Vt_1,uint8** Mt,uint8** Vt, uint8** Ot, uint8** Et);
 
-//Premiere étape de l'algorithme SigmaDelta
+//Premiere etape de l'algorithme SigmaDelta
+void SigmaDelta_step0(uint8** Io, uint8** Mt_1, uint8** Vt_1, \
+    int* nrl, int* nrh, \
+    int* ncl, int* nch);
+
+//Etapes suivantes de l'algorithme SigmaDelta
 void SigmaDelta_1step(uint8** It, uint8** Mt_1, uint8** Mt,\
     uint8** Ot, uint8** Vt_1, uint8** Vt,\
     uint8** Et, int* nrl, int* nrh, int* ncl, int* nch);
 
-//Etapes suivantes de l'algorithme SigmaDelta
-void SigmaDelta_1step(uint8** It, uint8** Mt_1, uint8** Mt, uint8** Ot, uint8** Vt_1, uint8** Vt, uint8** Et, int* nrl, int* nrh, int* ncl, int* nch)
-
 //Desallocation des matrices
 void free_ui8matrixes();
+
+//Fonction principale
+void main_mouvement();
 
 #endif /* MOUVEMENT_H */
