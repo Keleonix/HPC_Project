@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include <nrdef.h>
 #include <nrutil.h>
-#include <vnrdef.h>
-#include <vnrutil.h>
 #include <mutil.h>
 
 #define VMIN 1

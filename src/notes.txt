@@ -33,4 +33,19 @@ Ou bien aplatir l'image, avec une seule dimension ?
 
 vu que c'est m128i, on a donc 128bit dans le vecteur, et un uint8 veut 8bits donc un vecteur
 contient 16 uint8, on a donc 16 pixels par vecteur
+
+Etudier wrapping diapo 8
+Wrapping consiste à acceder à un tableau 1D avec un accès 2D
+du coup pour une image, un 1D de taille hxw avec un tableau de pointeurs
+de taille h, les pointeurs pointent vers les débuts de chaque ligne
+
 On utilise LoadPGM_ui8matrix pour charger l'image
+
+on fout des bords pour ne pas avoir à les gerer aka etre toujours aligné
+
+aujourd'hui, on teste directement dans le main => faut avancer younes
+
+Enregistrer les PGM en Brut sur GIMP
+
+//Avoir des vecteurs de 16 bits => tranposition 8x8 possible
+A quoi ça sert ? Aucune idée

@@ -28,7 +28,92 @@ void SigmaDelta_step0(uint8** Io, uint8** Mt_1, uint8** Vt_1, \
 
 }
 
+//Etape 1 : estimation de l'image de fond
+void SigmaDelta_step1(uint8** It, uint8** Mt_1, uint8** Mt, int* nrl, int* nrh, int* ncl, int* nch){
+
+        uint8 pixelM = 0;
+        uint8 pixelIm = 0;
+
+        //TODO : La matrice Mt_1 provoque des erreurs, à vérifier
+        //Avoir des vecteurs de 16 bits => tranposition 8x8 possible
+        for(int j = *nrl; j <= *nrh; j++){
+            for(int k = *ncl; k <= *nch; k++){
+                pixelIm = It[j][k];
+                pixelM = Mt_1[j][k];
+
+                if(pixelM < pixelIm)
+                {
+                    Mt[j][k] = pixelM + 1;
+                }
+                else if(pixelM > pixelIm){
+                    Mt[j][k] = pixelM - 1;
+                }
+                else{
+                    Mt[j][k] = pixelM;
+                }
+            }
+        }
+}
+
+//Etape 2 : Ot, difference entre image source et moyenne
+void SigmaDelta_step2(uint8** It,  uint8** Mt, uint8** Ot, int* nrl, int* nrh, int* ncl, int* nch){
+
+    for(int j = *nrl; j <= *nrh; j++){
+        for(int k = *ncl; k <= *nch; k++){
+            Ot[j][k] = abs(Mt[j][k] - It[j][k]);
+        }
+    }
+}
+
+//Etape 3 : Mise à jour de l'image de variance Vt
+void SigmaDelta_step3(uint8** Ot, uint8** Vt_1, uint8** Vt, int* nrl, int* nrh, int* ncl, int* nch){
+
+    uint8 pixelVt = 0;
+    uint8 pixelOt = 0;
+    for(int j = *nrl; j <= *nrh; j++){
+        for(int k = *ncl; k <= *nch; k++){
+            pixelVt = Vt_1[j][k];
+            pixelOt = Ot[j][k];
+
+            if(pixelVt < N * pixelOt)
+            {
+                Vt[j][k] = pixelVt + 1;
+            }
+            else if(pixelVt > N * pixelOt){
+                Vt[j][k] = pixelVt - 1;
+            }
+            else{
+                Vt[j][k] = pixelVt;
+            }
+
+            Vt[j][k] = MAX(MIN(Vt[j][k], VMAX), VMIN);
+        }
+    }
+}
+
+//Etape 4 : Estimation de l'image d'etiquettes binaires Et
+void SigmaDelta_step4(uint8** Ot, uint8** Vt, uint8** Et, int* nrl, int* nrh, int* ncl, int* nch){
+
+    uint8 pixelVt = 0;
+    uint8 pixelOt = 0;
+    for(int j = *nrl; j <= *nrh; j++){
+        for(int k = *ncl; k <= *nch; k++){
+            pixelVt = Vt[j][k];
+            pixelOt = Ot[j][k];
+
+            if(pixelOt < pixelVt){
+                Et[j][k] = 0;
+            }
+            else{
+                Et[j][k] = VMAX; //TODO:A remettre à 1 au lieu de VMAX
+            }
+        }
+    }
+
+}
+
 //Etapes suivantes de l'algorithme SigmaDelta
+//TODO: 1 fonction par step, pas tout au même endroit
 void SigmaDelta_1step(uint8** It, uint8** Mt_1, uint8** Mt,\
     uint8** Ot, uint8** Vt_1, uint8** Vt,\
     uint8** Et, int* nrl, int* nrh, int* ncl, int* nch){
@@ -156,8 +241,37 @@ void main_mouvement(){
     uint8** It = ui8matrix(*nrl, *nrh, *ncl, *nch);
 
     //Algorithme SigmaDelta
-    SigmaDelta_1step(It, Mt_1, Mt, Ot, Vt_1, Vt, Et, nrl, nrh, ncl, nch);
+    //SigmaDelta_1step(It, Mt_1, Mt, Ot, Vt_1, Vt, Et, nrl, nrh, ncl, nch);
+    char* image = malloc(18); //17 caractères dans le chemin relatif de l'image
+    for(int i = 3001; i < 3000+NOMBRE_IMAGE; i++){
 
+        //Generation du nom de fichier de l'image suivante
+        generate_filename_k_ndigit_extension("car3/car_", i, 0, "pgm", image);
+
+        //Chargement de l'image
+        It = LoadPGM_ui8matrix(image, nrl, nrh, ncl, nch);
+
+        //TODO : Rajouter les macros chrono pour mesurer le temps de chaque fonction
+        SigmaDelta_step1(It, Mt_1, Mt, nrl, nrh, ncl, nch);
+        SigmaDelta_step2(It, Mt, Ot, nrl, nrh, ncl, nch);
+        SigmaDelta_step3(Ot, Vt_1, Vt, nrl, nrh, ncl, nch);
+        SigmaDelta_step4(Ot, Vt, Et, nrl, nrh, ncl, nch);
+
+        //TODO : Test rapide, à retirer
+        //Creation de fichiers pgm à partir des dix premieres frames traitées
+        if(i < 3010 && i > 3000){
+
+            generate_filename_k_ndigit_extension("test/Vt_", i, 0, "pgm", image);
+            SavePGM_ui8matrix(Vt, *nrl, *nrh, *ncl, *nch, image);
+            generate_filename_k_ndigit_extension("test/Et_", i, 0, "pgm", image);
+            SavePGM_ui8matrix(Et, *nrl, *nrh, *ncl, *nch, image);
+
+        }
+
+        //Changement de variables
+        copy_ui8matrix_ui8matrix (Mt_1, *nrl, *nrh, *ncl, *nch, Mt);
+        copy_ui8matrix_ui8matrix (Vt_1, *nrl, *nrh, *ncl, *nch, Vt);
+    }
     //Desallocation de la mémoire
     free_ui8matrix(Io, *nrl, *nrh, *ncl, *nch);
     free_ui8matrix(It, *nrl, *nrh, *ncl, *nch);
