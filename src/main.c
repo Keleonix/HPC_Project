@@ -96,7 +96,61 @@ int main(){
     vuint8* Itvect = vui8vector(0, nbPixels);
     copy_ui8copy_ui8matrix_vui8vector(It, *nrl, *nrh, *ncl, *nch, Itvect);
 
-    
+    vuint8* Mt = vui8vector(0, nbPixels);
+    vuint8 pixelsIm, pixelsM, C1, C2, C, K1, K2, M;
+    for(int i = 0; i < nbVuint8; i++){
+        pixelsIm = _mm_load_si128(&Itvect[i]);
+        pixelsM = _mm_load_si128(&Mo[i]);
+
+        C1 = _mm_cmpgt_epi8 (pixelsIm, pixelsM); //Sont mis à 1 tout pixel où It > main
+        C2 = _mm_cmpgt_epi8 (pixelsM, pixelsIm); //On fait deux comparaisons pour s'assurer que les pixels égaux donnent 0
+        K1 = init_vuint8(1);
+        K2 = init_vuint8(-1);
+        K = _mm_or_si128(_mm_and_si128(C1, K1), _mm_and_si128(C2, K2));
+
+        M = _mm_add_si128(K, pixelsM);
+        _mm_store_si128(&Mt[i], M);
+    }
+
+    //Etape 2
+    //TODO: Faire une fonction abs_vuint8(vuint8) qui applique abs sur t
+    vuint8* Ot = vui8vector(0, nbPixels);
+    vuint8 O;
+    for(int i = 0; i < nbVuint8; i++){
+        pixelsIm = _mm_load_si128(&Itvect[i]);
+        pixelsM = _mm_load_si128(&Mt[i]);
+
+        O = _mm_sub_si128(pixelsM, pixelsIm);
+        //Appliquer abs
+        _mm_store_si128(&Ot[i], O);
+    }
+
+    //Etape 3
+    vuint8*
+
+    //Etape 4
+
+
+    // uint8 pixelM = 0;
+    // uint8 pixelIm = 0;
+    //
+    // for(int j = *nrl; j <= *nrh; j++){
+    //     for(int k = *ncl; k <= *nch; k++){
+    //         pixelIm = It[j][k];
+    //         pixelM = Mt_1[j][k];
+    //
+    //         if(pixelM < pixelIm)
+    //         {
+    //             Mt[j][k] = pixelM + 1;
+    //         }
+    //         else if(pixelM > pixelIm){
+    //             Mt[j][k] = pixelM - 1;
+    //         }
+    //         else{
+    //             Mt[j][k] = pixelM;
+    //         }
+    //     }
+    // }
 
 
     //On calcule le nombre de vecteurs correspondant à hxw
