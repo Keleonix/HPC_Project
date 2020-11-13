@@ -105,7 +105,7 @@ void SigmaDelta_step4(uint8** Ot, uint8** Vt, uint8** Et, int* nrl, int* nrh, in
                 Et[j][k] = 0;
             }
             else{
-                Et[j][k] = VMAX; //TODO:A remettre à 1 au lieu de VMAX
+                Et[j][k] = VMAX;
             }
         }
     }
@@ -242,7 +242,7 @@ void main_mouvement(){
 
     //Algorithme SigmaDelta
     //SigmaDelta_1step(It, Mt_1, Mt, Ot, Vt_1, Vt, Et, nrl, nrh, ncl, nch);
-    char* image = malloc(18); //17 caractères dans le chemin relatif de l'image
+    char image[18]; //17 caractères dans le chemin relatif de l'image
     for(int i = 3001; i < 3000+NOMBRE_IMAGE; i++){
 
         //Generation du nom de fichier de l'image suivante

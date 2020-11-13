@@ -49,3 +49,6 @@ Enregistrer les PGM en Brut sur GIMP
 
 //Avoir des vecteurs de 16 bits => tranposition 8x8 possible
 A quoi ça sert ? Aucune idée
+
+image toute blanche, verifiez toutes les etapes 1 par 1 en affichant un des
+resultats pour pinpoint le probleme

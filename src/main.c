@@ -41,6 +41,7 @@ void copy_ui8matrix_vui8vector(uint8** mat, long nrl, long nrh, long ncl, long n
     int i = 0; //Indice pour vui8vector
     for(int j = nrl; j <= nrh; j++){
         for(int k = ncl; k <= nch; k+=16){
+            //TODO:Remplacer par _mm_set_epi8 ?
             vect[i] = init_vuint8_all(mat[j][k  ], mat[j][k+1], mat[j][k+2], mat[j][k+3], \
                                     mat[j][k+4], mat[j][k+5], mat[j][k+6], mat[j][k+7], \
                                     mat[j][k+8], mat[j][k+9], mat[j][k+10], mat[j][k+11], \
@@ -48,6 +49,34 @@ void copy_ui8matrix_vui8vector(uint8** mat, long nrl, long nrh, long ncl, long n
             i++;
         }
     }
+}
+
+//Applique abs au vecteur en faisant un if(vect < 0)
+void abs_vuint8(vuint8 vect){
+
+}
+
+//Traite
+void abs_vuint8_v2(vuint8* vect){
+
+    uint8* p = (uint8*) vect;
+    for(int i = 0; i < 16; i++){
+        p[i] = abs(p[i]);
+    }
+}
+
+void copy_vui8vector_ui8matrix(vuint8* vect, long nrl, long nrh, long ncl, long nch, uint8** mat){
+
+    int i = 0;
+    uint8 *p = (uint8*) vect;
+    for(int j = nrl; j <= nrh; j++){
+        for(int k = ncl; k <= nch; k++){
+            mat[j][k] = p[i];
+            i++;
+            //TODO: Rajouter un if controlant la valeur de i depasse le nombre de pixels
+        }
+    }
+
 }
 
 int main(){
@@ -86,18 +115,18 @@ int main(){
         //Initialisation de Vo
         vuint8* Vo = vui8vector(0, nbPixels);
         for(int i = 0; i < nbVuint8; i++){
-            Vo = init_vuint8((uint8)VMIN);
+            Vo[i] = init_vuint8((uint8)VMIN);
         }
 
     //Etape 1
     //Chargement de la première image
-    char image1[] = "car3/car_3000.pgm";
+    char image1[] = "car3/car_3001.pgm";
     uint8** It = LoadPGM_ui8matrix(image0, nrl, nrh, ncl, nch);
     vuint8* Itvect = vui8vector(0, nbPixels);
-    copy_ui8copy_ui8matrix_vui8vector(It, *nrl, *nrh, *ncl, *nch, Itvect);
+    copy_ui8matrix_vui8vector(It, *nrl, *nrh, *ncl, *nch, Itvect);
 
     vuint8* Mt = vui8vector(0, nbPixels);
-    vuint8 pixelsIm, pixelsM, C1, C2, C, K1, K2, M;
+    vuint8 pixelsIm, pixelsM, C1, C2, K1, K2, K, M;
     for(int i = 0; i < nbVuint8; i++){
         pixelsIm = _mm_load_si128(&Itvect[i]);
         pixelsM = _mm_load_si128(&Mo[i]);
@@ -108,7 +137,7 @@ int main(){
         K2 = init_vuint8(-1);
         K = _mm_or_si128(_mm_and_si128(C1, K1), _mm_and_si128(C2, K2));
 
-        M = _mm_add_si128(K, pixelsM);
+        M = _mm_add_epi8(K, pixelsM);
         _mm_store_si128(&Mt[i], M);
     }
 
@@ -120,37 +149,58 @@ int main(){
         pixelsIm = _mm_load_si128(&Itvect[i]);
         pixelsM = _mm_load_si128(&Mt[i]);
 
-        O = _mm_sub_si128(pixelsM, pixelsIm);
+        O = _mm_sub_epi8(pixelsM, pixelsIm);
+        abs_vuint8_v2(&O);
         //Appliquer abs
         _mm_store_si128(&Ot[i], O);
     }
 
     //Etape 3
-    vuint8*
+    vuint8 vectN = init_vuint8(N);
+    vuint8* Vt = vui8vector(0, nbPixels);
+    vuint8 pixelsO, pixelsOtxN, pixelsVt_1, D1, D2, L1, L2, L, V;
+    for(int i = 0; i < nbVuint8; i++){
+        pixelsO = _mm_load_si128(&Ot[i]);
+
+        //pixelsOxN
+        //TODO: faire une fonction mul_epi8
+        pixelsOtxN = pixelsO;
+        pixelsVt_1 = _mm_load_si128(&Vo[i]);
+
+        D1 = _mm_cmpgt_epi8 (pixelsOtxN, pixelsVt_1); //Sont mis à 1 tout pixel où N*Ot > Vt
+        D2 = _mm_cmpgt_epi8 (pixelsVt_1, pixelsOtxN); //On fait deux comparaisons pour s'assurer que les pixels égaux donnent 0
+        L1 = init_vuint8(1);
+        L2 = init_vuint8(-1);
+        L = _mm_or_si128(_mm_and_si128(C1, K1), _mm_and_si128(C2, K2));
+
+        V = _mm_add_epi8(K, pixelsVt_1);
+        _mm_store_si128(&Vt[i], V);
+    }
 
     //Etape 4
+    vuint8* Et = vui8vector(0, nbPixels);
+    vuint8 pixelsVt;
+    vuint8 pixelsOt;
+    vuint8 C;
+    vuint8 E;
 
+    for(int i = 0; i < nbVuint8; i++){
+        pixelsVt = _mm_load_si128(&Vt[i]);
+        pixelsOt = _mm_load_si128(&Ot[i]);
 
-    // uint8 pixelM = 0;
-    // uint8 pixelIm = 0;
-    //
-    // for(int j = *nrl; j <= *nrh; j++){
-    //     for(int k = *ncl; k <= *nch; k++){
-    //         pixelIm = It[j][k];
-    //         pixelM = Mt_1[j][k];
-    //
-    //         if(pixelM < pixelIm)
-    //         {
-    //             Mt[j][k] = pixelM + 1;
-    //         }
-    //         else if(pixelM > pixelIm){
-    //             Mt[j][k] = pixelM - 1;
-    //         }
-    //         else{
-    //             Mt[j][k] = pixelM;
-    //         }
-    //     }
-    // }
+        C = _mm_cmpgt_epi8(pixelsVt, pixelsOt); //A 0, Ot >= Vt et à 0xFF, Vt > Ot
+        K = _mm_and_si128(C, init_vuint8(VMAX)); //A 0, Ot >= Vt et à 1, Vt > Ot
+        //TODO: VMAX = 0xFF non ?
+        E = _mm_add_epi8(K, pixelsVt_1);
+        _mm_store_si128(&Et[i], E);
+    }
+
+    uint8** Et_ui8 = ui8matrix(*nrl, *nrh, *ncl, *nch);
+    copy_vui8vector_ui8matrix(Et, *nrl, *nrh, *ncl, *nch, Et_ui8);
+    char image[18];
+    generate_filename_k_ndigit_extension("test_SIMD/Et_", 1, 0, "pgm", image);
+    SavePGM_ui8matrix(Et_ui8, *nrl, *nrh, *ncl, *nch, image);
+
 
 
     //On calcule le nombre de vecteurs correspondant à hxw
