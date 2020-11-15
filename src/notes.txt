@@ -1,0 +1,67 @@
+Notes mouvement :
+L'algorithme SD doit mettre en evidence les pixels en mouvement ou
+appartenant à une région en mouvement
+
+Trouver comment tester le mouvement, pour l'instant, c'est pas fou
+
+TIMER_LINUX defini pour utiliser dtime
+
+CHRONO =>
+
+DEBUG =>
+BENCH =>
+Obtenir la performance de notre programme avec un timer
+Metrique à utiliser :
+    - temps de traitement en ms de chaque operateur et de la
+    chaine complete
+    - cpp, cycle par point
+    - débit, pixels par seconde
+
+Penser à varier la taille des images de manière à tester des images
+assez petites pour tenir dans les caches et des images trop grandes
+pour tenir dans les caches
+
+On veut un timer de haute resolution permettant d'analyser
+
+SIMD =>
+Traiter le problème en SIMD, on utilise des vector uint8 ou vuint8
+qui correpondent à des __m128i (32, 32, 32, 32) FAUX
+Est-ce que pour charger l'image, il faut prendre une rangée, diviser le nombre de
+pixels par 4 pour obtenir le nombre de vecteurs par rangée ? Et ensuite, traiter
+les pixels avec un loop unrolling d'ordre 4
+Ou bien aplatir l'image, avec une seule dimension ?
+
+vu que c'est m128i, on a donc 128bit dans le vecteur, et un uint8 veut 8bits donc un vecteur
+contient 16 uint8, on a donc 16 pixels par vecteur
+
+Etudier wrapping diapo 8
+Wrapping consiste à acceder à un tableau 1D avec un accès 2D
+du coup pour une image, un 1D de taille hxw avec un tableau de pointeurs
+de taille h, les pointeurs pointent vers les débuts de chaque ligne
+
+On utilise LoadPGM_ui8matrix pour charger l'image
+
+on fout des bords pour ne pas avoir à les gerer aka etre toujours aligné
+
+aujourd'hui, on teste directement dans le main => faut avancer younes
+
+Enregistrer les PGM en Brut sur GIMP
+
+//Avoir des vecteurs de 16 bits => tranposition 8x8 possible
+A quoi ça sert ? Aucune idée
+
+image toute blanche, verifiez toutes les etapes 1 par 1 en affichant un des
+resultats pour pinpoint le probleme
+
+Faire un test sur le nombre de pixels, nbpixels%16 != 0, remplir le dernier
+vecteur avec des zeros, garder le nombre de zeros ajoutés et ensuite les retirer
+pendant la copie vers la matrice (devrait etre fait automatiquement en vrai)
+
+euh, arranger tout ce soir, et commencer à reflechir à comment faire les tests unitaires
+Ptet commencer à bencher du coup ?
+
+On verra bien
+ce que l'avenir nous reserve hein hein
+
+Pensez à merger les branches aussi pour recuperer les morphos et se mettre à les
+traduire (inch', c'est pas ultra long à faire => lol espoir)
