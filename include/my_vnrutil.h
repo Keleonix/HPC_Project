@@ -13,6 +13,8 @@
 #include <vnrutil.h>
 #include <mutil.h>
 
+#include "simd_macro.h"
+
 //Copie les données d'une matrice uint8** dans un tableau de vecteurs vuint8* de taille (nrh*nch)
 void copy_ui8matrix_vui8vector(uint8** mat, long nrl, long nrh, long ncl, long nch, vuint8* vect);
 

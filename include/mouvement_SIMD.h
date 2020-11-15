@@ -10,6 +10,8 @@
 #include <mutil.h>
 
 #include "my_vnrutil.h"
+#include "simd_macro.h"
+
 
 #define VMIN 1
 #define VMAX 254
@@ -17,7 +19,7 @@
 #define NOMBRE_IMAGE 199
 
 //Initialisation de la premiere image, image de fond et image de variance à t = 0
-void SigmaDelta_step0_SIMD(vuint8* Io, vuint8* Mt_1, vuint8* Vt_1,\
+void SigmaDelta_step0_SIMD(uint8** Io, vuint8* Mt_1, vuint8* Vt_1,\
      int* nrl, int* nrh, int* ncl, int* nch, int nbVuint8);
 
 //Etape 1 : estimation de l'image de fond (version SIMD)

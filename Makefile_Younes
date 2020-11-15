@@ -6,7 +6,7 @@
 # with a little help of Stephane Piskorski and Joel Falcou
 
 # -- File list ----------
-FILE = main.c mouvement.c nrutil.c vnrutil.c mutil.c
+FILE = main.c mouvement.c mouvement_SIMD.c nrutil.c vnrutil.c mutil.c my_vnrutil.c
 
 # -- Paths ----------
 SRC_PATH = src

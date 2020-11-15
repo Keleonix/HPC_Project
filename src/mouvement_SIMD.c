@@ -1,4 +1,7 @@
 #include "mouvement_SIMD.h"
+#include "simd_macro.h"
+#include "my_vnrutil.h"
+
 
 // t : instant de temps courant, servant à indicer les images
 // It : image source en niveau de gris à l’instant t
@@ -12,7 +15,7 @@
 
 
 //Premiere étape de l'algorithme SigmaDelta
-void SigmaDelta_step0_SIMD(vuint8* Io, vuint8* Mt_1, vuint8* Vt_1, int* nrl, int* nrh, int* ncl, int* nch, int nbVuint8){
+void SigmaDelta_step0_SIMD(uint8** Io, vuint8* Mt_1, vuint8* Vt_1, int* nrl, int* nrh, int* ncl, int* nch, int nbVuint8){
     //Parcours de Io pour remplir Mo TODO:mettre dans la fct principale
     // vuint8* Mo = vui8vector(0, nbPixels);
     // printf("Affichage de Mo quand il est encore NULL\n\n");
@@ -25,19 +28,16 @@ void SigmaDelta_step0_SIMD(vuint8* Io, vuint8* Mt_1, vuint8* Vt_1, int* nrl, int
     // display_vuint8(Mo[0],"%d\n", NULL);
     // printf("Fin de l'affichage de Mo après copie de Io\n\n");
 
-    //Initialisation de Vo
-    // vuint8* Vo = vui8vector(0, nbPixels);TODO:mettre dans la fct principale
-
-    printf("Affichage de Vo quand il est encore NULL\n\n");
-    display_vuint8(Vo[0],"%d\n", NULL);
-    printf("Fin de l'affichage de Vo quand il est encore NULL\n\n");
+    // printf("Affichage de Vo quand il est encore NULL\n\n");
+    // display_vuint8(Vt_1[0],"%d\n", NULL);
+    // printf("Fin de l'affichage de Vo quand il est encore NULL\n\n");
 
     for(int i = 0; i < nbVuint8; i++){
         Vt_1[i] = init_vuint8((uint8)VMIN);
     }
 
     // printf("Affichage de Vo après initialisation à VMIN \n\n");
-    // display_vuint8(Vo[0],"%d\n", NULL);
+    // display_vuint8(Vt_1[0],"%d\n", NULL);
     // printf("Fin de l'affichage de Vo après initialisation à VMIN\n\n");
 
 }
@@ -72,17 +72,17 @@ void SigmaDelta_step1_SIMD(vuint8* It, vuint8* Mt_1, vuint8* Mt, int nbVuint8){
 
         vuint8 pixelsIm, pixelsM, C1, C2, K1, K2, K, M;
         for(int i = 0; i < nbVuint8; i++){
-            pixelsIm = _mm_load_si128(&It[i]);
-            pixelsM = _mm_load_si128(&Mt_1[i]);
+            pixelsIm = vec_load(&It[i]);
+            pixelsM = vec_load(&Mt_1[i]);
 
-            C1 = _mm_cmpgt_epi8 (pixelsIm, pixelsM); //Sont mis à 1 tout pixel où It > main
-            C2 = _mm_cmpgt_epi8 (pixelsM, pixelsIm); //On fait deux comparaisons pour s'assurer que les pixels égaux donnent 0
+            C1 = vec_gt (pixelsIm, pixelsM); //Sont mis à 1 tout pixel où It > main
+            C2 = vec_gt (pixelsM, pixelsIm); //On fait deux comparaisons pour s'assurer que les pixels égaux donnent 0
             K1 = init_vuint8(1);
             K2 = init_vuint8(-1);
-            K = _mm_or_si128(_mm_and_si128(C1, K1), _mm_and_si128(C2, K2));
+            K = vec_or(vec_and(C1, K1), vec_and(C2, K2));
 
-            M = _mm_add_epi8(K, pixelsM);
-            _mm_store_si128(&Mt[i], M);
+            M = vec_add(K, pixelsM);
+            vec_store(&Mt[i], M);
 
         //     if(i >= 45 && i < 47){
         //
@@ -128,153 +128,18 @@ void SigmaDelta_step1_SIMD(vuint8* It, vuint8* Mt_1, vuint8* Mt, int nbVuint8){
         //     }
         }
 }
-// //Etapes suivantes de l'algorithme SigmaDelta
-// void SigmaDelta_1step(uint8** It, uint8** Mt_1, uint8** Mt,\
-//     uint8** Ot, uint8** Vt_1, uint8** Vt,\
-//     uint8** Et, int* nrl, int* nrh, int* ncl, int* nch){
-//
-//     //Algorithme SigmaDelta
-//     char* image = malloc(18); //17 caractères dans le chemin relatif de l'image
-//     for(int i = 3001; i < 3000+NOMBRE_IMAGE; i++){
-//
-//         //Generation du nom de fichier de l'image suivante
-//         generate_filename_k_ndigit_extension("car3/car_", i, 0, "pgm", image);
-//
-//         //Chargement de l'image
-//         It = LoadPGM_ui8matrix(image, nrl, nrh, ncl, nch);
-//
-//         //Début de l'algorithme t = 1
-//         //Etape 1 : estimation de l'image de fond
-//         uint8 pixelM = 0;
-//         uint8 pixelIm = 0;
-//         //TODO : La matrice Mt_1 provoque des erreurs, à vérifier
-//         for(int j = *nrl; j <= *nrh; j++){
-//             for(int k = *ncl; k <= *nch; k++){
-//                 pixelIm = It[j][k];
-//                 pixelM = Mt_1[j][k];
-//
-//                 if(pixelM < pixelIm)
-//                 {
-//                     Mt[j][k] = pixelM + 1;
-//                 }
-//                 else if(pixelM > pixelIm){
-//                     Mt[j][k] = pixelM - 1;
-//                 }
-//                 else{
-//                     Mt[j][k] = pixelM;
-//                 }
-//             }
-//         }
-//
-//         //Etape 2 : Difference Ot
-//         for(int j = *nrl; j <= *nrh; j++){
-//             for(int k = *ncl; k <= *nch; k++){
-//                 Ot[j][k] = abs(Mt[j][k] - It[j][k]);
-//             }
-//         }
-//
-//         //Etape 3 : Mise à jour de l'image de variance Vt
-//         uint8 pixelVt = 0;
-//         uint8 pixelOt = 0;
-//         for(int j = *nrl; j <= *nrh; j++){
-//             for(int k = *ncl; k <= *nch; k++){
-//                 pixelVt = Vt_1[j][k];
-//                 pixelOt = Ot[j][k];
-//
-//                 if(pixelVt < N * pixelOt)
-//                 {
-//                     Vt[j][k] = pixelVt + 1;
-//                 }
-//                 else if(pixelVt > N * pixelOt){
-//                     Vt[j][k] = pixelVt - 1;
-//                 }
-//                 else{
-//                     Vt[j][k] = pixelVt;
-//                 }
-//
-//                 Vt[j][k] = MAX(MIN(Vt[j][k], VMAX), VMIN);
-//             }
-//         }
-//
-//         //Etape 4 : Estimation de l'image d'etiquettes binaires Et
-//         for(int j = *nrl; j <= *nrh; j++){
-//             for(int k = *ncl; k <= *nch; k++){
-//                 pixelVt = Vt[j][k];
-//                 pixelOt = Ot[j][k];
-//
-//                 if(pixelOt < pixelVt){
-//                     Et[j][k] = 0;
-//                 }
-//                 else{
-//                     Et[j][k] = VMAX; //TODO:A remettre à 1 au lieu de VMAX
-//                 }
-//             }
-//         }
-//
-//         //TODO : Test rapide, à retirer
-//         //Creation de fichiers pgm à partir des dix premieres frames traitées
-//         if(i < 3010 && i > 3000){
-//
-//             generate_filename_k_ndigit_extension("test/Vt_", i, 0, "pgm", image);
-//             SavePGM_ui8matrix(Vt, *nrl, *nrh, *ncl, *nch, image);
-//             generate_filename_k_ndigit_extension("test/Et_", i, 0, "pgm", image);
-//             SavePGM_ui8matrix(Et, *nrl, *nrh, *ncl, *nch, image);
-//
-//         }
-//
-//         //Changement de variables
-//         copy_ui8matrix_ui8matrix (Mt_1, *nrl, *nrh, *ncl, *nch, Mt);
-//         copy_ui8matrix_ui8matrix (Vt_1, *nrl, *nrh, *ncl, *nch, Vt);
-//     }
-// }
-
-// //Etape 1 : estimation de l'image de fond
-// void SigmaDelta_step1_SIMD(vuint8* It, vuint8* Mt_1, vuint8* Mt, int* nrl, int* nrh, int* ncl, int* nch){
-//
-//         uint8 pixelM = 0;
-//         uint8 pixelIm = 0;
-//
-//         for(int j = *nrl; j <= *nrh; j++){
-//             for(int k = *ncl; k <= *nch; k++){
-//                 pixelIm = It[j][k];
-//                 pixelM = Mt_1[j][k];
-//
-//                 if(pixelM < pixelIm)
-//                 {
-//                     Mt[j][k] = pixelM + 1;
-//                 }
-//                 else if(pixelM > pixelIm){
-//                     Mt[j][k] = pixelM - 1;
-//                 }
-//                 else{
-//                     Mt[j][k] = pixelM;
-//                 }
-//             }
-//         }
-// }
 
 //Etape 2 : Ot, difference entre image source et moyenne
 void SigmaDelta_step2_SIMD(vuint8* It,  vuint8* Mt, vuint8* Ot, int nbVuint8){
 
-    // for(int j = *nrl; j <= *nrh; j++){
-    //     for(int k = *ncl; k <= *nch; k++){
-    //         Ot[j][k] = abs(Mt[j][k] - It[j][k]);
-    //     }
-    // }
-    // vuint8* Ot = vui8vector(0, nbPixels);
-    vuint8 pixelsO;
+    vuint8 pixelsIm, pixelsM, pixelsO;
     for(int i = 0; i < nbVuint8; i++){
-        pixelsIm = _mm_load_si128(&Itvect[i]);
-        pixelsM = _mm_load_si128(&Mt[i]);
+        pixelsIm = vec_load(&It[i]);
+        pixelsM = vec_load(&Mt[i]);
 
-        pixelsO = _mm_sub_epi8(pixelsM, pixelsIm);
-        if(i == 45){
-            display_vuint8(pixelsO, "%d ", "pixelsO ");
-        }
+        pixelsO = vec_sub(pixelsM, pixelsIm);
         pixelsO = vi8_abs(pixelsO);
-        // O = abs(O);
-        //Appliquer abs
-        _mm_store_si128(&Ot[i], pixelsO);
+        vec_store(&Ot[i], pixelsO);
 
         // if(i == 45){
         //     printf("\n");
@@ -297,38 +162,38 @@ void SigmaDelta_step3_SIMD(vuint8* Ot, vuint8* Vt_1, vuint8* Vt, int nbVuint8){
     // vuint8* Vt = vui8vector(0, nbPixels); //TODO: Fonction principale
     vuint8 pixelsO, pixelsOtxN, pixelsVt_1, D1, D2, L, V;
     for(int i = 0; i < nbVuint8; i++){
-        pixelsO = _mm_load_si128(&Ot[i]);
+        pixelsO = vec_load(&Ot[i]);
 
         pixelsOtxN = vi8_mul(pixelsO, init_vuint8(N));
-        pixelsVt_1 = _mm_load_si128(&Vo[i]);
+        pixelsVt_1 = vec_load(&Vt_1[i]);
 
-        D1 = _mm_cmpgt_epi8 (pixelsOtxN, pixelsVt_1); //Sont mis à 1 tout pixel où N*Ot > Vt
-        D2 = _mm_cmpgt_epi8 (pixelsVt_1, pixelsOtxN); //On fait deux comparaisons pour s'assurer que les pixels égaux donnent 0
+        D1 = vec_gt (pixelsOtxN, pixelsVt_1); //Sont mis à 1 tout pixel où N*Ot > Vt
+        D2 = vec_gt (pixelsVt_1, pixelsOtxN); //On fait deux comparaisons pour s'assurer que les pixels égaux donnent 0
 
-        L = _mm_or_si128(_mm_and_si128(D1, init_vuint8(1)), _mm_and_si128(D2, init_vuint8(-1)));
+        L = vec_or(vec_and(D1, init_vuint8(1)), vec_and(D2, init_vuint8(-1)));
 
-        V = _mm_add_epi8(L, pixelsVt_1);
-        //V = vi8_max(vi8_min(V, init_vuint8(VMAX)), init_vuint8(VMIN));
-        _mm_store_si128(&Vt[i], V);
+        V = vec_add(L, pixelsVt_1);
+        V = vi8_max(vi8_min(V, init_vuint8(VMAX)), init_vuint8(VMIN));
+        //vec_store(&Vt[i], V);
 
-        if(i == 45){
-            printf("\n");
-            display_vuint8(pixelsOtxN, "%d ", "OtxN ");
-            printf("\n");
-            display_vuint8(pixelsVt_1, "%d ", "Vt_1 ");
-            printf("\n");
-            display_vuint8(D1, "%d ", "D1 ");
-            printf("\n");
-            display_vuint8(D2, "%d ", "D2 ");
-            printf("\n");
-            display_vuint8(L, "%d ", "L ");
-            printf("\n");
-            display_vuint8(V, "%d ", "V ");
-            printf("\n");
-            printf("\n");
-            display_vuint8(Vt[i], "%d ", "Vt ");
-            printf("\n");
-        }
+        // if(i == 45){
+        //     printf("\n");
+        //     display_vuint8(pixelsOtxN, "%d ", "OtxN ");
+        //     printf("\n");
+        //     display_vuint8(pixelsVt_1, "%d ", "Vt_1 ");
+        //     printf("\n");
+        //     display_vuint8(D1, "%d ", "D1 ");
+        //     printf("\n");
+        //     display_vuint8(D2, "%d ", "D2 ");
+        //     printf("\n");
+        //     display_vuint8(L, "%d ", "L ");
+        //     printf("\n");
+        //     display_vuint8(V, "%d ", "V ");
+        //     printf("\n");
+        //     printf("\n");
+        //     display_vuint8(Vt[i], "%d ", "Vt ");
+        //     printf("\n");
+        // }
     }
     // uint8 pixelVt = 0;
     // uint8 pixelOt = 0;
@@ -361,32 +226,32 @@ void SigmaDelta_step4_SIMD(vuint8* Ot, vuint8* Vt, vuint8* Et, int nbVuint8){
     vuint8 pixelsVt, pixelsOt, C, E;
 
     for(int i = 0; i < nbVuint8; i++){
-        pixelsVt = _mm_load_si128(&Vt[i]);
-        pixelsOt = _mm_load_si128(&Ot[i]);
+        pixelsVt = vec_load(&Vt[i]);
+        pixelsOt = vec_load(&Ot[i]);
 
-        C = _mm_cmplt_epi8(pixelsOt, pixelsVt); //A 0, Ot >= Vt et à 0xFF, Ot < Vt
-        E = _mm_and_si128(C, init_vuint8(VMAX)); //A 0, Ot >= Vt et à VMAX, Ot < Ot
+        C = vec_lt(pixelsOt, pixelsVt); //A 0, Ot >= Vt et à 0xFF, Ot < Vt
+        E = vec_and(C, init_vuint8(VMAX)); //A 0, Ot >= Vt et à VMAX, Ot < Ot
         //TODO: VMAX = 0xFF non ?
-        // E = _mm_add_epi8(K, pixelsVt_1);
-        _mm_store_si128(&Et[i], E);
+        // E = vec_add(K, pixelsVt_1);
+        vec_store(&Et[i], E);
 
-        if(i == 45){
-            printf("\n");
-            display_vuint8(pixelsOt, "%d ", "Ot ");
-            printf("\n");
-            display_vuint8(pixelsVt, "%d ", "Vt");
-            printf("\n");
-            display_vuint8(C, "%d ", "C ");
-            printf("\n");
-            display_vuint8(E, "%d ", "E ");
-            printf("\n");
-            display_vuint8(Et[i], "%d ", "Et ");
-            printf("\n");
-        }
+        // if(i == 45){
+        //     printf("\n");
+        //     display_vuint8(pixelsOt, "%d ", "Ot ");
+        //     printf("\n");
+        //     display_vuint8(pixelsVt, "%d ", "Vt");
+        //     printf("\n");
+        //     display_vuint8(C, "%d ", "C ");
+        //     printf("\n");
+        //     display_vuint8(E, "%d ", "E ");
+        //     printf("\n");
+        //     display_vuint8(Et[i], "%d ", "Et ");
+        //     printf("\n");
+        // }
     }
 }
 
-void main_mouvement(){
+void main_mouvement_SIMD(){
     printf("Début du programme principal.\n");
     int* nrl = malloc(sizeof(int));
     int* nrh = malloc(sizeof(int));
@@ -400,6 +265,8 @@ void main_mouvement(){
     printf("nrl = %d\nnrh = %d\nncl = %d\nnch = %d\n", *nrl, *nrh, *ncl, *nch);
 
     int nbPixels = (*nrh+1)*(*nch+1);
+
+    //Calcule du nombre de vecteurs nécessaires pour l'image
     int nbVuint8 = nbPixels/16+1;
 
     //Allocation des matrices pour l'algorithme
@@ -414,36 +281,46 @@ void main_mouvement(){
     SigmaDelta_step0_SIMD(Io, Mt_1, Vt_1, nrl, nrh, ncl, nch, nbVuint8);
 
     //Allocation de It
-    uint8** It = vui8vector(0, nbPixels);
+    uint8** imagemat;
+    vuint8* It = vui8vector(0, nbPixels);
     char image[18]; //17 caractères dans le chemin relatif de l'image
-    for(int i = 3001; i < 3000+NOMBRE_IMAGE; i++){
+
+    //Allocation d'une matrice uint8 pour conserver le resultat Et
+    uint8** Et_ui8 = ui8matrix(*nrl, *nrh, *ncl, *nch);
+
+    //On commence l'algorithme à la deuxième image
+    for(int i = 3001; i <= 3000+NOMBRE_IMAGE; i++){
 
         //Generation du nom de fichier de l'image suivante
         generate_filename_k_ndigit_extension("car3/car_", i, 0, "pgm", image);
 
         //Chargement de l'image
-        It = LoadPGM_ui8matrix(image, nrl, nrh, ncl, nch);
+        imagemat = LoadPGM_ui8matrix(image, nrl, nrh, ncl, nch);
+        copy_ui8matrix_vui8vector(imagemat, *nrl, *nrh, *ncl, *nch, Mt_1);
 
         //TODO : Rajouter les macros chrono pour mesurer le temps de chaque fonction
-        SigmaDelta_step1_SIMD(It, Mt_1, Mt, nrl, nrh, ncl, nch);
-        SigmaDelta_step2_SIMD(It, Mt, Ot, nrl, nrh, ncl, nch);
-        SigmaDelta_step3_SIMD(Ot, Vt_1, Vt, nrl, nrh, ncl, nch);
-        SigmaDelta_step4_SIMD(Ot, Vt, Et, nrl, nrh, ncl, nch);
+        SigmaDelta_step1_SIMD(It, Mt_1, Mt, nbVuint8);
+        SigmaDelta_step2_SIMD(It, Mt, Ot, nbVuint8);
+        SigmaDelta_step3_SIMD(Ot, Vt_1, Vt, nbVuint8);
+        SigmaDelta_step4_SIMD(Ot, Vt, Et, nbVuint8);
 
         //TODO : Test rapide, à retirer
         //Creation de fichiers pgm à partir des dix premieres frames traitées
-        if(i < 3010 && i > 3000){
+        // if(i > 3070 && i < 3090){
 
-            generate_filename_k_ndigit_extension("test/Vt_", i, 0, "pgm", image);
-            //copy_vui8vector_ui8matrix(vuint8* vect, long nrl, long nrh, long ncl, long nch, uint8** mat);
-            SavePGM_ui8matrix(Vt, *nrl, *nrh, *ncl, *nch, image);
-            generate_filename_k_ndigit_extension("test/Et_", i, 0, "pgm", image);
-            //copy_vui8vector_ui8matrix(vuint8* vect, long nrl, long nrh, long ncl, long nch, uint8** mat);
-            SavePGM_ui8matrix(Et, *nrl, *nrh, *ncl, *nch, image);
+            // generate_filename_k_ndigit_extension("test/Vt_", i, 0, "pgm", image);
+            // copy_vui8vector_ui8matrix(vuint8* vect, long nrl, long nrh, long ncl, long nch, uint8** mat);
+            // SavePGM_ui8matrix(Vt, *nrl, *nrh, *ncl, *nch, image);
+        generate_filename_k_ndigit_extension("test_SIMD/Et_", i, 0, "pgm", image);
+        // printf("%s\n", image);
+        copy_vui8vector_ui8matrix(Et, *nrl, *nrh, *ncl, *nch, Et_ui8);
+        SavePGM_ui8matrix(Et_ui8, *nrl, *nrh, *ncl, *nch, image);
 
-        }
+        // }
 
         //Changement de variables
+        Mt_1 = Mt;
+        Vt_1 = Vt;
         //TODO: copy_vui8vector_vui8vector dans vnrutil
         //copy_ui8matrix_ui8matrix (Mt_1, *nrl, *nrh, *ncl, *nch, Mt);
         //copy_ui8matrix_ui8matrix (Vt_1, *nrl, *nrh, *ncl, *nch, Vt);
@@ -452,13 +329,13 @@ void main_mouvement(){
     //Algorithme SigmaDelta
     //Desallocation de la mémoire
     free_ui8matrix(Io, *nrl, *nrh, *ncl, *nch);
-    free_ui8matrix(It, *nrl, *nrh, *ncl, *nch);
-    free_ui8matrix(Mt_1, *nrl, *nrh, *ncl, *nch);
-    free_ui8matrix(Vt_1, *nrl, *nrh, *ncl, *nch);
-    free_ui8matrix(Mt, *nrl, *nrh, *ncl, *nch);
-    free_ui8matrix(Vt, *nrl, *nrh, *ncl, *nch);
-    free_ui8matrix(Ot, *nrl, *nrh, *ncl, *nch);
-    free_ui8matrix(Et, *nrl, *nrh, *ncl, *nch);
+    free_vui8vector(It, 0, nbPixels);
+    free_vui8vector(Mt_1, 0, nbPixels);
+    free_vui8vector(Vt_1, 0, nbPixels);
+    // free_vui8vector(Mt, 0, nbPixels);
+    // free_vui8vector(Vt, 0, nbPixels);
+    free_vui8vector(Ot, 0, nbPixels);
+    free_vui8vector(Et, 0, nbPixels);
     free(nrl);
     free(nrh);
     free(ncl);

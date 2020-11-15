@@ -238,12 +238,12 @@ void main_mouvement(){
     SigmaDelta_step0(Io, Mt_1, Vt_1, nrl, nrh, ncl, nch);
 
     //Allocation de It
-    uint8** It = ui8matrix(*nrl, *nrh, *ncl, *nch);
+    uint8** It;
 
     //Algorithme SigmaDelta
     //SigmaDelta_1step(It, Mt_1, Mt, Ot, Vt_1, Vt, Et, nrl, nrh, ncl, nch);
     char image[18]; //17 caractères dans le chemin relatif de l'image
-    for(int i = 3001; i < 3000+NOMBRE_IMAGE; i++){
+    for(int i = 3001; i <= 3000+NOMBRE_IMAGE; i++){
 
         //Generation du nom de fichier de l'image suivante
         generate_filename_k_ndigit_extension("car3/car_", i, 0, "pgm", image);
@@ -259,18 +259,20 @@ void main_mouvement(){
 
         //TODO : Test rapide, à retirer
         //Creation de fichiers pgm à partir des dix premieres frames traitées
-        if(i < 3010 && i > 3000){
+        // if(i < 3080 && i > 3090){
 
             generate_filename_k_ndigit_extension("test/Vt_", i, 0, "pgm", image);
             SavePGM_ui8matrix(Vt, *nrl, *nrh, *ncl, *nch, image);
             generate_filename_k_ndigit_extension("test/Et_", i, 0, "pgm", image);
             SavePGM_ui8matrix(Et, *nrl, *nrh, *ncl, *nch, image);
-
-        }
+        //
+        // }
 
         //Changement de variables
-        copy_ui8matrix_ui8matrix (Mt_1, *nrl, *nrh, *ncl, *nch, Mt);
-        copy_ui8matrix_ui8matrix (Vt_1, *nrl, *nrh, *ncl, *nch, Vt);
+        // Mt_1 = Mt;
+        // Vt_1 = Vt;
+        copy_ui8matrix_ui8matrix (Mt, *nrl, *nrh, *ncl, *nch, Mt_1);
+        copy_ui8matrix_ui8matrix (Vt, *nrl, *nrh, *ncl, *nch, Vt_1);
     }
     //Desallocation de la mémoire
     free_ui8matrix(Io, *nrl, *nrh, *ncl, *nch);

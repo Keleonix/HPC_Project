@@ -37,8 +37,8 @@ vuint8 vi8_mul(vuint8 a, vuint8 b){
     uint8* c_ = (uint8*) C;
 
     //vec_st(x, 0, T);
-    _mm_store_si128(A, a);
-    _mm_store_si128(B, b);
+    vec_store(A, a);
+    vec_store(B, b);
 
     for(int i = 0; i < 16; i++){
         c_[i] = a_[i]*b_[i];
@@ -52,13 +52,13 @@ vuint8 vi8_abs(vuint8 vect){
 
     vuint8 cmp, neg, pos, ABS;
 
-    cmp = _mm_cmpgt_epi8(init_vuint8(0), vect);//A 1, tous les uint8 < 0
-    neg = _mm_and_si128(cmp, vect); //Vecteur avec seulement les nombres negatifs
-    pos = _mm_andnot_si128(cmp, vect); //Vecteur avec seulement les positifs
+    cmp = vec_gt(init_vuint8(0), vect);//A 1, tous les uint8 < 0
+    neg = vec_and(cmp, vect); //Vecteur avec seulement les nombres negatifs
+    pos = vec_andnot(cmp, vect); //Vecteur avec seulement les positifs
 
     neg =  vi8_mul(neg, init_vuint8(-1));//Multiplication des negatifs par -1
 
-    ABS = _mm_or_si128(pos, neg);
+    ABS = vec_or(pos, neg);
 
     return ABS;
 }
@@ -66,11 +66,23 @@ vuint8 vi8_abs(vuint8 vect){
 //Compare les vecteurs a et b, et renvoie un vecteur composé des MAX(a[i], b[i])
 vuint8 vi8_max(vuint8 a, vuint8 b){
 
+    vuint8 cmp, res;
+
+    cmp = vec_gt(a, b);
+    res = vec_or(vec_and(a, cmp), vec_and(b, cmp));
+
+    return res;
 }
 
 //Compare les vecteurs a et b, et renvoie un vecteur composé des MIN(a[i], b[i])
 vuint8 vi8_min(vuint8 a, vuint8 b){
 
+    vuint8 cmp, res;
+
+    cmp = vec_lt(a, b);
+    res = vec_or(vec_and(a, cmp), vec_and(b, cmp));
+
+    return res;
 }
 
 void copy_vui8vector_ui8matrix(vuint8* vect, long nrl, long nrh, long ncl, long nch, uint8** mat){
@@ -84,5 +96,9 @@ void copy_vui8vector_ui8matrix(vuint8* vect, long nrl, long nrh, long ncl, long 
             //TODO: Rajouter un if controlant la valeur de i depasse le nombre de pixels
         }
     }
+}
+
+//Copie les elements de vect1 dans vect2
+void copy_vui8vector_vui8vector(vuint8 vect1, int nbVuint8, int vect2){
 
 }
