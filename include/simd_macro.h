@@ -13,7 +13,7 @@
 
 // shifts
 
-#define vec_left1(v0, v1)   _mm_shuffle_ps(_mm_shuffle_ps(v0, v1, _MM_SHUFFLE(0, 0, 3, 3)), v1, _MM_SHUFFLE(2, 1, 3, 0));
+#define vec_left1(v0, v1)  _mm_shuffle_ps(_mm_shuffle_ps(v0, v1, _MM_SHUFFLE(0, 0, 3, 3)), v1, _MM_SHUFFLE(2, 1, 3, 0));
 #define vec_left2(v0, v1)  _mm_shuffle_ps(v0, v1, _MM_SHUFFLE(1, 0, 3, 2));
 #define vec_left3(v0, v1)  _mm_shuffle_ps(v0, _mm_shuffle_ps(v0, v1, _MM_SHUFFLE(0,0,3,3)), _MM_SHUFFLE(2, 1, 3, 0));
 #define vec_left4(v0, v1)  _mm_shuffle_ps(v0, v0, _MM_SHUFFLE(3, 2, 1, 0));

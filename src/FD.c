@@ -9,7 +9,7 @@
 
 #include "mutil.h"
 
-#include "morphologies.h"
+#include "morpho.h"
 
 #define THETA 10
 

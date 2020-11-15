@@ -1,4 +1,4 @@
-#include "morphologies.h"
+#include "morpho.h"
 
 #define R 1                                     // On défini le rayon R pour l'espace B de convolution
 
