@@ -52,3 +52,16 @@ A quoi ça sert ? Aucune idée
 
 image toute blanche, verifiez toutes les etapes 1 par 1 en affichant un des
 resultats pour pinpoint le probleme
+
+Faire un test sur le nombre de pixels, nbpixels%16 != 0, remplir le dernier
+vecteur avec des zeros, garder le nombre de zeros ajoutés et ensuite les retirer
+pendant la copie vers la matrice (devrait etre fait automatiquement en vrai)
+
+euh, arranger tout ce soir, et commencer à reflechir à comment faire les tests unitaires
+Ptet commencer à bencher du coup ?
+
+On verra bien
+ce que l'avenir nous reserve hein hein
+
+Pensez à merger les branches aussi pour recuperer les morphos et se mettre à les
+traduire (inch', c'est pas ultra long à faire => lol espoir)
