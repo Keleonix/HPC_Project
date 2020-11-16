@@ -36,8 +36,8 @@ void SigmaDelta_step3(uint8** Ot, uint8** Vt_1, uint8** Vt, int* nrl, int* nrh, 
 void SigmaDelta_step4(uint8** Ot, uint8** Vt, uint8** Et, int* nrl, int* nrh, int* ncl, int* nch);
 
 //Fonction principale qui alloue/desalloue les tableaux utilisés, appelle les
-//fonctions correspondantes à chaque étape de SigmaDelta et enregistre chaque
-//tableau Et dans un fichier PGM (version SIMD)
+//fonctions correspondantes à chaque étape de SigmaDelta, enregistre chaque
+//tableau Et dans un fichier PGM
 void main_mouvement();
 
 #endif /* MOUVEMENT_H */

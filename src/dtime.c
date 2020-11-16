@@ -29,7 +29,7 @@
 /* or compile, for example, with the '-DUNIX' option.          */
 /***************************************************************/
 /* #define TIMER_Amiga       */
-/* #define TIMER_UNIX        */
+#define TIMER_UNIX
 /* #define TIMER_UNIX_Old    */
 /* #define TIMER_VMS         */
 /* #define TIMER_BORLAND_C   */
@@ -408,17 +408,17 @@ double dtime(void)
 #include <sys/syscall.h>
 #endif
 struct rusage rusage;
-/* ------------- */
-double dtime(void)
-/* ------------- */
-{
-    double q;
-    getrusage(RUSAGE_SELF,&rusage);
-    q = (double)(rusage.ru_utime.tv_sec);
-    q = q + (double)(rusage.ru_utime.tv_usec) * 1.0e-06;
-
-    return q;
-}
+// /* ------------- */
+// double dtime(void)
+// /* ------------- */
+// {
+//     double q;
+//     getrusage(RUSAGE_SELF,&rusage);
+//     q = (double)(rusage.ru_utime.tv_sec);
+//     q = q + (double)(rusage.ru_utime.tv_usec) * 1.0e-06;
+//
+//     return q;
+// }
 #endif
 /****************************************************/
 /*  Windows NT (32 bit) dtime() routine             */

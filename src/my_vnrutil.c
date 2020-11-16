@@ -69,7 +69,7 @@ vuint8 vi8_max(vuint8 a, vuint8 b){
     vuint8 cmp, res;
 
     cmp = vec_gt(a, b);
-    res = vec_or(vec_and(a, cmp), vec_and(b, cmp));
+    res = vec_or(vec_and(cmp, a), vec_andnot(cmp, b));
 
     return res;
 }
@@ -80,7 +80,7 @@ vuint8 vi8_min(vuint8 a, vuint8 b){
     vuint8 cmp, res;
 
     cmp = vec_lt(a, b);
-    res = vec_or(vec_and(a, cmp), vec_and(b, cmp));
+    res = vec_or(vec_and(cmp, a), vec_andnot(cmp, b));
 
     return res;
 }
@@ -99,6 +99,9 @@ void copy_vui8vector_ui8matrix(vuint8* vect, long nrl, long nrh, long ncl, long 
 }
 
 //Copie les elements de vect1 dans vect2
-void copy_vui8vector_vui8vector(vuint8 vect1, int nbVuint8, int vect2){
-
+void copy_vui8vector_vui8vector(vuint8* vect1, int nbVuint8, vuint8* vect2){
+    
+    for(int i = 0; i < nbVuint8; i++){
+        vect2[i] = vect1[i];
+    }
 }

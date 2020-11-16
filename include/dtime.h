@@ -53,7 +53,7 @@
 /* #define TIMER_WIN32       */
 /* #define TIMER_POSIX6      */
 /* #define TIMER_RISCOS      */
-/* #define TIMER_LINUX       */
+#define TIMER_LINUX
 /*****************************/
 
 #ifdef __cplusplus
@@ -78,10 +78,10 @@ double dcycle(void);
 #if defined(_i386_) || defined(__x86_64__)
 double dcycle(void);
 #endif
-    
+
 #if defined(_ARCH_PPC)
 double dcycle(void);
-#endif    
+#endif
 
 #ifdef __cplusplus
 }
