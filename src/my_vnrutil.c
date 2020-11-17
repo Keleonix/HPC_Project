@@ -7,10 +7,14 @@ void copy_ui8matrix_vui8vector(uint8** mat, long nrl, long nrh, long ncl, long n
     for(int j = nrl; j <= nrh; j++){
         for(int k = ncl; k <= nch; k+=16){
             //TODO:Remplacer par _mm_set_epi8 ?
-            vect[i] = init_vuint8_all(mat[j][k  ], mat[j][k+1], mat[j][k+2], mat[j][k+3], \
-                                    mat[j][k+4], mat[j][k+5], mat[j][k+6], mat[j][k+7], \
-                                    mat[j][k+8], mat[j][k+9], mat[j][k+10], mat[j][k+11], \
-                                    mat[j][k+12], mat[j][k+13], mat[j][k+14], mat[j][k+15]);
+            vect[i] = _mm_set_epi8 (mat[j][k+15], mat[j][k+14], mat[j][k+13], \
+                mat[j][k+12],mat[j][k+11], mat[j][k+10], mat[j][k+9],\
+                mat[j][k+8], mat[j][k+7], mat[j][k+6], mat[j][k+5],\
+                mat[j][k+4], mat[j][k+3], mat[j][k+2], mat[j][k+1], mat[j][k]);
+            // vect[i] = init_vuint8_all(mat[j][k  ], mat[j][k+1], mat[j][k+2], mat[j][k+3], \
+            //                         mat[j][k+4], mat[j][k+5], mat[j][k+6], mat[j][k+7], \
+            //                         mat[j][k+8], mat[j][k+9], mat[j][k+10], mat[j][k+11], \
+            //                         mat[j][k+12], mat[j][k+13], mat[j][k+14], mat[j][k+15]);
             i++;
         }
     }
@@ -100,7 +104,7 @@ void copy_vui8vector_ui8matrix(vuint8* vect, long nrl, long nrh, long ncl, long 
 
 //Copie les elements de vect1 dans vect2
 void copy_vui8vector_vui8vector(vuint8* vect1, int nbVuint8, vuint8* vect2){
-    
+
     for(int i = 0; i < nbVuint8; i++){
         vect2[i] = vect1[i];
     }
