@@ -75,6 +75,7 @@ void SigmaDelta_step3_SIMD(vuint8* Ot, vuint8* Vt_1, vuint8* Vt, int nbVuint8){
 
         V = vec_add(L, pixelsVt_1);
         // TODO: Tester la fonction
+        V = vec_max(vec_min(V, init_vuint8(VMAX)), init_vuint8(VMIN));
         // V = vi8_max(vi8_min(V, init_vuint8(VMAX)), init_vuint8(VMIN));
         // MAX(MIN(Vt[j][k], VMAX), VMIN);
         vec_store(&Vt[i], V);
@@ -172,10 +173,10 @@ void main_mouvement_SIMD(){
         copy_vui8vector_ui8matrix(Mt, *nrl, *nrh, *ncl, *nch, Mt_ui8);
         SavePGM_ui8matrix(Mt_ui8, *nrl, *nrh, *ncl, *nch, image);
 
-        generate_filename_k_ndigit_extension("test_SIMD/Ot_", i, 0, "pgm", image);
-        copy_vui8vector_ui8matrix(Ot, *nrl, *nrh, *ncl, *nch, Ot_ui8);
-        SavePGM_ui8matrix(Ot_ui8, *nrl, *nrh, *ncl, *nch, image);
-
+        // generate_filename_k_ndigit_extension("test_SIMD/Ot_", i, 0, "pgm", image);
+        // copy_vui8vector_ui8matrix(Ot, *nrl, *nrh, *ncl, *nch, Ot_ui8);
+        // SavePGM_ui8matrix(Ot_ui8, *nrl, *nrh, *ncl, *nch, image);
+        //
         generate_filename_k_ndigit_extension("test_SIMD/Vt_", i, 0, "pgm", image);
         copy_vui8vector_ui8matrix(Vt, *nrl, *nrh, *ncl, *nch, Vt_ui8);
         SavePGM_ui8matrix(Vt_ui8, *nrl, *nrh, *ncl, *nch, image);

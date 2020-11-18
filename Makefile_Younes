@@ -6,7 +6,7 @@
 # with a little help of Stephane Piskorski and Joel Falcou
 
 # -- File list ----------
-FILE = main.c mouvement.c test_mouvement_SIMD.c mouvement_SIMD.c morpho.c dtime.c nrutil.c vnrutil.c mutil.c my_vnrutil.c 
+FILE = main.c mouvement.c test_mouvement_SIMD.c test_mouvement_SIMD2.c mouvement_SIMD.c morpho.c dtime.c nrutil.c vnrutil.c mutil.c my_vnrutil.c
 
 # -- Paths ----------
 SRC_PATH = src
@@ -62,6 +62,8 @@ depend:
 clean:
 	rm -f $(OBJ)
 	rm -f ${LIB_PATH}/${PRODUCT}
+	rm -f test_SIMD/*
+	rm -f test/*
 
 tar:
 	tar -cvf deriche_SSE.tar Makefile src include

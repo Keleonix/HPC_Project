@@ -20,6 +20,9 @@
 #define vec_sub(a, b)   _mm_sub_epi8(a, b)
 #define vec_gt(a, b)    _mm_cmpgt_epi8(a, b)
 #define vec_lt(a, b)    _mm_cmplt_epi8(a, b)
+#define vec_eq(a, b)    _mm_cmpeq_epi8(a, b)
+#define vec_max(a, b)   _mm_max_epu8(a, b)
+#define vec_min(a, b)   _mm_min_epu8(a, b)
 
 // shifts
 

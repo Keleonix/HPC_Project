@@ -245,11 +245,13 @@ void chaine_complete_SIMD(){
 }
 
 int main(void){
-    main_mvt_ref_SIMD();
+    // test_fct_vi8max_OK();
+    // test_fct_vi8min_OK();
+    // main_mvt_ref_SIMD();
     // test_algo_step1_1();
 
     // main_mouvement();
-    // main_mouvement_SIMD();
+    main_mouvement_SIMD();
     // test_imagePGM();
     // test1_step1_SIMD();
     // int tmp = dtime();
