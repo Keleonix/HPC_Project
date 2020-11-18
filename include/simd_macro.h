@@ -8,8 +8,18 @@
 
 //chargements
 
-#define vec_store
-#define vec_load
+#define vec_store(adr, vec) _mm_store_si128(adr, vec)
+#define vec_load(adr) _mm_load_si128(adr)
+
+//Operations sur bit
+
+#define vec_and(a, b)   _mm_and_si128(a, b)
+#define vec_andnot(a, b) _mm_andnot_si128(a, b)
+#define vec_or(a, b)    _mm_or_si128(a, b)
+#define vec_add(a, b)   _mm_add_epi8(a, b)
+#define vec_sub(a, b)   _mm_sub_epi8(a, b)
+#define vec_gt(a, b)    _mm_cmpgt_epi8(a, b)
+#define vec_lt(a, b)    _mm_cmplt_epi8(a, b)
 
 // shifts
 
