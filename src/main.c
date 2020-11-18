@@ -244,11 +244,58 @@ void chaine_complete_SIMD(){
     free(nch);
 }
 
+// void test_gt(){
+//     vuint8 a = init_vuint8(124-127);
+//     vuint8 b = init_vuint8(254-127);
+//
+//     vuint8 c = _mm_cmpgt_epi8(a, b);
+//     vuint8 d = _mm_cmpgt_epi8(b, a);
+//
+//     display_vuint8(a,"%d ", "a ");
+//     printf("\n");
+//
+//     display_vuint8(b,"%d ", "b ");
+//     printf("\n");
+//
+//     printf("M  ");
+//     display_vuint8(c,"%d ", "c ");
+//     printf("\n");
+//
+//     printf("Mt ");
+//     display_vuint8(d,"%d ", "d ");
+//     printf("\n");
+// }
+//
+// void test_min(){
+//     vuint8 a = init_vuint8(124);
+//     vuint8 b = init_vuint8(129);
+//
+//     vuint8 c = vec_min(a, b);
+//     vuint8 d = vec_min(b, a);
+//
+//     display_vuint8(a,"%d ", "a ");
+//     printf("\n");
+//
+//     display_vuint8(b,"%d ", "b ");
+//     printf("\n");
+//
+//     printf("M  ");
+//     display_vuint8(c,"%d ", "c ");
+//     printf("\n");
+//
+//     printf("Mt ");
+//     display_vuint8(d,"%d ", "d ");
+//     printf("\n");
+// }
 int main(void){
+
+    // test_gt();
+    // test_min();
     // test_fct_vi8max_OK();
     // test_fct_vi8min_OK();
     // main_mvt_ref_SIMD();
     // test_algo_step1_1();
+    // test_vec_and();
 
     // main_mouvement();
     main_mouvement_SIMD();
@@ -263,38 +310,6 @@ int main(void){
     // chaine_complete_SIMD();
     // tmp = dtime() - tmp;
     // printf("Temps : %d\n", tmp);
-
-    //TODO: Reparez ce max et ce min qui sont nuls
-    // vuint8 a = init_vuint8_all(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15);
-    // vuint8 b = init_vuint8_all(15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0);
-    //
-    // vuint8 c = vi8_max(a, b);
-    // vuint8 d = vi8_min(a, b);
-    //
-    // vuint8 e = vec_gt(a, b);
-    //
-    // // pixelsVt = vec_load(&Vt[i]);
-    // // pixelsOt = vec_load(&Ot[i]);
-    //
-    // vuint8 C = vec_lt(a, b); //A 0, Ot >= Vt et à 0xFF, Ot < Vt
-    // vuint8 E = vec_and(C, init_vuint8(VMAX)); //A 0, Ot >= Vt et à VMAX, Ot < Ot
-    //
-    // display_vuint8(a, "%d ", "a ");
-    // printf("\n");
-    // display_vuint8(b, "%d ", "b ");
-    // printf("\n");
-    //
-    // display_vuint8(C, "%d ", "C ");
-    // printf("\n");
-    // display_vuint8(E, "%d ", "E ");
-    // printf("\n");
-    // display_vuint8(c, "%d ", "c ");
-    // printf("\n");
-    // display_vuint8(d, "%d ", "d ");
-    // printf("\n");
-    // display_vuint8(e, "%d ", "e ");
-    // printf("\n");
-
 
     //SIMD
     // int* nrl = malloc(sizeof(int));
@@ -316,12 +331,12 @@ int main(void){
     // int nbPixels = (*nrh+1)*(*nch+1);
     // int nbVuint8 = nbPixels/16+1;
     // printf("Nombre de pixels = %d, pixels restants après division = %d => Nombre de vecteurs = %d\n,", nbPixels, nbPixels%16, nbVuint8);
-    //
-    // //Les images de la séquence ont un nombre de pixels qui est multiple de 16
-    // //On va donc juste faire un tableau de vuint8 1D sans padding et on verra bien
-    // //Sans bord, sans padding
-    // //
-    // //Etape 0 :
+
+    // Les images de la séquence ont un nombre de pixels qui est multiple de 16
+    // On va donc juste faire un tableau de vuint8 1D sans padding et on verra bien
+    // Sans bord, sans padding
+
+    //Etape 0 :
     //     //Parcours de Io pour remplir Mo
     //     vuint8* Mo = vui8vector(0, nbPixels);
     //     printf("Affichage de Mo quand il est encore NULL\n\n");
@@ -382,8 +397,8 @@ int main(void){
     //     pixelsIm = _mm_load_si128(&Itvect[i]);
     //     pixelsM = _mm_load_si128(&Mo[i]);
     //
-    //     C1 = _mm_cmpgt_epi8 (pixelsIm, pixelsM); //Sont mis à 1 tout pixel où It > main
-    //     C2 = _mm_cmpgt_epi8 (pixelsM, pixelsIm); //On fait deux comparaisons pour s'assurer que les pixels égaux donnent 0
+    //     C1 = _mm_cmpgt_epi8 (vec_sub(pixelsIm, init_vuint8(127)), vec_sub(pixelsM, init_vuint8(127))); //Sont mis à 1 tout pixel où It > main
+    //     C2 = _mm_cmpgt_epi8 (vec_sub(pixelsM, init_vuint8(127)), vec_sub(pixelsIm, init_vuint8(127))); //On fait deux comparaisons pour s'assurer que les pixels égaux donnent 0
     //     K1 = init_vuint8(1);
     //     K2 = init_vuint8(-1);
     //     K = _mm_or_si128(_mm_and_si128(C1, K1), _mm_and_si128(C2, K2));
@@ -391,7 +406,7 @@ int main(void){
     //     M = _mm_add_epi8(K, pixelsM);
     //     _mm_store_si128(&Mt[i], M);
     //
-    //     if(i >= 45 && i < 65){
+    //     if(i == 0){
     //
     //         printf("Vecteur %i \n\n", i);
     //
@@ -419,11 +434,11 @@ int main(void){
     //         display_vuint8(K2,"%d ", NULL);
     //         printf("\n");
     //
-    //         printf("K ");
+    //         printf("K  ");
     //         display_vuint8(K,"%d ", NULL);
     //         printf("\n");
     //
-    //         printf("M ");
+    //         printf("M  ");
     //         display_vuint8(M,"%d ", NULL);
     //         printf("\n");
     //
@@ -434,8 +449,8 @@ int main(void){
     //         printf("Fin du vecteur %i \n\n", i);
     //     }
     // }
-    // //
-    // // Etape 1 validée
+
+    // Etape 1 validée
     // //
     // //Etape 2
     // //TODO: Faire une fonction abs_vuint8(vuint8) qui applique abs sur t

@@ -159,14 +159,14 @@ void main_mouvement(){
         //TODO : Test rapide, à retirer
         //Creation de fichiers pgm à partir des dix premieres frames traitées
         // if(i < 3080 && i > 3090){
-        // generate_filename_k_ndigit_extension("test/Mt_", i, 0, "pgm", image);
-        // SavePGM_ui8matrix(Mt, *nrl, *nrh, *ncl, *nch, image);
+        generate_filename_k_ndigit_extension("test/Mt_", i, 0, "pgm", image);
+        SavePGM_ui8matrix(Mt, *nrl, *nrh, *ncl, *nch, image);
         // generate_filename_k_ndigit_extension("test/Ot_", i, 0, "pgm", image);
         // SavePGM_ui8matrix(Ot, *nrl, *nrh, *ncl, *nch, image);
         // generate_filename_k_ndigit_extension("test/Vt_", i, 0, "pgm", image);
         // SavePGM_ui8matrix(Vt, *nrl, *nrh, *ncl, *nch, image);
-        // generate_filename_k_ndigit_extension("test/Et_", i, 0, "pgm", image);
-        // SavePGM_ui8matrix(Et, *nrl, *nrh, *ncl, *nch, image);
+        generate_filename_k_ndigit_extension("test/Et_", i, 0, "pgm", image);
+        SavePGM_ui8matrix(Et, *nrl, *nrh, *ncl, *nch, image);
         //
         // }
 
