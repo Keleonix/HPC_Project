@@ -5,7 +5,7 @@
 
 void bords_SIMD(uint8** im, int nrl, int* nrh, int ncl, int* nch){
     int i, j, n, r;
-    vuint8 im0, im1, im2
+    vuint8 im0, im1, im2;
     vuint8** marginIm;
 
     marginIm = vui8matrix(nrl - R, nrh + R, ncl - R, nch + R);
@@ -74,7 +74,7 @@ uint8** erosion(uint8** im, int nrl, int nrh, int ncl, int nch){
     res = ui8matrix(nrl, nrh, ncl, nch);
     marginIm = ui8matrix(nrl - R, nrh + R, ncl - R, nch + R);   // Future image de taille [nrl+nrh+2*R, ncl+nch+2*R]
 
-    marginIm = bords_SIMD(im, nrl, &nrh, ncl, &nch);            // Création de bords
+        bords_SIMD(marginIm, nrl, &nrh, ncl, &nch);            // Création de bords
 
     for(i = nrl; i <= nrh; i++){                                // On parcour toute l'image pour faire une convolution pixel par pixel
         for(j = ncl; j <= nch; j++){
