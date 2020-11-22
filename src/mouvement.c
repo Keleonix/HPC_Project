@@ -75,7 +75,7 @@ void SigmaDelta_step3(uint8** Ot, uint8** Vt_1, uint8** Vt, int* nrl, int* nrh, 
             pixelVt = Vt_1[j][k];
             pixelOt = Ot[j][k];
 
-            if(pixelVt < N * pixelOt)
+            if(pixelVt < N * pixelOt) //N = 3
             {
                 Vt[j][k] = pixelVt + 1;
             }
@@ -156,9 +156,7 @@ void main_mouvement(){
         SigmaDelta_step3(Ot, Vt_1, Vt, nrl, nrh, ncl, nch);
         SigmaDelta_step4(Ot, Vt, Et, nrl, nrh, ncl, nch);
 
-        //TODO : Test rapide, à retirer
-        //Creation de fichiers pgm à partir des dix premieres frames traitées
-        // if(i < 3080 && i > 3090){
+
         generate_filename_k_ndigit_extension("test/Mt_", i, 0, "pgm", image);
         SavePGM_ui8matrix(Mt, *nrl, *nrh, *ncl, *nch, image);
         // generate_filename_k_ndigit_extension("test/Ot_", i, 0, "pgm", image);
@@ -167,8 +165,7 @@ void main_mouvement(){
         // SavePGM_ui8matrix(Vt, *nrl, *nrh, *ncl, *nch, image);
         generate_filename_k_ndigit_extension("test/Et_", i, 0, "pgm", image);
         SavePGM_ui8matrix(Et, *nrl, *nrh, *ncl, *nch, image);
-        //
-        // }
+
 
         //Changement de variables
         // Mt_1 = Mt;

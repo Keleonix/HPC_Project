@@ -67,4 +67,8 @@ Pensez à merger les branches aussi pour recuperer les morphos et se mettre à l
 traduire (inch', c'est pas ultra long à faire => lol espoir)
 
 morpho
-margin cree une ui8matrix 
+margin cree une ui8matrix
+
+- Pour les optimisations de SIMD, la plus evidente à realiser serait une fusion
+des boucles aka une fusion des etapes, etudiez ça après avoir fini la partie
+OpenMP
