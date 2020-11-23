@@ -9,8 +9,11 @@ void bords_SIMD(uint8** im, int nrl, int* nrh, int ncl, int* nch){
     vuint8** marginIm;
 
     marginIm = vui8matrix(nrl - R, nrh + R, ncl - R, nch + R);
-
-    n = *nrh + 2*R;                                                         // porlogue 1
+    //Slide 17 NRC
+    //Prendre l'image, caster sur vuint8**
+    //Dupliquer les bords
+    
+    n = *nrh + 2*R;                                                         // prologue 1
     r = n % DEROULAGE_MARGE;
     for(i = nrl; i < n-r; i += DEROULAGE_MARGE){                            //boucle 1
         marginIm[i][ncl   ] = 0; marginIm[i+1][ncl   ] = 0; marginIm[i+2][ncl     ] = 0;
@@ -27,7 +30,7 @@ void bords_SIMD(uint8** im, int nrl, int* nrh, int ncl, int* nch){
             break;
     }
 
-    n = *nch + 2*R;                                                         // porlogue 2
+    n = *nch + 2*R;                                                         // prologue 2
     r = n % DEROULAGE_MARGE;
     for(i = ncl; i < n-r; i += DEROULAGE_MARGE){                            //boucle 2
         marginIm[nrl     ][j] = 0; marginIm[nrl     ][j+1] = 0; marginIm[nrl     ][j+2] = 0;
@@ -44,7 +47,7 @@ void bords_SIMD(uint8** im, int nrl, int* nrh, int ncl, int* nch){
             break;
     }
 
-    n = *nrh;                                                               // porlogue 3
+    n = *nrh;                                                               // prologue 3
     r = n % DEROULAGE_MARGE;
     for(j = ncl; j < *nch; j++){                                            // boucle 3
         for(i = nrl; i < *nrh; i++){
@@ -81,7 +84,7 @@ uint8** erosion(uint8** im, int nrl, int nrh, int ncl, int nch){
 
             tmp = marginIm[i-1][j-1];                           // tmp est égal à la première case de ce qui va être l'espace B
 
-            for(k = i-R; k <= i+R; k++){                        // On procède à la convolution sur l'espace B avec B = 2*R + 1 
+            for(k = i-R; k <= i+R; k++){                        // On procède à la convolution sur l'espace B avec B = 2*R + 1
                 for(l = j-R; l <= j+R; l++){
 
                     tmp &= marginIm[k][l];                     // On applique un filtre "AND" sur l'espace de convolution
@@ -113,7 +116,7 @@ uint8** dilatation(uint8** im, int nrl, int nrh, int ncl, int nch){
 
             tmp = marginIm[i-1][j-1];                               // tmp est égal à la première case de ce qui va être l'espace B
 
-            for(k = i-R; k <= i+R; k++){                            // On procède à la convolution sur l'espace B avec B = 2*R + 1 
+            for(k = i-R; k <= i+R; k++){                            // On procède à la convolution sur l'espace B avec B = 2*R + 1
                 for(l = j-R; l <= j+R; l++){
 
                     tmp |= marginIm[k][l];                         // On applique un filtre "OR" sur l'espace de convolution

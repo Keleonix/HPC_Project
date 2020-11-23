@@ -24,6 +24,12 @@ vuint8 vi8_mul(vuint8 a, vuint8 b);
 //Applique abs au vecteur en faisant un if(vect < 0)
 vuint8 vi8_abs(vuint8 vect);
 
+// //Effectue un left-shift de n uint8 et renvoie le résultat
+// vuint8 vi8_left(vuint8 a, vuint8 b, int n);
+//
+// //Effectue un right-shift de n uint8 et renvoie le résultat
+// vuint8 vi8_right(vuint8 a, vuint8 b, int n);
+
 // //Compare les vecteurs a et b, et renvoie un vecteur composé des MAX(a[i], b[i])
 // vuint8 vi8_max(vuint8 a, vuint8 b);
 //

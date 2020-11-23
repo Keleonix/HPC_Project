@@ -269,24 +269,37 @@ int main(void){
 
     //Test pour le shuffle
 
-    vuint8 a = init_vuint8_param(0, 1);
-    // vuint8 b = init_vuint8_param(-16, 1);
-
-    // vuint8 c = _mm_shufflehi_epi16(a, _MM_SHUFFLE(2, 1, 3, 0));
-    // vuint8 d = _mm_shufflehi_epi16(b, _MM_SHUFFLE(2, 1, 3, 0));
-    vuint8 c = _mm_bsrli_si128(a, 2);
-    display_vuint8(a, "%d ", "a ");
-    printf("\n");
-    // display_vuint8(b, "%d ", "b ");
+    // vuint8 a = init_vuint8_param(0, 1);
+    // // vuint8 b = init_vuint8_param(-16, 1);
+    //
+    // // vuint8 c = _mm_shufflehi_epi16(a, _MM_SHUFFLE(2, 1, 3, 0));
+    // // vuint8 d = _mm_shufflehi_epi16(b, _MM_SHUFFLE(2, 1, 3, 0));
+    // vuint8 c = _mm_bsrli_si128(a, 2);
+    // display_vuint8(a, "%d ", "a ");
     // printf("\n");
-    display_vuint8(c, "%d ", "c ");
-    printf("\n");
+    // // display_vuint8(b, "%d ", "b ");
+    // // printf("\n");
+    // display_vuint8(c, "%d ", "c ");
+    // printf("\n");
     // display_vuint8(d, "%d ", "d ");
     // printf("\n");
 
-    //Pour le shuffle, combiner les fonctions _mm_bsrli_si128 et _mm_bslli_si128
-    //TODO : Faire fonction puis  macros
-    
+    //Test des fonctions de shift
+
+    vuint8 a = init_vuint8_param(0, 1);
+    vuint8 b = init_vuint8_param(16, 1);
+
+    vuint8 c = vec_left3(a, b);
+    vuint8 d = vec_right3(a, b);
+    display_vuint8(a, "%d ", "a ");
+    printf("\n");
+    display_vuint8(b, "%d ", "b ");
+    printf("\n");
+    display_vuint8(c, "%d ", "c ");
+    printf("\n");
+    display_vuint8(d, "%d ", "d ");
+    printf("\n");
+
     // test_gt();
     // test_min();
     // test_fct_vi8max_OK();
