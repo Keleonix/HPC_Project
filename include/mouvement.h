@@ -35,6 +35,9 @@ void SigmaDelta_step3(uint8** Ot, uint8** Vt_1, uint8** Vt, int* nrl, int* nrh, 
 //Etape 4 : Estimation de l'image d'etiquettes binaires Et
 void SigmaDelta_step4(uint8** Ot, uint8** Vt, uint8** Et, int* nrl, int* nrh, int* ncl, int* nch);
 
+//Convertit la matrice binaire {0 ; 1} en matrice {0, VMAX}
+void convertion_matrice_binaire(uint8** mat, int nrl, int nrh, int ncl, int nch);
+
 //Fonction principale qui alloue/desalloue les tableaux utilisés, appelle les
 //fonctions correspondantes à chaque étape de SigmaDelta, enregistre chaque
 //tableau Et dans un fichier PGM

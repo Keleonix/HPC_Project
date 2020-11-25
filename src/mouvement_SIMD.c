@@ -114,7 +114,7 @@ void SigmaDelta_step4_SIMD(vuint8* Ot, vuint8* Vt, vuint8* Et, int nbVuint8){
         pixelsVt_127 = vec_sub(pixelsVt, init_vuint8(127));
 
         C = vec_lt(pixelsOt_127, pixelsVt_127); //A 0, Ot >= Vt et à 0xFF, Ot < Vt
-        E = vec_andnot(C, init_vuint8(VMAX)); //A 0, Ot >= Vt et à VMAX, Ot < Ot
+        E = vec_andnot(C, init_vuint8(1)); //A 0, Ot >= Vt et à VMAX, Ot < Ot
 
         vec_store(&Et[i], E);
     }

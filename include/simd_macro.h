@@ -40,14 +40,15 @@
 
 
 // calculs
-#define vec_div3(x) x
-#define vec_div5(x) x
-
-#define vec_add3(x0, x1, x2) _mm_add_ps(_mm_add_ps(x0, x1), x2)
-#define vec_add5(x0, x1, x2, x3, x4) vec_add3(vec_add3(x0, x1, x2), x3, x4)
-
-
-#define vAVERAGE3(x0,x1,x2) x0
-#define vAVERAGE5(x0,x1,x2,x3,x4) x0
+#define vec_and3(v0, v1, v2)    vec_and(vec_and(v0, v1), v2)
+#define vec_or3(v0, v1, v2)     vec_or(vec_or(v0, v1), v2)
+// #define vec_div3(x) x
+// #define vec_div5(x) x
+//
+// #define vec_add3(x0, x1, x2) _mm_add_ps(_mm_add_ps(x0, x1), x2)
+// #define vec_add5(x0, x1, x2, x3, x4) vec_add3(vec_add3(x0, x1, x2), x3, x4)
+//
+// #define vAVERAGE3(x0,x1,x2) x0
+// #define vAVERAGE5(x0,x1,x2,x3,x4) x0
 
 #endif // __SIMD_MACRO_H__

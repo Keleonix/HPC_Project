@@ -105,12 +105,24 @@ void SigmaDelta_step4(uint8** Ot, uint8** Vt, uint8** Et, int* nrl, int* nrh, in
                 Et[j][k] = 0;
             }
             else{
-                Et[j][k] = VMAX;
+                Et[j][k] = 1;
             }
         }
     }
 
 }
+
+//Convertit la matrice binaire {0 ; 1} en matrice {0, VMAX}
+void convertion_matrice_binaire(uint8** mat, int nrl, int nrh, int ncl, int nch){
+    for(int j = nrl; j <= nrh; j++){
+        for(int k = ncl; k <= nch; k++){
+            if(mat[j][k]){
+                mat[j][k] = VMAX;
+            }
+        }
+    }
+}
+
 
 void main_mouvement(){
     printf("Début du programme principal.\n");

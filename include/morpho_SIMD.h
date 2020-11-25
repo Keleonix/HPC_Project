@@ -9,7 +9,7 @@
 
 #include "mutil.h"
 
-void Margin_SIMD(uint8** im, int nrl, int* nrh, int ncl, int* nch);
+vuint8** bords_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch);
 uint8** erosion_SIMD(uint8** im, int nrl, int nrh, int ncr, int nch);
 uint8** dilatation_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch);
 uint8** fermeture_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch);

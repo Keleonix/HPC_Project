@@ -248,22 +248,29 @@ int main(void){
 
     //TODO : Supprimer une fois finie
     //TEST_MORPHO
-    // printf("Début du programme principal.\n");
-    // int* nrl = malloc(sizeof(int));
-    // int* nrh = malloc(sizeof(int));
-    // int* ncl = malloc(sizeof(int));
-    // int* nch = malloc(sizeof(int));
-    // char image0[] = "car3/car_3000.pgm";
-    //
-    // int b = 1;
-    // //Chargement de la 1ere image
-    // uint8** Io = LoadPGM_ui8matrix(image0, nrl-b, nrh+b, ncl-b, nch+b);
-    //
-    // vuint8** vect_Io = vui8matrix(*nrl-b, *nrh+b, *ncl-b, *nch+b);
+    printf("Début du programme principal.\n");
+    int* nrl = malloc(sizeof(int));
+    int* nrh = malloc(sizeof(int));
+    int* ncl = malloc(sizeof(int));
+    int* nch = malloc(sizeof(int));
+    char image0[] = "car3/car_3000.pgm";
+
+    int b = 1;
+    //Chargement de la 1ere image
+    uint8** Io = LoadPGM_ui8matrix(image0, nrl, nrh, ncl, nch);
+
+    vuint8** vect_Io = vui8matrix(-b, *nrh+b, -b, *nch+b);
+
+    // printf();
     // vect_Io = (vuint8**) Io;
-    //
+
+    vec_store(&vect_Io[-b][-b], init_vuint8(0));
     // printf("Premier pixel de l'image : %d\n", Io[*nrl][*ncl]);
-    // display_vuint8(vect_Io[*nrl][*ncl], "%d ", "Premiers pixels de l'image ");
+
+    display_vuint8(vect_Io[-b][-b], "%d ", "Bord de l'image ");
+    printf("\n");
+
+    // display_vuint8(vect_Io[*nrh][*ncl], "%d ", "Premiers pixels de l'image ");
     // printf("\n");
     //VALIDE, bords_SIMD prendra en argument
 
@@ -286,21 +293,21 @@ int main(void){
 
     //Test des fonctions de shift
 
-    vuint8 a = init_vuint8_param(0, 1);
-    vuint8 b = init_vuint8_param(16, 1);
-
-    vuint8 c = vec_left3(a, b);
-    vuint8 d = vec_right3(a, b);
-    display_vuint8(a, "%d ", "a ");
-    printf("\n");
-    display_vuint8(b, "%d ", "b ");
-    printf("\n");
-    display_vuint8(c, "%d ", "c ");
-    printf("\n");
-    display_vuint8(d, "%d ", "d ");
-    printf("\n");
-
-    // test_gt();
+    // vuint8 a = init_vuint8_param(0, 1);
+    // vuint8 b = init_vuint8_param(16, 1);
+    //
+    // vuint8 c = vec_left3(a, b);
+    // vuint8 d = vec_right3(a, b);
+    // display_vuint8(a, "%d ", "a ");
+    // printf("\n");
+    // display_vuint8(b, "%d ", "b ");
+    // printf("\n");
+    // display_vuint8(c, "%d ", "c ");
+    // printf("\n");
+    // display_vuint8(d, "%d ", "d ");
+    // printf("\n");
+    //
+    // // test_gt();
     // test_min();
     // test_fct_vi8max_OK();
     // test_fct_vi8min_OK();
