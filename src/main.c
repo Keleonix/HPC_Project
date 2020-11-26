@@ -25,7 +25,10 @@
 #include "simd_macro.h"
 
 #include "dtime.h"
+#include "test_morpho.h"
 #include "test_mouvement_SIMD.h"
+#include "test_morpho_SIMD.h"
+
 #define VMIN 1
 #define VMAX 254
 #define N 3
@@ -248,27 +251,32 @@ int main(void){
 
     //TODO : Supprimer une fois finie
     //TEST_MORPHO
-    printf("Début du programme principal.\n");
-    int* nrl = malloc(sizeof(int));
-    int* nrh = malloc(sizeof(int));
-    int* ncl = malloc(sizeof(int));
-    int* nch = malloc(sizeof(int));
-    char image0[] = "car3/car_3000.pgm";
+    // printf("Début du programme principal.\n");
+    // int* nrl = malloc(sizeof(int));
+    // int* nrh = malloc(sizeof(int));
+    // int* ncl = malloc(sizeof(int));
+    // int* nch = malloc(sizeof(int));
+    // char image0[] = "car3/car_3000.pgm";
+    //
+    // int b = 1;
+    // //Chargement de la 1ere image
+    // uint8** Io = LoadPGM_ui8matrix(image0, nrl, nrh, ncl, nch);
+    //
+    // vuint8** vect_Io = vui8matrix(-b, *nrh+b, -b, *nch+b);
+    //
+    // // printf();
+    // // vect_Io = (vuint8**) Io;
+    //
+    // vec_store(&vect_Io[-b][-b], init_vuint8(0));
+    // // printf("Premier pixel de l'image : %d\n", Io[*nrl][*ncl]);
+    //
+    // display_vuint8(vect_Io[-b][-b], "%d ", "Bord de l'image ");
+    // printf("\n");
+    printf("Version scalaire \n");
+    test_erosion_OK();
 
-    int b = 1;
-    //Chargement de la 1ere image
-    uint8** Io = LoadPGM_ui8matrix(image0, nrl, nrh, ncl, nch);
-
-    vuint8** vect_Io = vui8matrix(-b, *nrh+b, -b, *nch+b);
-
-    // printf();
-    // vect_Io = (vuint8**) Io;
-
-    vec_store(&vect_Io[-b][-b], init_vuint8(0));
-    // printf("Premier pixel de l'image : %d\n", Io[*nrl][*ncl]);
-
-    display_vuint8(vect_Io[-b][-b], "%d ", "Bord de l'image ");
-    printf("\n");
+    printf("Version SIMD\n");
+    test_erosion_SIMD_OK();
 
     // display_vuint8(vect_Io[*nrh][*ncl], "%d ", "Premiers pixels de l'image ");
     // printf("\n");

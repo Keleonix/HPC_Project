@@ -1,6 +1,6 @@
-#include "morpho_SIMD.h"
+#include "morpho.h"
 
-void test_erosionOK();
-void test_dilatationOK();
-void test_ouvertureOK();
-void test_fermetureOK();
+void test_erosion_OK();
+void test_dilatation_OK();
+void test_ouverture_OK();
+void test_fermeture_OK();
