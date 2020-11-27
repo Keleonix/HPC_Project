@@ -6,8 +6,7 @@
 # with a little help of Stephane Piskorski and Joel Falcou
 
 # -- File list ----------
-FILE = main.c mouvement.c test_mouvement_SIMD.c test_mouvement_SIMD2.c test_morpho_SIMD.c morpho_SIMD.c test_morpho.c mouvement_SIMD.c morpho.c dtime.c nrutil.c vnrutil.c mutil.c my_vnrutil.c
-
+FILE = nrutil.c vnrutil.c mutil.c my_vnrutil.c main.c mouvement.c test_mouvement_SIMD.c test_mouvement_SIMD2.c test_morpho_SIMD.c morpho_SIMD.c test_morpho.c mouvement_SIMD.c morpho.c dtime.c 
 # -- Paths ----------
 SRC_PATH = src
 OBJ_PATH = obj

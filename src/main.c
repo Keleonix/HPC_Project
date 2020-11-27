@@ -272,11 +272,17 @@ int main(void){
     //
     // display_vuint8(vect_Io[-b][-b], "%d ", "Bord de l'image ");
     // printf("\n");
+    // printf("Version scalaire \n");
+    // test_erosion_OK();
+    //
+    // printf("Version SIMD\n");
+    // test_erosion_SIMD_OK();
+
     printf("Version scalaire \n");
-    test_erosion_OK();
+    test_dilatation_OK();
 
     printf("Version SIMD\n");
-    test_erosion_SIMD_OK();
+    test_dilatation_SIMD_OK();
 
     // display_vuint8(vect_Io[*nrh][*ncl], "%d ", "Premiers pixels de l'image ");
     // printf("\n");

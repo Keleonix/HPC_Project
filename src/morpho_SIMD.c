@@ -4,7 +4,7 @@
 #define DEROULAGE_MARGE 3
 #define BORD 1
 
-vuint8** bords_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
+vuint8** bords_SIMD(uint8** im, int nrl, int hauteur, int ncl, int largeur){
 
     //1ERE SOLUTION, PEUT ETRE AMELIOREE
     //Creer une vui8matrix avec des bords
@@ -15,18 +15,18 @@ vuint8** bords_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
 
     //METHODE NAIVE (sans opti du tout)
     //Nombre de pixels par ligne
-    int nbPixels_ligne = nch;
-
-    //Calcule du nombre de vecteurs nécessaires pour l'image
-    int nbVuint8 = (nbPixels_ligne+1)/16+1;
+    // int nbPixels_ligne = nch;
+    //
+    // //Calcule du nombre de vecteurs nécessaires pour l'image
+    // int nbVuint8 = nbPixels_ligne/16;
 
     //On alloue la matrice necessaire
     //Dimensions :
     //hauteur : -b à nrh+b
     //largeur : -b à nbVuint8+b
     int bord = 1;
-    int hauteur = nrh;
-    int largeur = nbVuint8;
+    // int hauteur = nrh;
+    // int largeur = nbVuint8;
 
     //Matrice avec les bords et tout
 
@@ -39,7 +39,7 @@ vuint8** bords_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
     printf("Matrice avec l'image\n");
 
     //Premiere ligne et derniere ligne
-    for(int i = ncl-bord; i <= nbVuint8+bord; i++){
+    for(int i = ncl-bord; i <= largeur+bord; i++){
 
         vec_store(&im_mat[nrl-bord][i], init_vuint8(0));
         vec_store(&im_mat[hauteur+bord][i], init_vuint8(0));
@@ -55,12 +55,12 @@ vuint8** bords_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
         im_mat[j][ncl-bord] = init_vuint8(0);
 
         //On duplique cette ligne de l'image dans le im_mat
-        dup_vui8vector(im_vect[j], ncl, largeur, im_mat[j]);
+        // dup_vui8vector(im_vect[j], ncl, largeur, im_mat[j]);
 
         //Equivalent à :
-        // for (int k = ncl; k =< largeur; k++) {
-            //im_mat[j][k] = im_vect[j][k];
-        // }
+        for (int k = ncl; k <= largeur; k++) {
+            vec_store(&im_mat[j][k], im_vect[j][k]);
+        }
 
         //Bord droit
         im_mat[j][largeur+bord] = init_vuint8(0);
@@ -76,10 +76,10 @@ vuint8** bords_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
 uint8** erosion_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
 
     //Nombre de pixels de l'image
-    int nbPixels = (nrh+1)*(nch+1);
+    int nbPixels_ligne = nch;
 
     //Calcule du nombre de vecteurs nécessaires pour l'image
-    int nbVuint8 = nbPixels/16+1;
+    int nbVuint8 = nbPixels_ligne/16;
 
     //On alloue la matrice necessaire
     //Dimensions :
@@ -89,6 +89,9 @@ uint8** erosion_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
     int hauteur = nrh;
     int largeur = nbVuint8;
 
+    printf("Dimensions :\n");
+    printf("hauteur : %d \n", hauteur);
+    printf("largeur : %d \n", largeur);
     //Vecteurs dans lesquels nos pixels seront chargés
     vuint8 a0, b0, c0;
     vuint8 a1, b1, c1;
@@ -107,7 +110,15 @@ uint8** erosion_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
 
    //On crée une matrice vuint8** comprenant l'image avec des bords
    //TODO: trouver un meilleur
-   vuint8** im_mat = bords_SIMD(im, nrl, nrh, ncl, nch);
+   vuint8** im_mat = bords_SIMD(im, nrl, hauteur, ncl, largeur);
+   printf("Matrice d'image avec bords\n\n");
+   for(int i = nrl-BORD; i <= hauteur+BORD; i++){
+       for(int j = ncl-BORD; j <= largeur+BORD; j++){
+           printf("Vecteur [%d][%d] : ", i, j);
+           display_vuint8(im_mat[i][j], "%d ", NULL);
+           printf("\n");
+       }
+   }
 
    //On cree une matrice qui va contenir le résultat de notre erosion
    vuint8** erosion_mat = vui8matrix(nrl, hauteur, ncl, largeur);
@@ -121,39 +132,97 @@ uint8** erosion_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
         for(int k = ncl; k <= largeur; k++){
 
 
+
             a0 = vec_load(&im_mat[j-1][k-1]); b0 = vec_load(&im_mat[j-1][k]); c0 = vec_load(&im_mat[j-1][k+1]);
+            //Affichage des vecteurs loades
+            printf("Affichage des vecteurs loadés \n\n");
+            display_vuint8(a0, "%d ", "a0 = ");
+            printf("\n");
+            display_vuint8(b0, "%d ", "b0 = ");
+            printf("\n");
+            display_vuint8(c0, "%d ", "c0 = ");
+            printf("\n");
             a1 = vec_load(&im_mat[j  ][k-1]); b1 = vec_load(&im_mat[j  ][k]); c1 = vec_load(&im_mat[j-1][k+1]);
+            //Affichage des vecteurs loades
+            display_vuint8(a1, "%d ", "a1 = ");
+            printf("\n");
+            display_vuint8(b1, "%d ", "b1 = ");
+            printf("\n");
+            display_vuint8(c1, "%d ", "c1 = ");
+            printf("\n");
             a2 = vec_load(&im_mat[j+1][k-1]); b2 = vec_load(&im_mat[j+1][k]); c2 = vec_load(&im_mat[j-1][k+1]);
+            //Affichage des vecteurs loades
+            display_vuint8(a2, "%d ", "a2 = ");
+            printf("\n");
+            display_vuint8(b2, "%d ", "b2 = ");
+            printf("\n");
+            display_vuint8(c2, "%d ", "c2 = ");
+            printf("\n");
 
             //Shifts
+
             aa0 = vec_left1(a0, b0); cc0 = vec_right1(b0, c0);
-            aa1 = vec_left1(a1, b1); cc0 = vec_right1(b1, c1);
-            aa2 = vec_left1(a2, b2); cc0 = vec_right1(b2, c2);
+            printf("Affichage des shifts \n\n");
+            display_vuint8(aa0, "%d ", "aa0 = ");
+            printf("\n");
+            display_vuint8(cc0, "%d ", "cc0 = ");
+            printf("\n");
+
+            aa1 = vec_left1(a1, b1); cc1 = vec_right1(b1, c1);
+            display_vuint8(aa1, "%d ", "aa1 = ");
+            printf("\n");
+            display_vuint8(cc1, "%d ", "cc1 = ");
+            printf("\n");
+
+            aa2 = vec_left1(a2, b2); cc2 = vec_right1(b2, c2);
+            display_vuint8(aa2, "%d ", "aa2 = ");
+            printf("\n");
+            display_vuint8(cc2, "%d ", "cc2 = ");
+            printf("\n");
 
             //AND sur chaque ligne
+
             and_1ereligne = vec_and3(aa0, b0, cc0);
             and_2emeligne = vec_and3(aa1, b1, cc1);
             and_3emeligne = vec_and3(aa2, b2, cc2);
+            printf("Affichage des vecteurs AND\n\n");
+            display_vuint8(and_1ereligne, "%d ", "and_1ereligne = ");
+            printf("\n");
+            display_vuint8(and_2emeligne, "%d ", "and_2emeligne = ");
+            printf("\n");
+            display_vuint8(and_3emeligne, "%d ", "and_3emeligne = ");
+            printf("\n");
+
 
             //AND du noyau
+
             and_noyau = vec_and3(and_1ereligne, and_2emeligne, and_3emeligne);
+            // printf("Affichage du AND noyau \n\n");
+            // display_vuint8(and_noyau, "%d ", "and_noyau = ");
+            // printf("\n");
 
             //On place le résultat du AND dans la matrice resultat
             vec_store(&erosion_mat[j][k], and_noyau);
+            printf("Affichage de la donnée storée\n\n");
+            printf("Numéro [%d][%d]", j, k);
+            display_vuint8(erosion_mat[j][k], "%d ", "and_store = ");
+            printf("\n");
         }
     }
 
     //On retourne la matrice sous sa forme scalaire
+    //TODO: Utiliser une fonction convertissant dans le cas où le nombre de pixels par
+    //ligne n'est pas multiple de 16 ?
     return (uint8**)erosion_mat;
 }
 
 uint8** dilatation_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
 
     //Nombre de pixels de l'image
-    int nbPixels = (nrh+1)*(nch+1);
+    int nbPixels_ligne = nch;
 
     //Calcule du nombre de vecteurs nécessaires pour l'image
-    int nbVuint8 = nbPixels/16+1;
+    int nbVuint8 = nbPixels_ligne/16;
 
     //On alloue la matrice necessaire
     //Dimensions :
@@ -181,7 +250,7 @@ uint8** dilatation_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
 
    //On crée une matrice vuint8** comprenant l'image avec des bords
    //TODO: trouver un meilleur
-   vuint8** im_mat = bords_SIMD(im, nrl, nrh, ncl, nch);
+   vuint8** im_mat = bords_SIMD(im, nrl, hauteur, ncl, largeur);
 
    //On cree une matrice qui va contenir le résultat de notre erosion
    vuint8** dilatation_mat = vui8matrix(nrl, hauteur, ncl, largeur);
@@ -201,8 +270,8 @@ uint8** dilatation_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
 
             //Shifts
             aa0 = vec_left1(a0, b0); cc0 = vec_right1(b0, c0);
-            aa1 = vec_left1(a1, b1); cc0 = vec_right1(b1, c1);
-            aa2 = vec_left1(a2, b2); cc0 = vec_right1(b2, c2);
+            aa1 = vec_left1(a1, b1); cc1 = vec_right1(b1, c1);
+            aa2 = vec_left1(a2, b2); cc2 = vec_right1(b2, c2);
 
             //AND sur chaque ligne
             or_1ereligne = vec_or3(aa0, b0, cc0);
