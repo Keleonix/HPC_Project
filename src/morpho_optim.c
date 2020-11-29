@@ -1,4 +1,4 @@
-#include "morpho_OPTIM.h"
+#include "morpho_optim.h"
 
 #define R 1                                     // On défini le rayon R pour l'espace B de convolution ici R = 1
 #define DEROULAGE_MARGE 3
@@ -119,12 +119,13 @@ uint8** erosion_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
         //On charge les deux
         a0 = vec_load(&im_mat[j-1][ncl-1]); b0 = vec_load(&im_mat[j-1][ncl]);
         a1 = vec_load(&im_mat[j  ][ncl-1]); b1 = vec_load(&im_mat[j  ][ncl]);
-        a2 = vec_load(&im_mat[j+1][k-1]); b2 = vec_load(&im_mat[j+1][k]);
+        a2 = vec_load(&im_mat[j+1][ncl-1]); b2 = vec_load(&im_mat[j+1][ncl]);
+
         for(int k = ncl; k <= largeur; k++){
-            
+
              c0 = vec_load(&im_mat[j-1][k+1]);
-             c1 = vec_load(&im_mat[j-1][ncl+1]);
-             c2 = vec_load(&im_mat[j-1][k+1]);
+             c1 = vec_load(&im_mat[j ][k+1]);
+             c2 = vec_load(&im_mat[j+1][k+1]);
 
             //Shifts
 
@@ -159,6 +160,13 @@ uint8** erosion_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
             printf("Numéro [%d][%d]", j, k);
             display_vuint8(erosion_mat[j][k], "%d ", "and_store = ");
             printf("\n");
+
+            //Rotation registres
+            a0 = b0; b0 = c0;
+            a1 = b1; b1 = c1;
+            a2 = b2; b2 = c2;
+
+
         }
     }
 
@@ -217,8 +225,8 @@ uint8** dilatation_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
 
 
             a0 = vec_load(&im_mat[j-1][k-1]); b0 = vec_load(&im_mat[j-1][k]); c0 = vec_load(&im_mat[j-1][k+1]);
-            a1 = vec_load(&im_mat[j  ][k-1]); b1 = vec_load(&im_mat[j  ][k]); c1 = vec_load(&im_mat[j-1][k+1]);
-            a2 = vec_load(&im_mat[j+1][k-1]); b2 = vec_load(&im_mat[j+1][k]); c2 = vec_load(&im_mat[j-1][k+1]);
+            a1 = vec_load(&im_mat[j  ][k-1]); b1 = vec_load(&im_mat[j  ][k]); c1 = vec_load(&im_mat[j  ][k+1]);
+            a2 = vec_load(&im_mat[j+1][k-1]); b2 = vec_load(&im_mat[j+1][k]); c2 = vec_load(&im_mat[j+1][k+1]);
 
             //Shifts
             aa0 = vec_left1(a0, b0); cc0 = vec_right1(b0, c0);
