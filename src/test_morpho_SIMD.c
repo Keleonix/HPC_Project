@@ -54,7 +54,7 @@ void test_dilatation_SIMD_OK(){
 
     for(int j = nrl; j <= nrh; j++){
         for(int k = ncl; k <= nch; k++){
-            if(j == 1){
+            if(j == 1 && k%4 == 3){
                 mat_test[j][k] = 1;
             }
             else{

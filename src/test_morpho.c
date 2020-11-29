@@ -75,7 +75,7 @@ void test_dilatation_OK(){
     //On affiche le resultat
     //TODO: Remplacer par un test, qui envoie OK pour chaque ligne correcte
     //et KO pour chaque ligne mauvaise
-    printf("Matrice résultat de l'erosion\n\n");
+    printf("Matrice résultat de la dilatation\n\n");
     for(int i = nrl; i <= nrh; i++){
         display_ui8vector(resultat[i], ncl, nch, " %d", NULL);
         printf("\n");

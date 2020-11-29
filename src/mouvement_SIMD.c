@@ -14,7 +14,7 @@
 // x : le pixel courant de coordonnées (i,j)
 
 
-//Premiere étape de l'algorithme SigmaDelta
+//Initialisation de la premiere image, image de fond et image de variance à t = 0
 void SigmaDelta_step0_SIMD(uint8** Io, vuint8* Mt_1, vuint8* Vt_1, int* nrl, int* nrh, int* ncl, int* nch, int nbVuint8){
 
     copy_ui8matrix_vui8vector(Io, *nrl, *nrh, *ncl, *nch, Mt_1);
@@ -24,6 +24,7 @@ void SigmaDelta_step0_SIMD(uint8** Io, vuint8* Mt_1, vuint8* Vt_1, int* nrl, int
 
 }
 
+//Etape 1 : estimation de l'image de fond (version SIMD)
 void SigmaDelta_step1_SIMD(vuint8* It, vuint8* Mt_1, vuint8* Mt, int nbVuint8){
 
         vuint8 pixelsIm, pixelsM, C1, C2, K1, K2, K, M;

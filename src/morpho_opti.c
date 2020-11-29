@@ -1,10 +1,10 @@
-#include "morpho_SIMD.h"
+#include "morpho_OPTIM.h"
 
 #define R 1                                     // On défini le rayon R pour l'espace B de convolution ici R = 1
 #define DEROULAGE_MARGE 3
 #define BORD 1
 
-vuint8** bords_SIMD(uint8** im, int nrl, int hauteur, int ncl, int largeur){
+vuint8** bords_OPTIM(uint8** im, int nrl, int hauteur, int ncl, int largeur){
 
     //1ERE SOLUTION, PEUT ETRE AMELIOREE
     //Creer une vui8matrix avec des bords
@@ -59,7 +59,7 @@ vuint8** bords_SIMD(uint8** im, int nrl, int hauteur, int ncl, int largeur){
 }
 
 
-uint8** erosion_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
+uint8** erosion_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
 
     //Nombre de pixels de l'image
     int nbPixels_ligne = nch;
@@ -96,7 +96,7 @@ uint8** erosion_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
 
    //On crée une matrice vuint8** comprenant l'image avec des bords
    //TODO: trouver un meilleur
-   vuint8** im_mat = bords_SIMD(im, nrl, hauteur, ncl, largeur);
+   vuint8** im_mat = bords_OPTIM(im, nrl, hauteur, ncl, largeur);
    printf("Matrice d'image avec bords\n\n");
    for(int i = nrl-BORD; i <= hauteur+BORD; i++){
        for(int j = ncl-BORD; j <= largeur+BORD; j++){
@@ -115,56 +115,22 @@ uint8** erosion_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
 
     //On parcourt l'image de vecteur en vecteur
     for(int j = nrl; j <= hauteur; j++){
+
+        //On charge les deux
+        a0 = vec_load(&im_mat[j-1][ncl-1]); b0 = vec_load(&im_mat[j-1][ncl]);
+        a1 = vec_load(&im_mat[j  ][ncl-1]); b1 = vec_load(&im_mat[j  ][ncl]);
+        a2 = vec_load(&im_mat[j+1][k-1]); b2 = vec_load(&im_mat[j+1][k]);
         for(int k = ncl; k <= largeur; k++){
-
-
-
-            a0 = vec_load(&im_mat[j-1][k-1]); b0 = vec_load(&im_mat[j-1][k]); c0 = vec_load(&im_mat[j-1][k+1]);
-            //Affichage des vecteurs loades
-            printf("Affichage des vecteurs loadés \n\n");
-            display_vuint8(a0, "%d ", "a0 = ");
-            printf("\n");
-            display_vuint8(b0, "%d ", "b0 = ");
-            printf("\n");
-            display_vuint8(c0, "%d ", "c0 = ");
-            printf("\n");
-            a1 = vec_load(&im_mat[j  ][k-1]); b1 = vec_load(&im_mat[j  ][k]); c1 = vec_load(&im_mat[j ][k+1]);
-            //Affichage des vecteurs loades
-            display_vuint8(a1, "%d ", "a1 = ");
-            printf("\n");
-            display_vuint8(b1, "%d ", "b1 = ");
-            printf("\n");
-            display_vuint8(c1, "%d ", "c1 = ");
-            printf("\n");
-            a2 = vec_load(&im_mat[j+1][k-1]); b2 = vec_load(&im_mat[j+1][k]); c2 = vec_load(&im_mat[j+1][k+1]);
-            //Affichage des vecteurs loades
-            display_vuint8(a2, "%d ", "a2 = ");
-            printf("\n");
-            display_vuint8(b2, "%d ", "b2 = ");
-            printf("\n");
-            display_vuint8(c2, "%d ", "c2 = ");
-            printf("\n");
+            
+             c0 = vec_load(&im_mat[j-1][k+1]);
+             c1 = vec_load(&im_mat[j-1][ncl+1]);
+             c2 = vec_load(&im_mat[j-1][k+1]);
 
             //Shifts
 
             aa0 = vec_left1(a0, b0); cc0 = vec_right1(b0, c0);
-            printf("Affichage des shifts \n\n");
-            display_vuint8(aa0, "%d ", "aa0 = ");
-            printf("\n");
-            display_vuint8(cc0, "%d ", "cc0 = ");
-            printf("\n");
-
             aa1 = vec_left1(a1, b1); cc1 = vec_right1(b1, c1);
-            display_vuint8(aa1, "%d ", "aa1 = ");
-            printf("\n");
-            display_vuint8(cc1, "%d ", "cc1 = ");
-            printf("\n");
-
             aa2 = vec_left1(a2, b2); cc2 = vec_right1(b2, c2);
-            display_vuint8(aa2, "%d ", "aa2 = ");
-            printf("\n");
-            display_vuint8(cc2, "%d ", "cc2 = ");
-            printf("\n");
 
             //AND sur chaque ligne
 
@@ -202,7 +168,7 @@ uint8** erosion_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
     return (uint8**)erosion_mat;
 }
 
-uint8** dilatation_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
+uint8** dilatation_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
 
     //Nombre de pixels de l'image
     int nbPixels_ligne = nch;
@@ -236,7 +202,7 @@ uint8** dilatation_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
 
    //On crée une matrice vuint8** comprenant l'image avec des bords
    //TODO: trouver un meilleur
-   vuint8** im_mat = bords_SIMD(im, nrl, hauteur, ncl, largeur);
+   vuint8** im_mat = bords_OPTIM(im, nrl, hauteur, ncl, largeur);
 
    //On cree une matrice qui va contenir le résultat de notre erosion
    vuint8** dilatation_mat = vui8matrix(nrl, hauteur, ncl, largeur);
@@ -251,8 +217,8 @@ uint8** dilatation_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
 
 
             a0 = vec_load(&im_mat[j-1][k-1]); b0 = vec_load(&im_mat[j-1][k]); c0 = vec_load(&im_mat[j-1][k+1]);
-            a1 = vec_load(&im_mat[j  ][k-1]); b1 = vec_load(&im_mat[j  ][k]); c1 = vec_load(&im_mat[j  ][k+1]);
-            a2 = vec_load(&im_mat[j+1][k-1]); b2 = vec_load(&im_mat[j+1][k]); c2 = vec_load(&im_mat[j+1][k+1]);
+            a1 = vec_load(&im_mat[j  ][k-1]); b1 = vec_load(&im_mat[j  ][k]); c1 = vec_load(&im_mat[j-1][k+1]);
+            a2 = vec_load(&im_mat[j+1][k-1]); b2 = vec_load(&im_mat[j+1][k]); c2 = vec_load(&im_mat[j-1][k+1]);
 
             //Shifts
             aa0 = vec_left1(a0, b0); cc0 = vec_right1(b0, c0);
@@ -278,16 +244,16 @@ uint8** dilatation_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
     return (uint8**)dilatation_mat;
 }
 
-uint8** fermeture_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
-    return erosion_SIMD(dilatation_SIMD(im, nrl, nrh, ncl, nch), nrl, nrh, ncl, nch);
+uint8** fermeture_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
+    return erosion_OPTIM(dilatation_OPTIM(im, nrl, nrh, ncl, nch), nrl, nrh, ncl, nch);
 }
 
-uint8** ouverture_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
-    return dilatation_SIMD(erosion_SIMD(im, nrl, nrh, ncl, nch), nrl, nrh, ncl, nch);
+uint8** ouverture_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
+    return dilatation_OPTIM(erosion_OPTIM(im, nrl, nrh, ncl, nch), nrl, nrh, ncl, nch);
 }
 
 // //TODO : A etudier par la suite pour l'optimisation
-// void bords_SIMD_opti(uint8** im, int nrl, int* nrh, int ncl, int* nch){
+// void bords_OPTIM_opti(uint8** im, int nrl, int* nrh, int ncl, int* nch){
 //     int i, j, n, r;
 //     vuint8 im0, im1, im2;
 //     vuint8** marginIm;
@@ -350,4 +316,76 @@ uint8** ouverture_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
 //             break;
 //     }
 //
+// }
+
+// uint8** erosion(uint8** im, int nrl, int nrh, int ncl, int nch){
+//     int i, j, k, l;
+//     uint8 tmp;
+//     uint8** res;
+//     uint8** marginIm;
+//
+//     res = ui8matrix(nrl, nrh, ncl, nch);
+//     marginIm = ui8matrix(nrl - R, nrh + R, ncl - R, nch + R);   // Future image de taille [nrl+nrh+2*R, ncl+nch+2*R]
+//
+//         bords_OPTIM(marginIm, nrl, &nrh, ncl, &nch);            // Création de bords
+//
+//     for(i = nrl; i <= nrh; i++){                                // On parcour toute l'image pour faire une convolution pixel par pixel
+//         for(j = ncl; j <= nch; j++){
+//
+//             tmp = marginIm[i-1][j-1];                           // tmp est égal à la première case de ce qui va être l'espace B
+//
+//             for(k = i-R; k <= i+R; k++){                        // On procède à la convolution sur l'espace B avec B = 2*R + 1
+//                 for(l = j-R; l <= j+R; l++){
+//
+//                     tmp &= marginIm[k][l];                     // On applique un filtre "AND" sur l'espace de convolution
+//
+//                 }
+//             }
+//
+//             res[i][j] = tmp;                                    // On stocke le résultat
+//
+//         }
+//     }
+//
+//     return res;                                                 // On renvoie le résultat
+// }
+//
+// uint8** dilatation(uint8** im, int nrl, int nrh, int ncl, int nch){
+//     int i, j, k, l;
+//     uint8 tmp;
+//     uint8** res;
+//     uint8** marginIm;
+//
+//     res = ui8matrix(nrl, nrh, ncl, nch);
+//     marginIm = ui8matrix(nrl - R, nrh + R, ncl - R, nch + R);       // Future image de taille [nrl+nrh+2*R, ncl+nch+2*R]
+//
+//     marginIm = bords_OPTIM(im, nrl, &nrh, ncl, &nch);                // Création de bords
+//
+//     for(i = nrl; i <= nrh; i++){                                    // On parcour toute l'image pour faire une convolution pixel par pixel
+//         for(j = ncl; j <= nch; j++){
+//
+//             tmp = marginIm[i-1][j-1];                               // tmp est égal à la première case de ce qui va être l'espace B
+//
+//             for(k = i-R; k <= i+R; k++){                            // On procède à la convolution sur l'espace B avec B = 2*R + 1
+//                 for(l = j-R; l <= j+R; l++){
+//
+//                     tmp |= marginIm[k][l];                         // On applique un filtre "OR" sur l'espace de convolution
+//
+//                 }
+//             }
+//
+//             res[i][j] = tmp;                                        // On stocke le résultat
+//
+//         }
+//     }
+//
+//     return res;                                 // On renvoie le résultat
+// }
+//
+// uint8** fermeture(uint8** im, int nrl, int nrh, int ncl, int nch){
+//     return erosion(dilatation(im, nrl, nrh, ncl, nch), nrl, nrh, ncl, nch);
+// }
+//
+// uint8** ouverture(uint8** im, int nrl, int nrh, int ncl, int nch){
+//     return dilatation(erosion(im, nrl, nrh, ncl, nch), nrl, nrh, ncl, nch);
 // }

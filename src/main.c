@@ -249,6 +249,7 @@ void chaine_complete_SIMD(){
 
 int main(void){
 
+    // main_mouvement_OPTIM();
     //TODO : Supprimer une fois finie
     //TEST_MORPHO
     // printf("Début du programme principal.\n");
@@ -272,11 +273,11 @@ int main(void){
     //
     // display_vuint8(vect_Io[-b][-b], "%d ", "Bord de l'image ");
     // printf("\n");
-    // printf("Version scalaire \n");
-    // test_erosion_OK();
-    //
-    // printf("Version SIMD\n");
-    // test_erosion_SIMD_OK();
+    printf("Version scalaire \n");
+    test_erosion_OK();
+
+    printf("Version SIMD\n");
+    test_erosion_SIMD_OK();
 
     printf("Version scalaire \n");
     test_dilatation_OK();
