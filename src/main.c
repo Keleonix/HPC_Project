@@ -15,8 +15,6 @@
 
 #include "mouvement.h"
 #include "morpho.h"
-// #include "test_mouvement.h"
-// #include "bench_mouvement.h"
 
 #include "mouvement_SIMD.h"
 #include "morpho_SIMD.h"
@@ -25,9 +23,18 @@
 #include "simd_macro.h"
 
 #include "dtime.h"
-#include "test_morpho.h"
+#include "test_mouvement.h"
 #include "test_mouvement_SIMD.h"
+// #include "test_mouvement_optim.h"
+
+#include "test_morpho.h"
+#include "test_morpho_SIMD.h"
 #include "test_morpho_optim.h"
+
+
+
+#include "bench_mouvement.h"
+#include "bench_morpho.h"
 
 #define VMIN 1
 #define VMAX 254
@@ -56,6 +63,44 @@ void chaine_complete_OPTIM();
 
 int main(void){
 
+    //TODO: Nettoyer ce putain de main wah
+    //CHRONO
+    // printf("CHRONO SIGMA SCALAIRE\n\n");
+    // chrono_mouvement();
+    // printf("\n");
+    //
+    // printf("CHRONO SIGMA SIMD\n\n");
+    // chrono_mouvement_SIMD();
+    // printf("\n");
+    //
+    // printf("CHRONO SIGMA OPTIMISE\n\n");
+    // chrono_mouvement_OPTIM();
+    // printf("\n");
+
+    printf("CHRONO EROSION SCALAIRE\n\n");
+    chrono_erosion();
+    printf("\n");
+
+    printf("CHRONO EROSION SIMD\n\n");
+    chrono_erosion_SIMD();
+    printf("\n");
+
+    printf("CHRONO EROSION OPTIMISE\n\n");
+    chrono_erosion_OPTIM();
+    printf("\n");
+
+    // printf("CHRONO DILATATION SCALAIRE\n\n");
+    // chrono_dilatation();
+    // printf("\n");
+    //
+    // printf("CHRONO DILATATION SIMD\n\n");
+    // chrono_dilatation_SIMD();
+    // printf("\n");
+    //
+    // printf("CHRONO DILATATION OPTIMISE\n\n");
+    // chrono_dilatation_OPTIM();
+    // printf("\n");
+
     // main_mouvement_OPTIM();
     //TODO : Supprimer une fois finie
     //TEST_MORPHO
@@ -80,23 +125,23 @@ int main(void){
     //
     // display_vuint8(vect_Io[-b][-b], "%d ", "Bord de l'image ");
     // printf("\n");
-    printf("Version scalaire \n");
-    test_erosion_OK();
-    //
+    // printf("Version scalaire \n");
+    // test_erosion_OK();
+    // //
     // printf("Version SIMD\n");
     // test_erosion_SIMD_OK();
+    //
+    // printf("Version OPTIM\n");
+    // test_erosion_OPTIM_OK();
 
-    printf("Version OPTIM\n");
-    test_erosion_OPTIM_OK();
-
-    printf("Version scalaire \n");
-    test_dilatation_OK();
-
-    // printf("Version SIMD\n");
-    // test_dilatation_SIMD_OK();
-
-    printf("Version OPTIM\n");
-    test_dilatation_OPTIM_OK();
+    // printf("Version scalaire \n");
+    // test_dilatation_OK();
+    //
+    // // printf("Version SIMD\n");
+    // // test_dilatation_SIMD_OK();
+    //
+    // printf("Version OPTIM\n");
+    // test_dilatation_OPTIM_OK();
 
     // display_vuint8(vect_Io[*nrh][*ncl], "%d ", "Premiers pixels de l'image ");
     // printf("\n");

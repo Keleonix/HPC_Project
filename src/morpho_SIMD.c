@@ -19,12 +19,12 @@ vuint8** bords_SIMD(uint8** im, int nrl, int hauteur, int ncl, int largeur){
 
     //Matrice avec bords
     vuint8** im_mat = vui8matrix(nrl-bord, hauteur+bord, ncl-bord, largeur+bord);
-    printf("Matrice avec bords\n");
+    //printf("Matrice avec bords\n");
 
     //Matrice avec l'image
 
     vuint8** im_vect = (vuint8**) im;
-    printf("Matrice avec l'image\n");
+    //printf("Matrice avec l'image\n");
 
     //Premiere ligne et derniere ligne
     for(int i = ncl-bord; i <= largeur+bord; i++){
@@ -32,7 +32,7 @@ vuint8** bords_SIMD(uint8** im, int nrl, int hauteur, int ncl, int largeur){
         vec_store(&im_mat[nrl-bord][i], init_vuint8(0));
         vec_store(&im_mat[hauteur+bord][i], init_vuint8(0));
     }
-    printf("Premiere ligne et derniere ligne de la matrice avec bords\n");
+    //printf("Premiere ligne et derniere ligne de la matrice avec bords\n");
 
 
     for(int j = nrl; j <= hauteur; j++){
@@ -75,9 +75,9 @@ uint8** erosion_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
     int hauteur = nrh;
     int largeur = nbVuint8;
 
-    printf("Dimensions :\n");
-    printf("hauteur : %d \n", hauteur);
-    printf("largeur : %d \n", largeur);
+    //printf("Dimensions :\n");
+    //printf("hauteur : %d \n", hauteur);
+    //printf("largeur : %d \n", largeur);
     //Vecteurs dans lesquels nos pixels seront chargés
     vuint8 a0, b0, c0;
     vuint8 a1, b1, c1;
@@ -97,12 +97,12 @@ uint8** erosion_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
    //On crée une matrice vuint8** comprenant l'image avec des bords
    //TODO: trouver un meilleur
    vuint8** im_mat = bords_SIMD(im, nrl, hauteur, ncl, largeur);
-   printf("Matrice d'image avec bords\n\n");
+   //printf("Matrice d'image avec bords\n\n");
    for(int i = nrl-BORD; i <= hauteur+BORD; i++){
        for(int j = ncl-BORD; j <= largeur+BORD; j++){
-           printf("Vecteur [%d][%d] : ", i, j);
-           display_vuint8(im_mat[i][j], "%d ", NULL);
-           printf("\n");
+           //printf("Vecteur [%d][%d] : ", i, j);
+           //display_vuint8(im_mat[i][j], "%d ", NULL);
+           //printf("\n");
        }
    }
 
@@ -121,78 +121,78 @@ uint8** erosion_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
 
             a0 = vec_load(&im_mat[j-1][k-1]); b0 = vec_load(&im_mat[j-1][k]); c0 = vec_load(&im_mat[j-1][k+1]);
             //Affichage des vecteurs loades
-            printf("Affichage des vecteurs loadés \n\n");
-            display_vuint8(a0, "%d ", "a0 = ");
-            printf("\n");
-            display_vuint8(b0, "%d ", "b0 = ");
-            printf("\n");
-            display_vuint8(c0, "%d ", "c0 = ");
-            printf("\n");
+            //printf("Affichage des vecteurs loadés \n\n");
+            //display_vuint8(a0, "%d ", "a0 = ");
+            //printf("\n");
+            //display_vuint8(b0, "%d ", "b0 = ");
+            //printf("\n");
+            //display_vuint8(c0, "%d ", "c0 = ");
+            //printf("\n");
             a1 = vec_load(&im_mat[j  ][k-1]); b1 = vec_load(&im_mat[j  ][k]); c1 = vec_load(&im_mat[j ][k+1]);
             //Affichage des vecteurs loades
-            display_vuint8(a1, "%d ", "a1 = ");
-            printf("\n");
-            display_vuint8(b1, "%d ", "b1 = ");
-            printf("\n");
-            display_vuint8(c1, "%d ", "c1 = ");
-            printf("\n");
+            //display_vuint8(a1, "%d ", "a1 = ");
+            //printf("\n");
+            //display_vuint8(b1, "%d ", "b1 = ");
+            //printf("\n");
+            //display_vuint8(c1, "%d ", "c1 = ");
+            //printf("\n");
             a2 = vec_load(&im_mat[j+1][k-1]); b2 = vec_load(&im_mat[j+1][k]); c2 = vec_load(&im_mat[j+1][k+1]);
             //Affichage des vecteurs loades
-            display_vuint8(a2, "%d ", "a2 = ");
-            printf("\n");
-            display_vuint8(b2, "%d ", "b2 = ");
-            printf("\n");
-            display_vuint8(c2, "%d ", "c2 = ");
-            printf("\n");
+            //display_vuint8(a2, "%d ", "a2 = ");
+            //printf("\n");
+            //display_vuint8(b2, "%d ", "b2 = ");
+            //printf("\n");
+            //display_vuint8(c2, "%d ", "c2 = ");
+            //printf("\n");
 
             //Shifts
 
             aa0 = vec_left1(a0, b0); cc0 = vec_right1(b0, c0);
-            printf("Affichage des shifts \n\n");
-            display_vuint8(aa0, "%d ", "aa0 = ");
-            printf("\n");
-            display_vuint8(cc0, "%d ", "cc0 = ");
-            printf("\n");
+            //printf("Affichage des shifts \n\n");
+            //display_vuint8(aa0, "%d ", "aa0 = ");
+            //printf("\n");
+            //display_vuint8(cc0, "%d ", "cc0 = ");
+            //printf("\n");
 
             aa1 = vec_left1(a1, b1); cc1 = vec_right1(b1, c1);
-            display_vuint8(aa1, "%d ", "aa1 = ");
-            printf("\n");
-            display_vuint8(cc1, "%d ", "cc1 = ");
-            printf("\n");
+            //display_vuint8(aa1, "%d ", "aa1 = ");
+            //printf("\n");
+            //display_vuint8(cc1, "%d ", "cc1 = ");
+            //printf("\n");
 
             aa2 = vec_left1(a2, b2); cc2 = vec_right1(b2, c2);
-            display_vuint8(aa2, "%d ", "aa2 = ");
-            printf("\n");
-            display_vuint8(cc2, "%d ", "cc2 = ");
-            printf("\n");
+            //display_vuint8(aa2, "%d ", "aa2 = ");
+            //printf("\n");
+            //display_vuint8(cc2, "%d ", "cc2 = ");
+            //printf("\n");
 
             //AND sur chaque ligne
 
             and_1ereligne = vec_and3(aa0, b0, cc0);
             and_2emeligne = vec_and3(aa1, b1, cc1);
             and_3emeligne = vec_and3(aa2, b2, cc2);
-            printf("Affichage des vecteurs AND\n\n");
-            display_vuint8(and_1ereligne, "%d ", "and_1ereligne = ");
-            printf("\n");
-            display_vuint8(and_2emeligne, "%d ", "and_2emeligne = ");
-            printf("\n");
-            display_vuint8(and_3emeligne, "%d ", "and_3emeligne = ");
-            printf("\n");
+            //printf("Affichage des vecteurs AND\n\n");
+            // //display_vuint8(and_1ereligne, "%d ", "and_1ereligne = ");
+            // //printf("\n");
+            // //display_vuint8(and_2emeligne, "%d ", "and_2emeligne = ");
+            // //printf("\n");
+            // //display_vuint8(and_3emeligne, "%d ", "and_3emeligne = ");
+            //printf("\n");
 
 
             //AND du noyau
 
             and_noyau = vec_and3(and_1ereligne, and_2emeligne, and_3emeligne);
-            // printf("Affichage du AND noyau \n\n");
-            // display_vuint8(and_noyau, "%d ", "and_noyau = ");
-            // printf("\n");
+            // //printf("Affichage du AND noyau \n\n");
+            // //display_vuint8(and_noyau, "%d ", "and_noyau = ");
+            // //printf("\n");
 
             //On place le résultat du AND dans la matrice resultat
             vec_store(&erosion_mat[j][k], and_noyau);
-            printf("Affichage de la donnée storée\n\n");
-            printf("Numéro [%d][%d]", j, k);
-            display_vuint8(erosion_mat[j][k], "%d ", "and_store = ");
-            printf("\n");
+            //printf("Affichage de la donnée storée\n\n");
+            //printf("Numéro [%d][%d]", j, k);
+            // //display_vuint8(erosion_mat[j][k], "%d ", "and_store = ");
+            //printf("\n");
         }
     }
 

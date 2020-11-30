@@ -4,16 +4,16 @@
 #include "mouvement.h"
 #include "mouvement_SIMD.h"
 #include "mouvement_optim.h"
-#include "my_macro.h"
+#include "mymacro.h"
 
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
 #define MAX(X, Y) (((X) > (Y)) ? (X) : (Y))
 
 
-#define TEMPS_RESULTATS(t, t_min, t_max, t_somme) \
+#define CPP_RESULTATS(t, t_min, t_max, t_somme) \
         t_min = MIN(t_min, t); \
         t_max = MAX(t_max, t); \
-        t_somme += timer_step1;
+        t_somme += t;
 
 //Mesure du temps pour la version scalaire de l'algorithme SigmaDelta
 void chrono_mouvement();

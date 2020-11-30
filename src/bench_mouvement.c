@@ -8,30 +8,32 @@ void chrono_mouvement(){
     int run, nrun = 1;
     double t0, t1, dt, tmin, t;
 
-    //Timer pour chaque étape
-    //TIMER STEP1
-    double timer_step1 = 0;
-    double timer_step1_min = 1e38; //Temps minimum pour un appel de l'étape 1
-    double timer_step1_max = 0; //Temps maximum pour un appel de l'étape 1
-    double timer_step1_sequence = 0; //Somme des temps pour la sequence entiere
+    int n = 0;
 
-    //TIMER STEP2
-    double timer_step2 = 0;
-    double timer_step2_min = 1e38; //Temps minimum pour un appel de l'étape 2
-    double timer_step2_max = 0; //Temps maximum pour un appel de l'étape 2
-    double timer_step2_sequence = 0; //Somme des temps pour la sequence entiere
+    //CPP pour chaque étape
+    //CPP STEP1
+    double cycle_step1 = 0;
+    double cycle_step1_min = 1e38; //Temps minimum pour un appel de l'étape 1
+    double cycle_step1_max = 0; //Temps maximum pour un appel de l'étape 1
+    double cycle_step1_sequence = 0; //Somme des temps pour la sequence entiere
 
-    //TIMER STEP3
-    double timer_step3 = 0;
-    double timer_step3_min = 1e38; //Temps minimum pour un appel de l'étape 3
-    double timer_step3_max = 0; //Temps maximum pour un appel de l'étape 3
-    double timer_step3_sequence = 0; //Somme des temps pour la sequence entiere
+    //CPP STEP2
+    double cycle_step2 = 0;
+    double cycle_step2_min = 1e38; //Temps minimum pour un appel de l'étape 2
+    double cycle_step2_max = 0; //Temps maximum pour un appel de l'étape 2
+    double cycle_step2_sequence = 0; //Somme des temps pour la sequence entiere
 
-    //TIMER STEP4
-    double timer_step4 = 0 ;
-    double timer_step4_min = 1e38; //Temps minimum pour un appel de l'étape 2
-    double timer_step4_max = 0; //Temps maximum pour un appel de l'étape 2
-    double timer_step4_sequence = 0; //Somme des temps pour la sequence entiere
+    //CPP STEP3
+    double cycle_step3 = 0;
+    double cycle_step3_min = 1e38; //Temps minimum pour un appel de l'étape 3
+    double cycle_step3_max = 0; //Temps maximum pour un appel de l'étape 3
+    double cycle_step3_sequence = 0; //Somme des temps pour la sequence entiere
+
+    //CPP STEP4
+    double cycle_step4 = 0 ;
+    double cycle_step4_min = 1e38; //Temps minimum pour un appel de l'étape 2
+    double cycle_step4_max = 0; //Temps maximum pour un appel de l'étape 2
+    double cycle_step4_sequence = 0; //Somme des temps pour la sequence entiere
 
     //Algorithme
     int* nrl = malloc(sizeof(int));
@@ -56,7 +58,7 @@ void chrono_mouvement(){
 
     //Allocation de It
     uint8** It;
-
+    n = (*nrh+1)*(*nch+1); //Nombre de pixels
     //Algorithme SigmaDelta
     //SigmaDelta_1step(It, Mt_1, Mt, Ot, Vt_1, Vt, Et, nrl, nrh, ncl, nch);
     char image[18]; //17 caractères dans le chemin relatif de l'image
@@ -68,17 +70,17 @@ void chrono_mouvement(){
         //Chargement de l'image
         It = LoadPGM_ui8matrix(image, nrl, nrh, ncl, nch);
 
-        CHRONO(SigmaDelta_step1(It, Mt_1, Mt, nrl, nrh, ncl, nch), timer_step1);
-        TEMPS_RESULTATS(timer_step1, timer_step1_min, timer_step1_max, timer_step1_sequence);
+        CHRONO(SigmaDelta_step1(It, Mt_1, Mt, nrl, nrh, ncl, nch), cycle_step1);
+        CPP_RESULTATS(cycle_step1, cycle_step1_min, cycle_step1_max, cycle_step1_sequence);
 
-        CHRONO(SigmaDelta_step2(It, Mt, Ot, nrl, nrh, ncl, nch), timer_step2);
-        TEMPS_RESULTATS(timer_step2, timer_step2_min, timer_step2_max, timer_step2_sequence);
+        CHRONO(SigmaDelta_step2(It, Mt, Ot, nrl, nrh, ncl, nch), cycle_step2);
+        CPP_RESULTATS(cycle_step2, cycle_step2_min, cycle_step2_max, cycle_step2_sequence);
 
-        CHRONO(SigmaDelta_step3(Ot, Vt_1, Vt, nrl, nrh, ncl, nch), timer_step3);
-        TEMPS_RESULTATS(timer_step3, timer_step3_min, timer_step3_max, timer_step3_sequence);
+        CHRONO(SigmaDelta_step3(Ot, Vt_1, Vt, nrl, nrh, ncl, nch), cycle_step3);
+        CPP_RESULTATS(cycle_step3, cycle_step3_min, cycle_step3_max, cycle_step3_sequence);
 
-        CHRONO(SigmaDelta_step4(Ot, Vt, Et, nrl, nrh, ncl, nch), timer_step4);
-        TEMPS_RESULTATS(timer_step4, timer_step4_min, timer_step4_max, timer_step4_sequence);
+        CHRONO(SigmaDelta_step4(Ot, Vt, Et, nrl, nrh, ncl, nch), cycle_step4);
+        CPP_RESULTATS(cycle_step4, cycle_step4_min, cycle_step4_max, cycle_step4_sequence);
 
         copy_ui8matrix_ui8matrix (Mt, *nrl, *nrh, *ncl, *nch, Mt_1);
         copy_ui8matrix_ui8matrix (Vt, *nrl, *nrh, *ncl, *nch, Vt_1);
@@ -86,24 +88,24 @@ void chrono_mouvement(){
 
     //Affichage des résultats
     printf("Resultats étape 1 de l'algorithme\n");
-    printf("Temps minimum : %4.0f \n", timer_step1_min);
-    printf("Temps maximum : %4.0f \n", timer_step1_max);
-    printf("Temps séquence : %4.0f \n", timer_step1_sequence);
+    printf("Temps minimum : %6.2f \n", cycle_step1_min/n);
+    printf("Temps maximum : %6.2f \n", cycle_step1_max/n);
+    printf("Temps séquence : %6.2f \n", cycle_step1_sequence/n);
 
     printf("Resultats étape 2 de l'algorithme\n");
-    printf("Temps minimum : %4.0f \n", timer_step2_min);
-    printf("Temps maximum : %4.0f \n", timer_step2_max);
-    printf("Temps séquence : %4.0f \n", timer_step2_sequence);
+    printf("Temps minimum : %6.2f \n", cycle_step2_min/n);
+    printf("Temps maximum : %6.2f \n", cycle_step2_max/n);
+    printf("Temps séquence : %6.2f \n", cycle_step2_sequence/n);
 
     printf("Resultats étape 3 de l'algorithme\n");
-    printf("Temps minimum : %4.0f \n", timer_step3_min);
-    printf("Temps maximum : %4.0f \n", timer_step3_max);
-    printf("Temps séquence : %4.0f \n", timer_step3_sequence);
+    printf("Temps minimum : %6.2f \n", cycle_step3_min/n);
+    printf("Temps maximum : %6.2f \n", cycle_step3_max/n);
+    printf("Temps séquence : %6.2f \n", cycle_step3_sequence/n);
 
     printf("Resultats étape 4 de l'algorithme\n");
-    printf("Temps minimum : %4.0f \n", timer_step4_min);
-    printf("Temps maximum : %4.0f \n", timer_step4_max);
-    printf("Temps séquence : %4.0f \n", timer_step4_sequence);
+    printf("Temps minimum : %6.2f \n", cycle_step4_min/n);
+    printf("Temps maximum : %6.2f \n", cycle_step4_max/n);
+    printf("Temps séquence : %6.2f \n", cycle_step4_sequence/n);
 
     //Desallocation de la mémoire
     free_ui8matrix(Io, *nrl, *nrh, *ncl, *nch);
@@ -124,34 +126,35 @@ void chrono_mouvement(){
 void chrono_mouvement_SIMD(){
 
     // chronometrie
-    int iter, niter = 1;
-    int run, nrun = 1;
+    int iter, niter = 5;
+    int run, nrun = 5;
     double t0, t1, dt, tmin, t;
 
+    int n = 0;
     //Timer pour chaque étape
-    //TIMER STEP1
-    double timer_step1 = 0;
-    double timer_step1_min = 1e38; //Temps minimum pour un appel de l'étape 1
-    double timer_step1_max = 0; //Temps maximum pour un appel de l'étape 1
-    double timer_step1_sequence = 0; //Somme des temps pour la sequence entiere
+    //CPP STEP1
+    double cycle_step1 = 0;
+    double cycle_step1_min = 1e38; //Temps minimum pour un appel de l'étape 1
+    double cycle_step1_max = 0; //Temps maximum pour un appel de l'étape 1
+    double cycle_step1_sequence = 0; //Somme des temps pour la sequence entiere
 
-    //TIMER STEP2
-    double timer_step2 = 0;
-    double timer_step2_min = 1e38; //Temps minimum pour un appel de l'étape 2
-    double timer_step2_max = 0; //Temps maximum pour un appel de l'étape 2
-    double timer_step2_sequence = 0; //Somme des temps pour la sequence entiere
+    //CPP STEP2
+    double cycle_step2 = 0;
+    double cycle_step2_min = 1e38; //Temps minimum pour un appel de l'étape 2
+    double cycle_step2_max = 0; //Temps maximum pour un appel de l'étape 2
+    double cycle_step2_sequence = 0; //Somme des temps pour la sequence entiere
 
-    //TIMER STEP3
-    double timer_step3 = 0;
-    double timer_step3_min = 1e38; //Temps minimum pour un appel de l'étape 3
-    double timer_step3_max = 0; //Temps maximum pour un appel de l'étape 3
-    double timer_step3_sequence = 0; //Somme des temps pour la sequence entiere
+    //CPP STEP3
+    double cycle_step3 = 0;
+    double cycle_step3_min = 1e38; //Temps minimum pour un appel de l'étape 3
+    double cycle_step3_max = 0; //Temps maximum pour un appel de l'étape 3
+    double cycle_step3_sequence = 0; //Somme des temps pour la sequence entiere
 
-    //TIMER STEP4
-    double timer_step4 = 0 ;
-    double timer_step4_min = 1e38; //Temps minimum pour un appel de l'étape 2
-    double timer_step4_max = 0; //Temps maximum pour un appel de l'étape 2
-    double timer_step4_sequence = 0; //Somme des temps pour la sequence entiere
+    //CPP STEP4
+    double cycle_step4 = 0 ;
+    double cycle_step4_min = 1e38; //Temps minimum pour un appel de l'étape 2
+    double cycle_step4_max = 0; //Temps maximum pour un appel de l'étape 2
+    double cycle_step4_sequence = 0; //Somme des temps pour la sequence entiere
 
     //Algorithme
     int* nrl = malloc(sizeof(int));
@@ -165,6 +168,7 @@ void chrono_mouvement_SIMD(){
 
     int nbPixels = (*nrh+1)*(*nch+1);
 
+    n = nbPixels;
     //Calcule du nombre de vecteurs nécessaires pour l'image
     int nbVuint8 = nbPixels/16+1;
 
@@ -202,17 +206,17 @@ void chrono_mouvement_SIMD(){
 
         copy_ui8matrix_vui8vector(imagemat, *nrl, *nrh, *ncl, *nch, It);
 
-        CHRONO(SigmaDelta_step1_SIMD(It, Mt_1, Mt, nbVuint8), timer_step1);
-        TEMPS_RESULTATS(timer_step1, timer_step1_min, timer_step1_max, timer_step1_sequence);
+        CHRONO(SigmaDelta_step1_SIMD(It, Mt_1, Mt, nbVuint8), cycle_step1);
+        CPP_RESULTATS(cycle_step1, cycle_step1_min, cycle_step1_max, cycle_step1_sequence);
 
-        CHRONO(SigmaDelta_step2_SIMD(It, Mt, Ot, nbVuint8), timer_step2);
-        TEMPS_RESULTATS(timer_step2, timer_step2_min, timer_step2_max, timer_step2_sequence);
+        CHRONO(SigmaDelta_step2_SIMD(It, Mt, Ot, nbVuint8), cycle_step2);
+        CPP_RESULTATS(cycle_step2, cycle_step2_min, cycle_step2_max, cycle_step2_sequence);
 
-        CHRONO(SigmaDelta_step3_SIMD(Ot, Vt_1, Vt, nbVuint8), timer_step3);
-        TEMPS_RESULTATS(timer_step3, timer_step3_min, timer_step3_max, timer_step3_sequence);
+        CHRONO(SigmaDelta_step3_SIMD(Ot, Vt_1, Vt, nbVuint8), cycle_step3);
+        CPP_RESULTATS(cycle_step3, cycle_step3_min, cycle_step3_max, cycle_step3_sequence);
 
-        CHRONO(SigmaDelta_step4_SIMD(Ot, Vt, Et, nbVuint8), timer_step4);
-        TEMPS_RESULTATS(timer_step4, timer_step4_min, timer_step4_max, timer_step4_sequence);
+        CHRONO(SigmaDelta_step4_SIMD(Ot, Vt, Et, nbVuint8), cycle_step4);
+        CPP_RESULTATS(cycle_step4, cycle_step4_min, cycle_step4_max, cycle_step4_sequence);
 
         copy_vui8vector_vui8vector(Mt, nbVuint8, Mt_1);
         copy_vui8vector_vui8vector(Vt, nbVuint8, Vt_1);
@@ -220,24 +224,24 @@ void chrono_mouvement_SIMD(){
 
     //Affichage des résultats
     printf("Resultats étape 1 de l'algorithme\n");
-    printf("Temps minimum : %4.0f \n", timer_step1_min);
-    printf("Temps maximum : %4.0f \n", timer_step1_max);
-    printf("Temps séquence : %4.0f \n", timer_step1_sequence);
+    printf("Temps minimum : %6.2f \n", cycle_step1_min/n);
+    printf("Temps maximum : %6.2f \n", cycle_step1_max/n);
+    printf("Temps séquence : %6.2f \n", cycle_step1_sequence/n);
 
     printf("Resultats étape 2 de l'algorithme\n");
-    printf("Temps minimum : %4.0f \n", timer_step2_min);
-    printf("Temps maximum : %4.0f \n", timer_step2_max);
-    printf("Temps séquence : %4.0f \n", timer_step2_sequence);
+    printf("Temps minimum : %6.2f \n", cycle_step2_min/n);
+    printf("Temps maximum : %6.2f \n", cycle_step2_max/n);
+    printf("Temps séquence : %6.2f \n", cycle_step2_sequence/n);
 
     printf("Resultats étape 3 de l'algorithme\n");
-    printf("Temps minimum : %4.0f \n", timer_step3_min);
-    printf("Temps maximum : %4.0f \n", timer_step3_max);
-    printf("Temps séquence : %4.0f \n", timer_step3_sequence);
+    printf("Temps minimum : %6.2f \n", cycle_step3_min/n);
+    printf("Temps maximum : %6.2f \n", cycle_step3_max/n);
+    printf("Temps séquence : %6.2f \n", cycle_step3_sequence/n);
 
     printf("Resultats étape 4 de l'algorithme\n");
-    printf("Temps minimum : %4.0f \n", timer_step4_min);
-    printf("Temps maximum : %4.0f \n", timer_step4_max);
-    printf("Temps séquence : %4.0f \n", timer_step4_sequence);
+    printf("Temps minimum : %6.2f \n", cycle_step4_min/n);
+    printf("Temps maximum : %6.2f \n", cycle_step4_max/n);
+    printf("Temps séquence : %6.2f \n", cycle_step4_sequence/n);
 
     // Desallocation de la mémoire
     free_ui8matrix(Io, *nrl, *nrh, *ncl, *nch);
@@ -262,11 +266,11 @@ void chrono_mouvement_OPTIM(){
     double t0, t1, dt, tmin, t;
 
     //Timer pour chaque étape
-    //TIMER STEPS
-    double timer_steps = 0;
-    double timer_steps_min = 1e38; //Temps minimum pour un appel de la fonction
-    double timer_steps_max = 0; //Temps maximum pour un appel de la fonction
-    double timer_steps_sequence = 0; //Somme des temps pour la sequence entiere
+    //CPP STEPS
+    double cycle_steps = 0;
+    double cycle_steps_min = 1e38; //Temps minimum pour un appel de la fonction
+    double cycle_steps_max = 0; //Temps maximum pour un appel de la fonction
+    double cycle_steps_sequence = 0; //Somme des temps pour la sequence entiere
 
     //Algorithme
     int* nrl = malloc(sizeof(int));
@@ -279,7 +283,7 @@ void chrono_mouvement_OPTIM(){
     uint8** Io = LoadPGM_ui8matrix(image0, nrl, nrh, ncl, nch);
 
     int nbPixels = (*nrh+1)*(*nch+1);
-
+    int n = nbPixels;
     //Calcule du nombre de vecteurs nécessaires pour l'image
     int nbVuint8 = nbPixels/16+1;
 
@@ -317,17 +321,17 @@ void chrono_mouvement_OPTIM(){
 
         copy_ui8matrix_vui8vector(imagemat, *nrl, *nrh, *ncl, *nch, It);
 
-        CHRONO(SigmaDelta_steps_OPTIM(It, Mt_1, Mt, Ot, Vt_1, Vt, Et, nbVuint8), timer_steps);
-        TEMPS_RESULTATS(timer_steps, timer_steps_min, timer_steps_max, timer_steps_sequence);
+        CHRONO(SigmaDelta_steps_OPTIM(It, Mt_1, Mt, Ot, Vt_1, Vt, Et, nbVuint8), cycle_steps);
+        CPP_RESULTATS(cycle_steps, cycle_steps_min, cycle_steps_max, cycle_steps_sequence);
 
         copy_vui8vector_vui8vector(Mt, nbVuint8, Mt_1);
         copy_vui8vector_vui8vector(Vt, nbVuint8, Vt_1);
     }
     //Affichage des résultats
-    printf("Resultats étape 1 de l'algorithme\n");
-    printf("Temps minimum : %4.0f \n", timer_steps_min);
-    printf("Temps maximum : %4.0f \n", timer_steps_max);
-    printf("Temps séquence : %4.0f \n", timer_steps_sequence);
+    printf("Resultats étapes de l'algorithme\n");
+    printf("Temps minimum : %6.2f \n", cycle_steps_min/n);
+    printf("Temps maximum : %6.2f \n", cycle_steps_max/n);
+    printf("Temps séquence : %6.2f \n", cycle_steps_sequence/n);
 
     // Desallocation de la mémoire
     free_ui8matrix(Io, *nrl, *nrh, *ncl, *nch);

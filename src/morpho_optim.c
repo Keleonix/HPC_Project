@@ -19,12 +19,12 @@ vuint8** bords_OPTIM(uint8** im, int nrl, int hauteur, int ncl, int largeur){
 
     //Matrice avec bords
     vuint8** im_mat = vui8matrix(nrl-bord, hauteur+bord, ncl-bord, largeur+bord);
-    printf("Matrice avec bords\n");
+    //printf("Matrice avec bords\n");
 
     //Matrice avec l'image
 
     vuint8** im_vect = (vuint8**) im;
-    printf("Matrice avec l'image\n");
+    //printf("Matrice avec l'image\n");
 
     //Premiere ligne et derniere ligne
     for(int i = ncl-bord; i <= largeur+bord; i++){
@@ -32,7 +32,7 @@ vuint8** bords_OPTIM(uint8** im, int nrl, int hauteur, int ncl, int largeur){
         vec_store(&im_mat[nrl-bord][i], init_vuint8(0));
         vec_store(&im_mat[hauteur+bord][i], init_vuint8(0));
     }
-    printf("Premiere ligne et derniere ligne de la matrice avec bords\n");
+    //printf("Premiere ligne et derniere ligne de la matrice avec bords\n");
 
 
     for(int j = nrl; j <= hauteur; j++){
@@ -75,9 +75,11 @@ uint8** erosion_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
     int hauteur = nrh;
     int largeur = nbVuint8;
 
-    printf("Dimensions :\n");
-    printf("hauteur : %d \n", hauteur);
-    printf("largeur : %d \n", largeur);
+    //printf("Dimensions :\n");
+    //printf("hauteur : %d \n", hauteur);
+    //printf("largeur : %d \n", largeur);
+    //TODO: Retirer les variables inutiles/non-utilisés
+    //TODO: Une fonction par optimisation ou
     //Vecteurs dans lesquels nos pixels seront chargés
     vuint8 a0, b0, c0;
     vuint8 a1, b1, c1;
@@ -95,14 +97,13 @@ uint8** erosion_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
     vuint8 and_noyau;
 
    //On crée une matrice vuint8** comprenant l'image avec des bords
-   //TODO: trouver un meilleur
    vuint8** im_mat = bords_OPTIM(im, nrl, hauteur, ncl, largeur);
-   printf("Matrice d'image avec bords\n\n");
+   //printf("Matrice d'image avec bords\n\n");
    // for(int i = nrl-BORD; i <= hauteur+BORD; i++){
    //     for(int j = ncl-BORD; j <= largeur+BORD; j++){
-   //         printf("Vecteur [%d][%d] : ", i, j);
+   //         //printf("Vecteur [%d][%d] : ", i, j);
    //         display_vuint8(im_mat[i][j], "%d ", NULL);
-   //         printf("\n");
+   //         //printf("\n");
    //     }
    // }
 
@@ -140,8 +141,13 @@ uint8** erosion_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
             c1 = vec_load(&im_mat[j ][k+1]);
 
             //Shifts
+
+            //AND Horizontal
             aa1 = vec_left1(a1, b1); cc1 = vec_right1(b1, c1);
             and_2emeligne = vec_and3(aa1, b1, cc1);
+
+            //AND Vertical
+            and_3emeligne = vec_and3(b0, b1, b2);
 
             // aa0 = vec_left1(a0, b0); cc0 = vec_right1(b0, c0);
             // aa1 = vec_left1(a1, b1); cc1 = vec_right1(b1, c1);
@@ -152,33 +158,35 @@ uint8** erosion_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
             // and_1ereligne = vec_and3(aa0, b0, cc0);
             // and_2emeligne = vec_and3(aa1, b1, cc1);
             // and_3emeligne = vec_and3(aa2, b2, cc2);
-            // printf("Affichage des vecteurs AND\n\n");
+            // //printf("Affichage des vecteurs AND\n\n");
             // display_vuint8(and_1ereligne, "%d ", "and_1ereligne = ");
-            // printf("\n");
+            // //printf("\n");
             // display_vuint8(and_2emeligne, "%d ", "and_2emeligne = ");
-            // printf("\n");
+            // //printf("\n");
             // display_vuint8(and_3emeligne, "%d ", "and_3emeligne = ");
-            // printf("\n");
+            // //printf("\n");
 
 
             //AND du noyau
 
-            and_noyau = vec_and3(and_1ereligne, and_2emeligne, and_3emeligne);
-            // printf("Affichage du AND noyau \n\n");
+            and_noyau = vec_and(and_2emeligne, and_3emeligne);
+            // and_noyau = vec_and3(and_1ereligne, and_2emeligne, and_3emeligne);
+            // //printf("Affichage du AND noyau \n\n");
             // display_vuint8(and_noyau, "%d ", "and_noyau = ");
-            // printf("\n");
+            // //printf("\n");
 
             //On place le résultat du AND dans la matrice resultat
             vec_store(&erosion_mat[j][k], and_noyau);
-            printf("Affichage de la donnée storée\n\n");
-            printf("Numéro [%d][%d]", j, k);
-            display_vuint8(erosion_mat[j][k], "%d ", "and_store = ");
-            printf("\n");
+            // //printf("Affichage de la donnée storée\n\n");
+            // //printf("Numéro [%d][%d]", j, k);
+            // display_vuint8(erosion_mat[j][k], "%d ", "and_store = ");
+            // //printf("\n");
 
             //Rotation registres
-            a0 = b0; b0 = c0;
+            //b0, b2, c1
+                     // b0 = c0;
             a1 = b1; b1 = c1;
-            a2 = b2; b2 = c2;
+                     // b2 = c2;
 
 
         }

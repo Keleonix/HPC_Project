@@ -1,7 +1,8 @@
 #include "test_morpho_optim.h"
 
 //TODO: Faire les mêmes tests en changeant avec des valeurs différentes
-
+//TODO: Faire des macros pour chaque matrice pour augmenter le nombre de tests
+//unitaires
 //On va tester l'erosion sur une matrice uint8** 3x32
 //Soit trois pixels de hauteur et 32 de largeur
 void test_erosion_OPTIM_OK(){
@@ -14,12 +15,22 @@ void test_erosion_OPTIM_OK(){
     //On fait une matrice avec des 1 et des 0 qui s'enchainent parce qu'il est
     //tard et que j'ai pas d'autres idées
 
+    // for(int j = nrl; j <= nrh; j++){
+    //     for(int k = ncl; k <= nch; k++){
+    //         mat_test[j][k] = 1;
+    //     }
+    // }
+
     for(int j = nrl; j <= nrh; j++){
         for(int k = ncl; k <= nch; k++){
-            mat_test[j][k] = 1;
+            if(j == 1 && k%4 == 3){
+                mat_test[j][k] = 1;
+            }
+            else{
+                mat_test[j][k] = 0;
+            }
         }
     }
-
     //On affiche la matrice pour s'assurer qu'elle ressemble bien à ce qu'on
     //s'attend
     printf("Matrice de test \n\n");
@@ -39,6 +50,10 @@ void test_erosion_OPTIM_OK(){
         display_ui8vector(resultat[i], ncl, nch, " %d", NULL);
         printf("\n");
     }
+
+}
+
+void test_erosion_OPTIM_OK_2(){
 
 }
 

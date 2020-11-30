@@ -138,9 +138,9 @@ void SigmaDelta_steps_OPTIM(vuint8* It, vuint8* Mt_1, vuint8* Mt,\
 
         //IF (Ot - 127) < (Vt_1 - 127) E = 1
         //ELSE E = 0
-        E = vec_andnot(C, init_vuint8(1));
+        vect_Et = vec_andnot(C, init_vuint8(1));
 
-        vec_store(&Et[i], E);
+        vec_store(&Et[i], vect_Et);
     }
 }
 
