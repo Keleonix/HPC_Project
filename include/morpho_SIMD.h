@@ -1,3 +1,6 @@
+#ifndef MORPHO_SIMD_H
+#define MORPHO_SIMD_H
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -15,3 +18,5 @@ uint8** erosion_SIMD(uint8** im, int nrl, int nrh, int ncr, int nch);
 uint8** dilatation_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch);
 uint8** fermeture_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch);
 uint8** ouverture_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch);
+
+#endif /*MORPHO_SIMD_H */

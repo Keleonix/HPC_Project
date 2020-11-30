@@ -98,13 +98,13 @@ uint8** erosion_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
    //TODO: trouver un meilleur
    vuint8** im_mat = bords_OPTIM(im, nrl, hauteur, ncl, largeur);
    printf("Matrice d'image avec bords\n\n");
-   for(int i = nrl-BORD; i <= hauteur+BORD; i++){
-       for(int j = ncl-BORD; j <= largeur+BORD; j++){
-           printf("Vecteur [%d][%d] : ", i, j);
-           display_vuint8(im_mat[i][j], "%d ", NULL);
-           printf("\n");
-       }
-   }
+   // for(int i = nrl-BORD; i <= hauteur+BORD; i++){
+   //     for(int j = ncl-BORD; j <= largeur+BORD; j++){
+   //         printf("Vecteur [%d][%d] : ", i, j);
+   //         display_vuint8(im_mat[i][j], "%d ", NULL);
+   //         printf("\n");
+   //     }
+   // }
 
    //On cree une matrice qui va contenir le résultat de notre erosion
    vuint8** erosion_mat = vui8matrix(nrl, hauteur, ncl, largeur);
@@ -117,34 +117,48 @@ uint8** erosion_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
     for(int j = nrl; j <= hauteur; j++){
 
         //On charge les deux
-        a0 = vec_load(&im_mat[j-1][ncl-1]); b0 = vec_load(&im_mat[j-1][ncl]);
-        a1 = vec_load(&im_mat[j  ][ncl-1]); b1 = vec_load(&im_mat[j  ][ncl]);
-        a2 = vec_load(&im_mat[j+1][ncl-1]); b2 = vec_load(&im_mat[j+1][ncl]);
+        // a0 = vec_load(&im_mat[j-1][ncl-1]); b0 = vec_load(&im_mat[j-1][ncl]);
+        // a1 = vec_load(&im_mat[j  ][ncl-1]); b1 = vec_load(&im_mat[j  ][ncl]);
+        // a2 = vec_load(&im_mat[j+1][ncl-1]); b2 = vec_load(&im_mat[j+1][ncl]);
+
+        //On charge a1 et b1 pour le début de l'algorithme (fusion)
+        a1 = vec_load(&im_mat[j  ][ncl-1]);
+        b1 = vec_load(&im_mat[j  ][ncl]);
 
         for(int k = ncl; k <= largeur; k++){
 
-             c0 = vec_load(&im_mat[j-1][k+1]);
-             c1 = vec_load(&im_mat[j ][k+1]);
-             c2 = vec_load(&im_mat[j+1][k+1]);
+             // c0 = vec_load(&im_mat[j-1][k+1]);
+             // c1 = vec_load(&im_mat[j ][k+1]);
+             // c2 = vec_load(&im_mat[j+1][k+1]);
+
+            //fusion
+            //Vertical
+            b0 = vec_load(&im_mat[j-1][k]);
+            b2 = vec_load(&im_mat[j+1][k]);
+
+            //Horizontal
+            c1 = vec_load(&im_mat[j ][k+1]);
 
             //Shifts
-
-            aa0 = vec_left1(a0, b0); cc0 = vec_right1(b0, c0);
             aa1 = vec_left1(a1, b1); cc1 = vec_right1(b1, c1);
-            aa2 = vec_left1(a2, b2); cc2 = vec_right1(b2, c2);
-
-            //AND sur chaque ligne
-
-            and_1ereligne = vec_and3(aa0, b0, cc0);
             and_2emeligne = vec_and3(aa1, b1, cc1);
-            and_3emeligne = vec_and3(aa2, b2, cc2);
-            printf("Affichage des vecteurs AND\n\n");
-            display_vuint8(and_1ereligne, "%d ", "and_1ereligne = ");
-            printf("\n");
-            display_vuint8(and_2emeligne, "%d ", "and_2emeligne = ");
-            printf("\n");
-            display_vuint8(and_3emeligne, "%d ", "and_3emeligne = ");
-            printf("\n");
+
+            // aa0 = vec_left1(a0, b0); cc0 = vec_right1(b0, c0);
+            // aa1 = vec_left1(a1, b1); cc1 = vec_right1(b1, c1);
+            // aa2 = vec_left1(a2, b2); cc2 = vec_right1(b2, c2);
+            //
+            // //AND sur chaque ligne
+            //
+            // and_1ereligne = vec_and3(aa0, b0, cc0);
+            // and_2emeligne = vec_and3(aa1, b1, cc1);
+            // and_3emeligne = vec_and3(aa2, b2, cc2);
+            // printf("Affichage des vecteurs AND\n\n");
+            // display_vuint8(and_1ereligne, "%d ", "and_1ereligne = ");
+            // printf("\n");
+            // display_vuint8(and_2emeligne, "%d ", "and_2emeligne = ");
+            // printf("\n");
+            // display_vuint8(and_3emeligne, "%d ", "and_3emeligne = ");
+            // printf("\n");
 
 
             //AND du noyau

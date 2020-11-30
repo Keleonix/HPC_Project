@@ -15,9 +15,6 @@
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
 #define MAX(X, Y) (((X) > (Y)) ? (X) : (Y))
 
-// //Allocation des matrices
-// void alloc_ui8matrixes(uint8** Mt_1, uint8** Vt_1,uint8** Mt,uint8** Vt, uint8** Ot, uint8** Et);
-
 //Initialisation de la premiere image, matrice de moyenne et matrice de variance à t = 0
 void SigmaDelta_step0(uint8** Io, uint8** Mt_1, uint8** Vt_1, \
     int* nrl, int* nrh, \

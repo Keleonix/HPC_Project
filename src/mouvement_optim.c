@@ -36,7 +36,7 @@ void SigmaDelta_steps_OPTIM(vuint8* It, vuint8* Mt_1, vuint8* Mt,\
 
     vuint8 vect_It, vect_Mt_1; //Vecteurs où sont chargés It, Mt_1, Mt
     vuint8 vect_It_127, vect_Mt_1_127; //Vecteurs après soustraction par 127
-    vuint8 C1, C2, K1, K2, K, M; //Vecteurs de comparaison
+    vuint8 C1, C2, K1, K2, K; //Vecteurs de comparaison
 
     //Variables de l'etape 2
 
@@ -48,11 +48,12 @@ void SigmaDelta_steps_OPTIM(vuint8* It, vuint8* Mt_1, vuint8* Mt,\
     vuint8 vect_OtxN, vect_Vt_1; //Vecteurs où sont chargés Ot*N, Vt_1
     vuint8 vect_OtxN_127, vect_Vt_1_127; //Vecteurs après soustraction par 127
     vuint8 D1, D2, L; //Vecteurs de comparaison
-    vuint8 V;         //Vecteurs résultat
+    vuint8 V;         //Vecteur résultat
 
     //Variables de l'etape 4
-    vuint8 vect_Vt, C, E;
-    vuint8 vect_Vt_127, vect_Ot_127;
+    vuint8 vect_Vt, C;
+    vuint8 vect_Vt_127, vect_Ot_127;//Vecteurs après soustraction par 127
+    vuint8 vect_Et; //Vecteur résultat
 
     for(int i = 0; i < nbVuint8; i++){
 
@@ -78,19 +79,19 @@ void SigmaDelta_steps_OPTIM(vuint8* It, vuint8* Mt_1, vuint8* Mt,\
         //ELSE K = 0
         K = vec_or(vec_and(C1, K1), vec_and(C2, K2));
 
-        M = vec_add(K, vect_Mt_1);
-        vec_store(&Mt[i], M);
+        vect_Mt = vec_add(K, vect_Mt_1);
+        vec_store(&Mt[i], vect_Mt);
 
         //ETAPE 2
-        vect_It = vec_load(&It[i]);
-        vect_Mt = vec_load(&Mt[i]);
+        // vect_It = vec_load(&It[i]); TODO: A retirer
+        // vect_Mt = vec_load(&Mt[i]); TODO: A retirer
 
-        vect_Ot = vec_sub(vect_Mt_1, vect_It); // Ot = Mt_1 - It
+        vect_Ot = vec_sub(vect_Mt, vect_It); // Ot = Mt - It
         vect_Ot = vi8_abs(vect_Ot); //ABS(Ot)
         vec_store(&Ot[i], vect_Ot);
 
         //ETAPE 3
-        vect_Ot = vec_load(&Ot[i]);
+        // vect_Ot = vec_load(&Ot[i]); TODO: A retirer
 
         vect_OtxN = vi8_mul(vect_Ot, init_vuint8(N));
         vect_Vt_1 = vec_load(&Vt_1[i]);
@@ -103,19 +104,25 @@ void SigmaDelta_steps_OPTIM(vuint8* It, vuint8* Mt_1, vuint8* Mt,\
         vect_OtxN_127 = vec_sub(vect_OtxN, init_vuint8(127));
         vect_Vt_1_127 = vec_sub(vect_Vt_1, init_vuint8(127));
 
-        D1 = vec_gt(vect_OtxN_127, vect_Vt_1_127); //Sont mis à 1 tout pixel où N*Ot > Vt
-        D2 = vec_gt(vect_Vt_1_127, vect_OtxN_127); //On fait deux comparaisons pour s'assurer que les pixels égaux donnent 0
+        D1 = vec_gt(vect_OtxN_127, vect_Vt_1_127); //IF (N*Ot - 127) > (Vt_1 - 127)
+        D2 = vec_gt(vect_Vt_1_127, vect_OtxN_127); //IF (Vt_1 - 127) > (N*Ot - 127)
 
+        //IF (N*Ot - 127) > (Vt_1 - 127) L = 1
+        //ELSE IF(Vt_1 - 127) > (N*Ot - 127) L = -1
+        //ELSE L = 0
         L = vec_or(vec_and(D1, init_vuint8(1)), vec_and(D2, init_vuint8(-1)));
 
+        //Vt = Vt_1 + L
         V = vec_add(L, vect_Vt_1);
-        V = vec_max(vec_min(V, init_vuint8(VMAX)), init_vuint8(VMIN));
-        vec_store(&Vt[i], V);
+
+        //MAX(MIN(Vt, VMAX), VMIN);
+        vect_Vt = vec_max(vec_min(V, init_vuint8(VMAX)), init_vuint8(VMIN));
+        vec_store(&Vt[i], vect_Vt);
 
 
         //ETAPE 4
-        vect_Vt = vec_load(&Vt[i]);
-        vect_Ot = vec_load(&Ot[i]);
+        // vect_Vt = vec_load(&Vt[i]); TODO: A retirer
+        // vect_Ot = vec_load(&Ot[i]); TODO: A retirer
 
         //Les fonctions de comparaisons considerent que les entiers sont
         //signés, MSB est considéré comme le signe et les 7 LSB sont comparés
@@ -125,8 +132,13 @@ void SigmaDelta_steps_OPTIM(vuint8* It, vuint8* Mt_1, vuint8* Mt,\
         vect_Ot_127 = vec_sub(vect_Ot, init_vuint8(127));
         vect_Vt_127 = vec_sub(vect_Vt, init_vuint8(127));
 
-        C = vec_lt(vect_Ot_127, vect_Vt_127); //A 0, Ot >= Vt et à 0xFF, Ot < Vt
-        E = vec_andnot(C, init_vuint8(1)); //A 0, Ot >= Vt et à VMAX, Ot < Ot
+        //IF (Ot - 127) < (Vt_1 - 127) C = 1
+        //ELSE C = 0
+        C = vec_lt(vect_Ot_127, vect_Vt_127);
+
+        //IF (Ot - 127) < (Vt_1 - 127) E = 1
+        //ELSE E = 0
+        E = vec_andnot(C, init_vuint8(1));
 
         vec_store(&Et[i], E);
     }
@@ -186,15 +198,8 @@ void main_mouvement_OPTIM(){
 
         copy_ui8matrix_vui8vector(imagemat, *nrl, *nrh, *ncl, *nch, It);
 
-        //TODO : Rajouter les macros chrono pour mesurer le temps de chaque fonction
-        // SigmaDelta_step1_OPTIM(It, Mt_1, Mt, nbVuint8);
-        // SigmaDelta_step2_OPTIM(It, Mt, Ot, nbVuint8);
-        // SigmaDelta_step3_OPTIM(Ot, Vt_1, Vt, nbVuint8);
-        // SigmaDelta_step4_OPTIM(Ot, Vt, Et, nbVuint8);
-        SigmaDelta_steps_OPTIM(It, Mt_1, Mt,\
-             Ot, Vt_1, Vt, Et, nbVuint8);
+        SigmaDelta_steps_OPTIM(It, Mt_1, Mt, Ot, Vt_1, Vt, Et, nbVuint8);
 
-        
         generate_filename_k_ndigit_extension("test_OPTIM/Mt_", i, 0, "pgm", image);
         copy_vui8vector_ui8matrix(Mt, *nrl, *nrh, *ncl, *nch, Mt_ui8);
         SavePGM_ui8matrix(Mt_ui8, *nrl, *nrh, *ncl, *nch, image);
@@ -211,16 +216,10 @@ void main_mouvement_OPTIM(){
         copy_vui8vector_ui8matrix(Et, *nrl, *nrh, *ncl, *nch, Et_ui8);
         SavePGM_ui8matrix(Et_ui8, *nrl, *nrh, *ncl, *nch, image);
 
-        // }
-
-        //Changement de variables
-        // Mt_1 = Mt;
-        // Vt_1 = Vt;
         copy_vui8vector_vui8vector(Mt, nbVuint8, Mt_1);
         copy_vui8vector_vui8vector(Vt, nbVuint8, Vt_1);
     }
 
-    // Algorithme SigmaDelta
     // Desallocation de la mémoire
     free_ui8matrix(Io, *nrl, *nrh, *ncl, *nch);
     free_vui8vector(It, 0, nbPixels);
