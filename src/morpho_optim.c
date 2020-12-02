@@ -4,6 +4,7 @@
 #define DEROULAGE_MARGE 3
 #define BORD 1
 
+//TODO: A revoir, a l'air lent
 vuint8** bords_OPTIM(uint8** im, int nrl, int hauteur, int ncl, int largeur){
 
     //1ERE SOLUTION, PEUT ETRE AMELIOREE
@@ -59,6 +60,7 @@ vuint8** bords_OPTIM(uint8** im, int nrl, int hauteur, int ncl, int largeur){
 }
 
 
+//TODO: A ajouter loop unrolling et 1 bit si on a le temps
 uint8** erosion_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
 
     //Nombre de pixels de l'image

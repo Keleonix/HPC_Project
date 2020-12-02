@@ -65,17 +65,17 @@ int main(void){
 
     //TODO: Nettoyer ce putain de main wah
     //CHRONO
-    // printf("CHRONO SIGMA SCALAIRE\n\n");
-    // chrono_mouvement();
-    // printf("\n");
-    //
-    // printf("CHRONO SIGMA SIMD\n\n");
-    // chrono_mouvement_SIMD();
-    // printf("\n");
-    //
-    // printf("CHRONO SIGMA OPTIMISE\n\n");
-    // chrono_mouvement_OPTIM();
-    // printf("\n");
+    printf("CHRONO SIGMA SCALAIRE\n\n");
+    chrono_mouvement();
+    printf("\n");
+
+    printf("CHRONO SIGMA SIMD\n\n");
+    chrono_mouvement_SIMD();
+    printf("\n");
+
+    printf("CHRONO SIGMA OPTIMISE\n\n");
+    chrono_mouvement_OPTIM();
+    printf("\n");
 
     printf("CHRONO EROSION SCALAIRE\n\n");
     chrono_erosion();

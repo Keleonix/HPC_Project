@@ -98,13 +98,13 @@ uint8** erosion_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
    //TODO: trouver un meilleur
    vuint8** im_mat = bords_SIMD(im, nrl, hauteur, ncl, largeur);
    //printf("Matrice d'image avec bords\n\n");
-   for(int i = nrl-BORD; i <= hauteur+BORD; i++){
-       for(int j = ncl-BORD; j <= largeur+BORD; j++){
-           //printf("Vecteur [%d][%d] : ", i, j);
-           //display_vuint8(im_mat[i][j], "%d ", NULL);
-           //printf("\n");
-       }
-   }
+   // for(int i = nrl-BORD; i <= hauteur+BORD; i++){
+   //     for(int j = ncl-BORD; j <= largeur+BORD; j++){
+   //         //printf("Vecteur [%d][%d] : ", i, j);
+   //         //display_vuint8(im_mat[i][j], "%d ", NULL);
+   //         //printf("\n");
+   //     }
+   // }
 
    //On cree une matrice qui va contenir le résultat de notre erosion
    vuint8** erosion_mat = vui8matrix(nrl, hauteur, ncl, largeur);
