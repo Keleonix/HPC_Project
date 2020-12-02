@@ -44,7 +44,6 @@
     }                                     \
     t = tmin / (double) niter
 
-
 #define BENCH(X) X
 #define DEBUG(X)
 

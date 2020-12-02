@@ -30,6 +30,7 @@ void chrono_erosion(){
 
     printf("Resultats erosion\n");
     printf("Cpp : %6.2f \n", cycle_erosion/n);
+    //TODO: free mat test et resultat
 }
 
 void chrono_erosion_SIMD(){
@@ -63,6 +64,8 @@ void chrono_erosion_SIMD(){
     // uint8** resultat = erosion_SIMD(mat_test, nrl, nrh, ncl, nch);
     printf("Resultats erosion SIMD\n");
     printf("Cpp : %6.2f \n", cycle_erosion_SIMD/n);
+    //TODO: free mat test et resultat (Impossible de lancer chrone avec niter > 1)
+    //erreur seg à voir
 }
 
 void chrono_erosion_OPTIM(){

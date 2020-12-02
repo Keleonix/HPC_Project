@@ -8,7 +8,7 @@
 #include "mouvement_SIMD.h"
 #include "mouvement_optim.h"
 #include "mymacro.h"
-
+#include "dtime.h"
 
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
 #define MAX(X, Y) (((X) > (Y)) ? (X) : (Y))
@@ -18,7 +18,19 @@
         t_min = MIN(t_min, t); \
         t_max = MAX(t_max, t); \
 
-//Fonctions servant à bencher la chaine SD+Morpho 
+#define TEMPS(X,t)                       \
+    tmin = 1e38;                          \
+    for(run=0; run<nrun; run++) {         \
+        t0 = (double) dtime();           \
+        for(iter=0; iter<niter; iter++) { \
+            X;                            \
+        }                                 \
+        t1 = (double) dtime();           \
+        dt=t1-t0; if(dt<tmin) tmin = dt;  \
+    }                                     \
+    t = tmin / (double) niter
+
+//Fonctions servant à bencher la chaine SD+Morpho
 
 void chrono_chaine();
 void chrono_chaine_SIMD();
