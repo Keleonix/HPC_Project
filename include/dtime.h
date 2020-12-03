@@ -31,7 +31,7 @@
 /* or compile, for example, with the '-DUNIX' option.          */
 /***************************************************************/
 /* #define TIMER_Amiga       */
-/* #define TIMER_UNIX        */
+// #define TIMER_UNIX        
 /* #define TIMER_DEC_ALPHA   */
 /* #define TIMER_UNIX_Old    */
 /* #define TIMER_VMS         */
@@ -53,7 +53,7 @@
 /* #define TIMER_WIN32       */
 /* #define TIMER_POSIX6      */
 /* #define TIMER_RISCOS      */
-#define TIMER_LINUX
+/* #define TIMER_LINUX       */
 /*****************************/
 
 #ifdef __cplusplus

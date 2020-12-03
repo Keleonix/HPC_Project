@@ -200,6 +200,7 @@ uint8** erosion_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
     return (uint8**)erosion_mat;
 }
 
+//TODO: Copier les optimisations d'erosion_SIMD dans celle-ci
 uint8** dilatation_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
 
     //Nombre de pixels de l'image

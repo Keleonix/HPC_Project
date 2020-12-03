@@ -35,6 +35,7 @@
 
 #include "bench_mouvement.h"
 #include "bench_morpho.h"
+#include "bench_chaine.h"
 
 #define VMIN 1
 #define VMAX 254
@@ -65,30 +66,33 @@ int main(void){
 
     //TODO: Nettoyer ce putain de main wah
     //CHRONO
-    printf("CHRONO SIGMA SCALAIRE\n\n");
-    chrono_mouvement();
-    printf("\n");
+    // printf("CHRONO SIGMA SCALAIRE\n\n");
+    // chrono_mouvement();
+    // printf("\n");
+    //
+    // printf("CHRONO SIGMA SIMD\n\n");
+    // chrono_mouvement_SIMD();
+    // printf("\n");
+    //
+    // printf("CHRONO SIGMA OPTIMISE\n\n");
+    // chrono_mouvement_OPTIM();
+    // printf("\n");
+    //
+    // printf("CHRONO EROSION SCALAIRE\n\n");
+    // chrono_erosion();
+    // printf("\n");
+    //
+    // printf("CHRONO EROSION SIMD\n\n");
+    // chrono_erosion_SIMD();
+    // printf("\n");
+    //
+    // printf("CHRONO EROSION OPTIMISE\n\n");
+    // chrono_erosion_OPTIM();
+    // printf("\n");
 
-    printf("CHRONO SIGMA SIMD\n\n");
-    chrono_mouvement_SIMD();
-    printf("\n");
-
-    printf("CHRONO SIGMA OPTIMISE\n\n");
-    chrono_mouvement_OPTIM();
-    printf("\n");
-
-    printf("CHRONO EROSION SCALAIRE\n\n");
-    chrono_erosion();
-    printf("\n");
-
-    printf("CHRONO EROSION SIMD\n\n");
-    chrono_erosion_SIMD();
-    printf("\n");
-
-    printf("CHRONO EROSION OPTIMISE\n\n");
-    chrono_erosion_OPTIM();
-    printf("\n");
-
+    chrono_chaine(10);
+    chrono_chaine_SIMD(10);
+    chrono_chaine_OPTIM(10);
     // printf("CHRONO DILATATION SCALAIRE\n\n");
     // chrono_dilatation();
     // printf("\n");
