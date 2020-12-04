@@ -63,6 +63,7 @@ void chrono_chaine(int n){
 
     for(int essai = 0; essai < n; essai++)
     {
+        temps_sequence = 0;
         for(int i = 3001; i <= 3000+NOMBRE_IMAGE; i++){
 
             //Generation du nom de fichier de l'image suivante
@@ -165,6 +166,8 @@ void chrono_chaine_SIMD(int n){
     uint8** Mt_ui8 = ui8matrix(*nrl, *nrh, *ncl, *nch);
 
     for(int essai = 0; essai < n; essai++){
+
+        temps_sequence = 0;
         for(int i = 3001; i <= 3000+NOMBRE_IMAGE; i++){
 
             //Generation du nom de fichier de l'image suivante
@@ -190,8 +193,6 @@ void chrono_chaine_SIMD(int n){
             temps_frame = dtime() - temps_frame;
 
             temps_sequence += temps_frame;
-
-            SavePGM_ui8matrix(Et_ui8, *nrl, *nrh, *ncl, *nch, image);
 
             //Changement de variables
             // Mt_1 = Mt;
@@ -279,6 +280,8 @@ void chrono_chaine_OPTIM(int n){
     uint8** Mt_ui8 = ui8matrix(*nrl, *nrh, *ncl, *nch);
 
     for(int essai = 0; essai < n; essai++){
+
+        temps_sequence = 0;
         for(int i = 3001; i <= 3000+NOMBRE_IMAGE; i++){
 
             //Generation du nom de fichier de l'image suivante
@@ -298,9 +301,7 @@ void chrono_chaine_OPTIM(int n){
             Et_ui8 = fermeture_OPTIM(Et_ui8, *nrl, *nrh, *ncl, *nch);
             temps_frame = dtime() - temps_frame;
 
-            generate_filename_k_ndigit_extension("test_OPTIM/Et_", i, 0, "pgm", image);
-            convertion_matrice_binaire(Et_ui8, *nrl, *nrh, *ncl, *nch);
-            SavePGM_ui8matrix(Et_ui8, *nrl, *nrh, *ncl, *nch, image);
+            temps_sequence += temps_frame;
 
             copy_vui8vector_vui8vector(Mt, nbVuint8, Mt_1);
             copy_vui8vector_vui8vector(Vt, nbVuint8, Vt_1);
