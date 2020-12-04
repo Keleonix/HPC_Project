@@ -6,7 +6,11 @@
 # with a little help of Stephane Piskorski and Joel Falcou
 
 # -- File list ----------
-FILE = main.c mouvement.c test_mouvement_SIMD.c mouvement_SIMD.c morpho.c dtime.c nrutil.c vnrutil.c mutil.c my_vnrutil.c 
+FILE = nrutil.c vnrutil.c mutil.c my_vnrutil.c main.c mouvement.c \
+test_mouvement_SIMD.c test_mouvement_SIMD2.c test_morpho_SIMD.c morpho_SIMD.c\
+ test_morpho.c mouvement_SIMD.c morpho.c dtime.c mouvement_optim.c\
+  morpho_optim.c test_morpho_optim.c bench_mouvement.c bench_morpho.c\
+  bench_chaine.c 
 
 # -- Paths ----------
 SRC_PATH = src
@@ -40,12 +44,14 @@ CFLAGS = $(C_CC_FLAGS) $(C_OPTIMISATION_FLAGS) $(C_ARCH_FLAGS) $(C_OS_FLAGS) $(C
 LDFLAGS = $(C_CC_FLAGS) $(C_OPTIMISATION_FLAGS) $(C_ARCH_FLAGS) $(C_OS_FLAGS) $(C_CONFIG_FLAGS) $(C_INC_FLAGS) $(LIB_LIB_PATH)
 
 # -- Final product ----------
-PRODUCT   = testSigma.exe
+PRODUCT   = chaine.exe
 
 # -- src and obj List ----------
+#SRC = $(addprefix ${SRC_PATH}/, $(FILE))
 SRC = $(addprefix ${SRC_PATH}/, $(FILE))
 OBJ = $(addprefix ${OBJ_PATH}/, $(addsuffix .o, $(basename $(FILE))))
-
+# SRC = $(wildcard $(SRC_PATH)/*.c)
+# OBJ = $(wildcard $(OBJ_PATH)/*.o)
 # -- Base rules ----------
 $(OBJ_PATH)/%.o : $(SRC_PATH)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -61,7 +67,10 @@ depend:
 
 clean:
 	rm -f $(OBJ)
-	rm -f ${LIB_PATH}/${PRODUCT}
+	rm -f ${EXE_PATH}/${PRODUCT}
+	rm -f test_OPTIM/*
+	rm -f test_SIMD/*
+	rm -f test/*
 
 tar:
 	tar -cvf deriche_SSE.tar Makefile src include

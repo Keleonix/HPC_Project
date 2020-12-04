@@ -15,9 +15,6 @@
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
 #define MAX(X, Y) (((X) > (Y)) ? (X) : (Y))
 
-// //Allocation des matrices
-// void alloc_ui8matrixes(uint8** Mt_1, uint8** Vt_1,uint8** Mt,uint8** Vt, uint8** Ot, uint8** Et);
-
 //Initialisation de la premiere image, matrice de moyenne et matrice de variance à t = 0
 void SigmaDelta_step0(uint8** Io, uint8** Mt_1, uint8** Vt_1, \
     int* nrl, int* nrh, \
@@ -34,6 +31,9 @@ void SigmaDelta_step3(uint8** Ot, uint8** Vt_1, uint8** Vt, int* nrl, int* nrh, 
 
 //Etape 4 : Estimation de l'image d'etiquettes binaires Et
 void SigmaDelta_step4(uint8** Ot, uint8** Vt, uint8** Et, int* nrl, int* nrh, int* ncl, int* nch);
+
+//Convertit la matrice binaire {0 ; 1} en matrice {0, VMAX}
+void convertion_matrice_binaire(uint8** mat, int nrl, int nrh, int ncl, int nch);
 
 //Fonction principale qui alloue/desalloue les tableaux utilisés, appelle les
 //fonctions correspondantes à chaque étape de SigmaDelta, enregistre chaque

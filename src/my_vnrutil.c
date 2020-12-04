@@ -6,15 +6,10 @@ void copy_ui8matrix_vui8vector(uint8** mat, long nrl, long nrh, long ncl, long n
     int i = 0; //Indice pour vui8vector
     for(int j = nrl; j <= nrh; j++){
         for(int k = ncl; k <= nch; k+=16){
-            //TODO:Remplacer par _mm_set_epi8 ?
-            vect[i] = _mm_set_epi8 (mat[j][k+15], mat[j][k+14], mat[j][k+13], \
-                mat[j][k+12],mat[j][k+11], mat[j][k+10], mat[j][k+9],\
-                mat[j][k+8], mat[j][k+7], mat[j][k+6], mat[j][k+5],\
-                mat[j][k+4], mat[j][k+3], mat[j][k+2], mat[j][k+1], mat[j][k]);
-            // vect[i] = init_vuint8_all(mat[j][k  ], mat[j][k+1], mat[j][k+2], mat[j][k+3], \
-            //                         mat[j][k+4], mat[j][k+5], mat[j][k+6], mat[j][k+7], \
-            //                         mat[j][k+8], mat[j][k+9], mat[j][k+10], mat[j][k+11], \
-            //                         mat[j][k+12], mat[j][k+13], mat[j][k+14], mat[j][k+15]);
+            vect[i] = init_vuint8_all(mat[j][k  ], mat[j][k+1], mat[j][k+2], mat[j][k+3], \
+                                    mat[j][k+4], mat[j][k+5], mat[j][k+6], mat[j][k+7], \
+                                    mat[j][k+8], mat[j][k+9], mat[j][k+10], mat[j][k+11], \
+                                    mat[j][k+12], mat[j][k+13], mat[j][k+14], mat[j][k+15]);
             i++;
         }
     }
@@ -67,28 +62,54 @@ vuint8 vi8_abs(vuint8 vect){
     return ABS;
 }
 
-//Compare les vecteurs a et b, et renvoie un vecteur composé des MAX(a[i], b[i])
-vuint8 vi8_max(vuint8 a, vuint8 b){
 
-    vuint8 cmp, res;
+// //Compare les vecteurs a et b, et renvoie un vecteur composé des MAX(a[i], b[i])
+// vuint8 vi8_max(vuint8 a, vuint8 b){
+//
+//     vuint8 cmp, res;
+//
+//     cmp = vec_gt(a, b);
+//     res = vec_or(vec_and(cmp, a), vec_andnot(cmp, b));
+//
+//     return res;
+// }
+//
+// //Compare les vecteurs a et b, et renvoie un vecteur composé des MIN(a[i], b[i])
+// vuint8 vi8_min(vuint8 a, vuint8 b){
+//
+//     vuint8 cmp, res;
+//
+//     cmp = vec_lt(a, b);
+//     display_vuint8(cmp, "%d ", "cmp ");
+//     printf("\n ");
+//     res = vec_or(vec_and(cmp, a), vec_andnot(cmp, b));
+//
+//     return res;
+// }
 
-    cmp = vec_gt(a, b);
-    res = vec_or(vec_and(cmp, a), vec_andnot(cmp, b));
+// //Effectue un left-shift de n uint8 et renvoie le résultat
+// vuint8 vi8_left(vuint8 a, vuint8 b, int n){
+//     int decalage = 16-n;
+//     vuint8 vec_1 = vec_srl(a, decalage);
+//     vuint8 vec_2 = vec_sll(b, n);
+//
+//
+//     vuint8 vec = vec_add(vec_1, vec_2);
+//     return vec;
+// }
+//
+// //Effectue un right-shift de n uint8 et renvoie le résultat
+// vuint8 vi8_right(vuint8 a, vuint8 b, int n){
+//     int decalage = 16-n;
+//     vuint8 vec_1 = vec_srl(a, n);
+//     vuint8 vec_2 = vec_sll(b, decalage);
+// 
+//     vuint8 vec = vec_add(vec_1, vec_2);
+//     return vec;
+// }
 
-    return res;
-}
-
-//Compare les vecteurs a et b, et renvoie un vecteur composé des MIN(a[i], b[i])
-vuint8 vi8_min(vuint8 a, vuint8 b){
-
-    vuint8 cmp, res;
-
-    cmp = vec_lt(a, b);
-    res = vec_or(vec_and(cmp, a), vec_andnot(cmp, b));
-
-    return res;
-}
-
+//Copie le contenu d'un tableau vui8vector dans une matrice ui8matrix
+//TODO: A revoir absolument, soit optimiser, soit trouver une autre solution
 void copy_vui8vector_ui8matrix(vuint8* vect, long nrl, long nrh, long ncl, long nch, uint8** mat){
 
     int i = 0;

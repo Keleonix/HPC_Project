@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <ctype.h> 
+#include <ctype.h>
 #include <string.h>
 #include <math.h> /* fabs */
 
@@ -739,7 +739,7 @@ uint8** LoadPGM_ui8matrix(char *filename, int *nrl, int *nrh, int *ncl, int *nch
   char *buffer;
   /*char  c;/**/
   int i;
-  
+
   buffer = (char*) calloc(80, sizeof(char));
   /* ouverture du fichier */
   file = fopen(filename,"rb");
@@ -763,7 +763,7 @@ uint8** LoadPGM_ui8matrix(char *filename, int *nrl, int *nrh, int *ncl, int *nch
   *ncl = 0;
   *nch = width - 1;
   m = ui8matrix(*nrl, *nrh, *ncl, *nch);
-  
+
   for(i=0; i<height; i++) {
     ReadPGMrow(file, width, m[i]);
   }
@@ -778,35 +778,35 @@ void MLoadPGM_ui8matrix(char *filename, int nrl, int nrh, int ncl, int nch, uint
 /* ------------------------------------------------------------------------------- */
 {
     /* cette version ne lit plus que le type P5 */
-    
+
     int height, width, gris;
     FILE *file;
-    
+
     char *buffer;
     int i;
-    
+
     buffer = (char*) calloc(80, sizeof(char));
     /* ouverture du fichier */
     file = fopen(filename,"rb");
     if (file==NULL)
         nrerror("ouverture du fichier impossible\n");
     //nrerror("ouverture du fichier %s impossible\n", filename);
-    
+
     /* lecture de l'entete du fichier pgm */
     readitem(file, buffer);
     /*fscanf(fichier, "%s", buffer);*/
     if(strcmp(buffer, "P5") != 0)
         nrerror("entete du fichier %s invalide\n");
     //nrerror("entete du fichier %s invalide\n", filename);
-    
+
     width  = atoi(readitem(file, buffer));
     height = atoi(readitem(file, buffer));
     gris   = atoi(readitem(file, buffer));
-    
+
     for(i=0; i<height; i++) {
         ReadPGMrow(file, width, m[i]);
     }
-    
+
     fclose(file);
     free(buffer);
 }
@@ -818,11 +818,12 @@ void SavePGM_ui8matrix(uint8 **m, int nrl, int nrh, int ncl, int nch, char *file
   int ncol = nch-ncl+1;
 
   char buffer[80];
-  
+
   FILE *file;
   int  i;
 
-  file = fopen(filename, "wb");
+  // file = fopen(filename, "wb");TODO: changer ça
+  file = fopen(filename, "w");
   if (file == NULL)
     //nrerror("ouverture du fichier %s impossible dans SavePGM_bmatrix\n", filename);
     nrerror("ouverture du fichier %s impossible dans SavePGM_ui8matrix\n");
@@ -871,7 +872,7 @@ rgb8** LoadPPM_rgb8matrix(char *filename, int *nrl, int *nrh, int *ncl, int *nch
   char *buffer;
   /*char  c;/**/
   int i;
-  
+
   buffer = (char*) calloc(80, sizeof(char));
   /* ouverture du fichier */
   file = fopen(filename,"rb");
@@ -895,7 +896,7 @@ rgb8** LoadPPM_rgb8matrix(char *filename, int *nrl, int *nrh, int *ncl, int *nch
   *ncl = 0;
   *nch = width - 1;
   m = rgb8matrix(*nrl, *nrh, *ncl, *nch);
-  
+
   for(i=0; i<height; i++) {
     ReadPNMrow(file, width, (uint8*)m[i]);
   }
@@ -913,7 +914,7 @@ void SavePPM_rgb8matrix(rgb8 **m, int nrl, int nrh, int ncl, int nch, char *file
   int ncol = nch-ncl+1;
 
   char buffer[80];
-  
+
   FILE *file;
   int  i;
 

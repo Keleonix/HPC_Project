@@ -29,7 +29,7 @@
 /* or compile, for example, with the '-DUNIX' option.          */
 /***************************************************************/
 /* #define TIMER_Amiga       */
-#define TIMER_UNIX
+/* #define TIMER_UNIX        */
 /* #define TIMER_UNIX_Old    */
 /* #define TIMER_VMS         */
 /* #define TIMER_BORLAND_C   */
