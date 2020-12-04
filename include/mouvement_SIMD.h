@@ -39,5 +39,5 @@ void SigmaDelta_step4_SIMD(vuint8* Ot, vuint8* Vt, vuint8* Et, int nbVuint8);
 //tableau Et dans un fichier PGM (version SIMD)
 void main_mouvement_SIMD();
 
-void main_mvt_ref_SIMD()
+void main_mvt_ref_SIMD();
 #endif /*MOUVEMENT_SIMD_H */
