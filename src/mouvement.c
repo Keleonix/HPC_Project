@@ -19,7 +19,6 @@
 void SigmaDelta_step0(uint8** Io, uint8** Mt_1, uint8** Vt_1, \
     int* nrl, int* nrh, \
     int* ncl, int* nch){
-    printf("Initialisation\n");
     // Mt_1 = Io
     // Vt_1 = VMIN
     copy_ui8matrix_ui8matrix (Io, *nrl, *nrh, *ncl, *nch, Mt_1); //La première image de fond est égale à la première image
@@ -28,8 +27,6 @@ void SigmaDelta_step0(uint8** Io, uint8** Mt_1, uint8** Vt_1, \
             Vt_1[j][k] = VMIN;
         }
     }
-    printf("Fin du step0\n");
-
 }
 
 //Etape 1 : estimation de l'image de fond

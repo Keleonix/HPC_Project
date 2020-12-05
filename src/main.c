@@ -74,26 +74,42 @@ int main(int argc, char const *argv[]){
     //1 pour le traitement, fait la chaine complète et enregistre les images traitées
     //2 pour les benchmarks
 
-    int mode = 0;
+    int mode = 2;
+    int n = 500;
 
     switch(mode){
         case 0:
             /*Fonctions appelant tous les tests unitaires */
             break;
         case 1:
+
             chaine_complete();
             chaine_complete_SIMD();
             chaine_complete_OPTIM();
             break;
+
         case 2:
             /*Chrono étapes SD */
+            chrono_SD_step1(n);
+            chrono_SD_step2(n);
+            chrono_SD_step3(n);
+            chrono_SD_step4(n);
+
+            /*Chrono étapes SD SIMD*/
+            chrono_SD_step1_SIMD(n);
+            chrono_SD_step2_SIMD(n);
+            chrono_SD_step3_SIMD(n);
+            chrono_SD_step4_SIMD(n);
+
+            /*Chrono SD optimisé*/
+            chrono_SD_steps_OPTIM(n);
 
             /*Chrono morpho */
 
             /* Chrono chaine complète*/
-            chrono_chaine(10);
-            chrono_chaine_SIMD(10);
-            chrono_chaine_OPTIM(10);
+            chrono_chaine(n);
+            chrono_chaine_SIMD(n);
+            chrono_chaine_OPTIM(n);
             break;
     }
 
