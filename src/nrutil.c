@@ -822,8 +822,7 @@ void SavePGM_ui8matrix(uint8 **m, int nrl, int nrh, int ncl, int nch, char *file
   FILE *file;
   int  i;
 
-  // file = fopen(filename, "wb");TODO: changer ça
-  file = fopen(filename, "w");
+  file = fopen(filename, "wb");
   if (file == NULL)
     //nrerror("ouverture du fichier %s impossible dans SavePGM_bmatrix\n", filename);
     nrerror("ouverture du fichier %s impossible dans SavePGM_ui8matrix\n");

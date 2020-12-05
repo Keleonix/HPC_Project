@@ -62,149 +62,42 @@ void chaine_complete_SIMD();
 void chaine_complete_OPTIM();
 
 
-int main(void){
+//TODO: Pour l'agencement du main
+//Trois modes possibles,
+//Verif (Lance les tests unitaires et affiche donc les OK et les KO
+//Traitement (Fais la chaine complète normalement et enregistre les images traitées)
+//Bench (Lance les fonctions de benchmark)
 
-    //TODO: Nettoyer ce putain de main wah
-    //CHRONO
-    // printf("CHRONO SIGMA SCALAIRE\n\n");
-    // chrono_mouvement();
-    // printf("\n");
-    //
-    // printf("CHRONO SIGMA SIMD\n\n");
-    // chrono_mouvement_SIMD();
-    // printf("\n");
-    //
-    // printf("CHRONO SIGMA OPTIMISE\n\n");
-    // chrono_mouvement_OPTIM();
-    // printf("\n");
-    //
-    // printf("CHRONO EROSION SCALAIRE\n\n");
-    // chrono_erosion();
-    // printf("\n");
-    //
-    // printf("CHRONO EROSION SIMD\n\n");
-    // chrono_erosion_SIMD();
-    // printf("\n");
-    //
-    // printf("CHRONO EROSION OPTIMISE\n\n");
-    // chrono_erosion_OPTIM();
-    // printf("\n");
+int main(int argc, char const *argv[]){
 
-    chrono_chaine(10);
-    chrono_chaine_SIMD(10);
-    chrono_chaine_OPTIM(10);
-    // printf("CHRONO DILATATION SCALAIRE\n\n");
-    // chrono_dilatation();
-    // printf("\n");
-    //
-    // printf("CHRONO DILATATION SIMD\n\n");
-    // chrono_dilatation_SIMD();
-    // printf("\n");
-    //
-    // printf("CHRONO DILATATION OPTIMISE\n\n");
-    // chrono_dilatation_OPTIM();
-    // printf("\n");
+    //0 pour les tests unitaires,
+    //1 pour le traitement, fait la chaine complète et enregistre les images traitées
+    //2 pour les benchmarks
 
-    // main_mouvement_OPTIM();
-    //TODO : Supprimer une fois finie
-    //TEST_MORPHO
-    // printf("Début du programme principal.\n");
-    // int* nrl = malloc(sizeof(int));
-    // int* nrh = malloc(sizeof(int));
-    // int* ncl = malloc(sizeof(int));
-    // int* nch = malloc(sizeof(int));
-    // char image0[] = "car3/car_3000.pgm";
-    //
-    // int b = 1;
-    // //Chargement de la 1ere image
-    // uint8** Io = LoadPGM_ui8matrix(image0, nrl, nrh, ncl, nch);
-    //
-    // vuint8** vect_Io = vui8matrix(-b, *nrh+b, -b, *nch+b);
-    //
-    // // printf();
-    // // vect_Io = (vuint8**) Io;
-    //
-    // vec_store(&vect_Io[-b][-b], init_vuint8(0));
-    // // printf("Premier pixel de l'image : %d\n", Io[*nrl][*ncl]);
-    //
-    // display_vuint8(vect_Io[-b][-b], "%d ", "Bord de l'image ");
-    // printf("\n");
-    // printf("Version scalaire \n");
-    // test_erosion_OK();
-    // //
-    // printf("Version SIMD\n");
-    // test_erosion_SIMD_OK();
-    //
-    // printf("Version OPTIM\n");
-    // test_erosion_OPTIM_OK();
+    int mode = 0;
 
-    // printf("Version scalaire \n");
-    // test_dilatation_OK();
-    //
-    // // printf("Version SIMD\n");
-    // // test_dilatation_SIMD_OK();
-    //
-    // printf("Version OPTIM\n");
-    // test_dilatation_OPTIM_OK();
+    switch(mode){
+        case 0:
+            /*Fonctions appelant tous les tests unitaires */
+            break;
+        case 1:
+            chaine_complete();
+            chaine_complete_SIMD();
+            chaine_complete_OPTIM();
+            break;
+        case 2:
+            /*Chrono étapes SD */
 
-    // display_vuint8(vect_Io[*nrh][*ncl], "%d ", "Premiers pixels de l'image ");
-    // printf("\n");
-    //VALIDE, bords_SIMD prendra en argument
+            /*Chrono morpho */
 
-    //Test pour le shuffle
+            /* Chrono chaine complète*/
+            chrono_chaine(10);
+            chrono_chaine_SIMD(10);
+            chrono_chaine_OPTIM(10);
+            break;
+    }
 
-    // vuint8 a = init_vuint8_param(0, 1);
-    // // vuint8 b = init_vuint8_param(-16, 1);
-    //
-    // // vuint8 c = _mm_shufflehi_epi16(a, _MM_SHUFFLE(2, 1, 3, 0));
-    // // vuint8 d = _mm_shufflehi_epi16(b, _MM_SHUFFLE(2, 1, 3, 0));
-    // vuint8 c = _mm_bsrli_si128(a, 2);
-    // display_vuint8(a, "%d ", "a ");
-    // printf("\n");
-    // // display_vuint8(b, "%d ", "b ");
-    // // printf("\n");
-    // display_vuint8(c, "%d ", "c ");
-    // printf("\n");
-    // display_vuint8(d, "%d ", "d ");
-    // printf("\n");
 
-    //Test des fonctions de shift
-
-    // vuint8 a = init_vuint8_param(0, 1);
-    // vuint8 b = init_vuint8_param(16, 1);
-    //
-    // vuint8 c = vec_left3(a, b);
-    // vuint8 d = vec_right3(a, b);
-    // display_vuint8(a, "%d ", "a ");
-    // printf("\n");
-    // display_vuint8(b, "%d ", "b ");
-    // printf("\n");
-    // display_vuint8(c, "%d ", "c ");
-    // printf("\n");
-    // display_vuint8(d, "%d ", "d ");
-    // printf("\n");
-    //
-    // // test_gt();
-    // test_min();
-    // test_fct_vi8max_OK();
-    // test_fct_vi8min_OK();
-    // main_mvt_ref_SIMD();
-    // test_algo_step1_1();
-    // test_vec_and();
-
-    // main_mouvement();
-    // main_mouvement_SIMD();
-    // test_imagePGM();
-    // test1_step1_SIMD();
-    // int tmp = dtime();
-    // chaine_complete();
-    // tmp = dtime() - tmp;
-    // printf("Temps : %d\n", tmp);
-    //
-    // tmp = dtime();
-    // chaine_complete_SIMD();
-    // tmp = dtime() - tmp;
-    // printf("Temps : %d\n", tmp);
     return 0;
 }
 

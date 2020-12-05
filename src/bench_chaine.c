@@ -4,24 +4,20 @@
 //n : nombre de fois où la chaine est lancée
 void chrono_chaine(int n){
 
-    // // chronometrie
-    // int iter, niter = 1;
-    // int run, nrun = 1;
-    // double t0, t1, dt, tmin, t;
-
     //Timer pour chaque étape
     //CPP STEPS
     //La mesure de temps de la chaine ne prend pas en compte les
     //chargements et allocations, on va chronometrer du step1
     //à fermeture
 
-    //Idée, ecrire un csv
-    //Après avoir traité les 199
-    //ecrire le temps complet pris pour traiter la sequence
-    //ecrire le nombre de pixels par seconde
-    //ptet autre chose, à voir
+    //On ecrit un csv
+    //Après avoir traité les 199 images
+    //On ecrit le temps complet pris pour traiter la sequence
+    //On ecrit le temps pour traiter une frame
+    //On ecrit le débit, i.e. nombre de pixels traités par seconde
+
     FILE* fichier_csv;
-    //On supprime le contenu du fichier et on écrit le nom des colonnes
+    //On ouvre le contenu du fichier et on écrit le nom des colonnes
     fichier_csv = fopen("bench_csv/chaine_scalaire.csv", "w");
     fprintf(fichier_csv, "Essai;Temps_frame;Temps_sequence;Pixel_par_seconde\n");
     fclose(fichier_csv);
@@ -161,9 +157,6 @@ void chrono_chaine_SIMD(int n){
 
     //Allocation d'une matrice uint8 pour conserver le resultat Et
     uint8** Et_ui8 = ui8matrix(*nrl, *nrh, *ncl, *nch);
-    uint8** Vt_ui8 = ui8matrix(*nrl, *nrh, *ncl, *nch);
-    uint8** Ot_ui8 = ui8matrix(*nrl, *nrh, *ncl, *nch);
-    uint8** Mt_ui8 = ui8matrix(*nrl, *nrh, *ncl, *nch);
 
     for(int essai = 0; essai < n; essai++){
 

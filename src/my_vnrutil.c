@@ -62,52 +62,6 @@ vuint8 vi8_abs(vuint8 vect){
     return ABS;
 }
 
-
-// //Compare les vecteurs a et b, et renvoie un vecteur composé des MAX(a[i], b[i])
-// vuint8 vi8_max(vuint8 a, vuint8 b){
-//
-//     vuint8 cmp, res;
-//
-//     cmp = vec_gt(a, b);
-//     res = vec_or(vec_and(cmp, a), vec_andnot(cmp, b));
-//
-//     return res;
-// }
-//
-// //Compare les vecteurs a et b, et renvoie un vecteur composé des MIN(a[i], b[i])
-// vuint8 vi8_min(vuint8 a, vuint8 b){
-//
-//     vuint8 cmp, res;
-//
-//     cmp = vec_lt(a, b);
-//     display_vuint8(cmp, "%d ", "cmp ");
-//     printf("\n ");
-//     res = vec_or(vec_and(cmp, a), vec_andnot(cmp, b));
-//
-//     return res;
-// }
-
-// //Effectue un left-shift de n uint8 et renvoie le résultat
-// vuint8 vi8_left(vuint8 a, vuint8 b, int n){
-//     int decalage = 16-n;
-//     vuint8 vec_1 = vec_srl(a, decalage);
-//     vuint8 vec_2 = vec_sll(b, n);
-//
-//
-//     vuint8 vec = vec_add(vec_1, vec_2);
-//     return vec;
-// }
-//
-// //Effectue un right-shift de n uint8 et renvoie le résultat
-// vuint8 vi8_right(vuint8 a, vuint8 b, int n){
-//     int decalage = 16-n;
-//     vuint8 vec_1 = vec_srl(a, n);
-//     vuint8 vec_2 = vec_sll(b, decalage);
-// 
-//     vuint8 vec = vec_add(vec_1, vec_2);
-//     return vec;
-// }
-
 //Copie le contenu d'un tableau vui8vector dans une matrice ui8matrix
 //TODO: A revoir absolument, soit optimiser, soit trouver une autre solution
 void copy_vui8vector_ui8matrix(vuint8* vect, long nrl, long nrh, long ncl, long nch, uint8** mat){

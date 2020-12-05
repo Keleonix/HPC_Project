@@ -7,11 +7,6 @@
 #include <nrutil.h>
 #include <mutil.h>
 
-#define VMIN 1
-#define VMAX 254
-#define N 3
-#define NOMBRE_IMAGE 199
-
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
 #define MAX(X, Y) (((X) > (Y)) ? (X) : (Y))
 
