@@ -59,7 +59,7 @@ $(OBJ_PATH)/%.o : $(SRC_PATH)/%.c
 #-----Main rule ----------
 
 $(EXE_PATH)/$(PRODUCT): $(OBJ)
-	$(CC) -o $@ $^ $(LDFLAGS) $(OPTFLAGS) $(CFG) $(INC) $(LIB) -lm
+	$(CC) -o $@ $^ $(LDFLAGS) $(OPTFLAGS) $(CFG) $(INC) $(LIB) -lm -fopenmp
 
 # -- Other stuff ----------
 depend:

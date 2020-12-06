@@ -58,10 +58,9 @@
 
 //Applique l'algorithme SigmaDelta, puis la morphologie aux images de la séquence
 void chaine_complete();
-//Applique l'algorithme SigmaDelta, puis la morphologie aux images de la séquence
-//en SIMD
+//Applique l'algorithme SigmaDelta, puis la morphologie aux images de la séquence en SIMD
 void chaine_complete_SIMD();
-
+//Applique l'algorithme SigmaDelta, puis la morphologie aux images de la séquence en SIMD optimisé
 void chaine_complete_OPTIM();
 
 
@@ -78,7 +77,7 @@ int main(int argc, char const *argv[]){
     //2 pour les benchmarks
 
     int mode = 2;
-    int n = 500;
+    int n = 5;
 
     switch(mode){
         case 0:
@@ -87,8 +86,8 @@ int main(int argc, char const *argv[]){
         case 1:
 
             chaine_complete();
-            // chaine_complete_SIMD();
-            // chaine_complete_OPTIM();
+            chaine_complete_SIMD();
+            chaine_complete_OPTIM();
             break;
 
         case 2:
@@ -205,6 +204,7 @@ void chaine_complete(){
     free(nch);
 
 }
+
 void chaine_complete_SIMD(){
     printf("Début du programme principal.\n");
     int* nrl = malloc(sizeof(int));
@@ -308,6 +308,7 @@ void chaine_complete_SIMD(){
     free(ncl);
     free(nch);
 }
+
 void chaine_complete_OPTIM(){
     printf("Début du programme principal.\n");
     int* nrl = malloc(sizeof(int));

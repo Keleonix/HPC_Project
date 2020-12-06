@@ -2,10 +2,12 @@
 
 void chrono_erosion(int n){
 
+    printf("Debut chrono_erosion\n");
+
     FILE* fichier_csv;
     //On ouvre le contenu du fichier et on écrit le nom des colonnes
     fichier_csv = fopen("bench_csv/morpho/erosion_scalaire.csv", "w");
-    fprintf(fichier_csv, "Essai;Temps_frame;Pixel_par_seconde\n");
+    fprintf(fichier_csv, "Essai;Temps_frame;Temps_sequence;Pixel_par_seconde\n");
     fclose(fichier_csv);
 
     double temps_frame = 0;
@@ -55,14 +57,18 @@ void chrono_erosion(int n){
     free_ui8matrix(mat_test, nrl, nrh, ncl, nch);
     free_ui8matrix(resultat, nrl, nrh, ncl, nch);
 
+    printf("Fin chrono_erosion\n");
+
 }
 
 void chrono_erosion_SIMD(int n){
 
+    printf("Debut chrono_erosion_SIMD\n");
+
     FILE* fichier_csv;
     //On ouvre le contenu du fichier et on écrit le nom des colonnes
     fichier_csv = fopen("bench_csv/morpho/erosion_SIMD.csv", "w");
-    fprintf(fichier_csv, "Essai;Temps_frame;Pixel_par_seconde\n");
+    fprintf(fichier_csv, "Essai;Temps_frame;Temps_sequence;Pixel_par_seconde\n");
     fclose(fichier_csv);
 
     double temps_frame = 0;
@@ -112,14 +118,18 @@ void chrono_erosion_SIMD(int n){
     free_ui8matrix(mat_test, nrl, nrh, ncl, nch);
     free_ui8matrix(resultat, nrl, nrh, ncl, nch);
 
+    printf("Fin chrono_erosion_SIMD\n");
+
 }
 
 void chrono_erosion_OPTIM(int n){
 
+    printf("Debut chrono_erosion_OPTIM\n");
+
     FILE* fichier_csv;
     //On ouvre le contenu du fichier et on écrit le nom des colonnes
     fichier_csv = fopen("bench_csv/morpho/erosion_OPTIM.csv", "w");
-    fprintf(fichier_csv, "Essai;Temps_frame;Pixel_par_seconde\n");
+    fprintf(fichier_csv, "Essai;Temps_frame;Temps_sequence;Pixel_par_seconde\n");
     fclose(fichier_csv);
 
     double temps_frame = 0;
@@ -169,14 +179,19 @@ void chrono_erosion_OPTIM(int n){
 
     free_ui8matrix(mat_test, nrl, nrh, ncl, nch);
     free_ui8matrix(resultat, nrl, nrh, ncl, nch);
+
+    printf("Fin chrono_erosion_OPTIM\n");
+
 }
 
 void chrono_dilatation(int n){
 
+    printf("Debut chrono_dilatation\n");
+
     FILE* fichier_csv;
     //On ouvre le contenu du fichier et on écrit le nom des colonnes
     fichier_csv = fopen("bench_csv/morpho/dilatation_scalaire.csv", "w");
-    fprintf(fichier_csv, "Essai;Temps_frame;Pixel_par_seconde\n");
+    fprintf(fichier_csv, "Essai;Temps_frame;Temps_sequence;Pixel_par_seconde\n");
     fclose(fichier_csv);
 
     double temps_frame = 0;
@@ -225,13 +240,19 @@ void chrono_dilatation(int n){
 
     free_ui8matrix(mat_test, nrl, nrh, ncl, nch);
     free_ui8matrix(resultat, nrl, nrh, ncl, nch);
+
+    printf("Fin chrono_dilatation\n");
+
 }
 
 void chrono_dilatation_SIMD(int n){
+
+    printf("Debut chrono_dilatation_SIMD\n");
+
     FILE* fichier_csv;
     //On ouvre le contenu du fichier et on écrit le nom des colonnes
     fichier_csv = fopen("bench_csv/morpho/dilatation_SIMD.csv", "w");
-    fprintf(fichier_csv, "Essai;Temps_frame;Pixel_par_seconde\n");
+    fprintf(fichier_csv, "Essai;Temps_frame;Temps_sequence;Pixel_par_seconde\n");
     fclose(fichier_csv);
 
     double temps_frame = 0;
@@ -280,13 +301,19 @@ void chrono_dilatation_SIMD(int n){
 
     free_ui8matrix(mat_test, nrl, nrh, ncl, nch);
     free_ui8matrix(resultat, nrl, nrh, ncl, nch);
+
+    printf("Fin chrono_dilatation_SIMD\n");
+
 }
 
 void chrono_dilatation_OPTIM(int n){
+
+    printf("Debut chrono_dilatation_OPTIM\n");
+
     FILE* fichier_csv;
     //On ouvre le contenu du fichier et on écrit le nom des colonnes
     fichier_csv = fopen("bench_csv/morpho/dilatation_OPTIM.csv", "w");
-    fprintf(fichier_csv, "Essai;Temps_frame;Pixel_par_seconde\n");
+    fprintf(fichier_csv, "Essai;Temps_frame;Temps_sequence;Pixel_par_seconde\n");
     fclose(fichier_csv);
 
     double temps_frame = 0;
@@ -335,4 +362,7 @@ void chrono_dilatation_OPTIM(int n){
 
     free_ui8matrix(mat_test, nrl, nrh, ncl, nch);
     free_ui8matrix(resultat, nrl, nrh, ncl, nch);
+
+    printf("Fin chrono_dilatation_OPTIM\n");
+
 }
