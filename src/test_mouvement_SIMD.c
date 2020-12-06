@@ -525,8 +525,6 @@ void test3_step2_SIMD_OK(){
                 It[i][j] -= ecart;
             }
 
-            ecart++;
-
         }
     }
 
@@ -711,7 +709,7 @@ void test2_step3_SIMD_OK(){
             }
 
             else if(i == 1){//On met la ligne à 0
-                Vt_1[i][j] = 0;
+                Vt_1[i][j] = 1;
             }
             else if(i == 2){//On met la ligne à 255
                 Vt_1[i][j] = 255;
@@ -748,7 +746,7 @@ void test2_step3_SIMD_OK(){
     for(i = nrl; i <= nrh; i++){
         for(j = ncl; j <= nch; j++){
             if(i == 0){
-                if(Vt[i][j] != VMAX){
+                if(Vt[i][j] != VMAX-1){
                     printf("test2_step3_SIMD_OK faux, KO\n");
                     return;
                 }
@@ -962,11 +960,11 @@ void test1_step4_SIMD_OK(){
                 }
             }
             else if(i == 2){//On descend de 1 sur la dernière ligne
-                if(j < 8 && Et[i][j] != 0){
+                if(j <= 7 && Et[i][j] != 0){
                     printf("test1_step4_SIMD_OK faux, KO\n");
                     return;
                 }
-                else if(j > 8 && Et[i][j] != 0){
+                else if(j > 7 && Et[i][j] != 1){
                     printf("test1_step4_SIMD_OK faux, KO\n");
                     return;
                 }

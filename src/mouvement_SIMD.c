@@ -45,7 +45,11 @@ void SigmaDelta_step1_SIMD(vuint8* It, vuint8* Mt_1, vuint8* Mt, int nbVuint8){
             C2 = vec_gt (vect_Mt_1_127, vect_It_127); //On fait deux comparaisons pour s'assurer que les pixels égaux donnent 0
             K1 = init_vuint8(1);
             K2 = init_vuint8(-1);
-            K = vec_or(vec_and(C1, K1), vec_and(C2, K2));//+1 où It > M et -1 où It < M
+
+            //IF(It > Mt_1) K = 1
+            //ELSE IF(Mt_1 > It) K = -1
+            //ELSE K = 0
+            K = vec_or(vec_and(C1, K1), vec_and(C2, K2));
 
             M = vec_add(K, vect_Mt_1);
             vec_store(&Mt[i], M);
@@ -172,37 +176,26 @@ void main_mouvement_SIMD(){
 
         //Chargement de l'image
         imagemat = LoadPGM_ui8matrix(image, nrl, nrh, ncl, nch);
-        // printf("nrl = %d\nnrh = %d\nncl = %d\nnch = %d\n", *nrl, *nrh, *ncl, *nch);
 
         copy_ui8matrix_vui8vector(imagemat, *nrl, *nrh, *ncl, *nch, It);
-        //TODO: Le mode SinCity c'est quand je copiais l'image dans Mt_1 au lieu de It
-
-        //TODO : Rajouter les macros chrono pour mesurer le temps de chaque fonction
         SigmaDelta_step1_SIMD(It, Mt_1, Mt, nbVuint8);
         SigmaDelta_step2_SIMD(It, Mt, Ot, nbVuint8);
         SigmaDelta_step3_SIMD(Ot, Vt_1, Vt, nbVuint8);
         SigmaDelta_step4_SIMD(Ot, Vt, Et, nbVuint8);
 
-        //TODO : Test rapide, à retirer
-        //Creation de fichiers pgm à partir des dix premieres frames traitées
-        // if(i > 3070 && i < 3090){
-
-            // generate_filename_k_ndigit_extension("test/Vt_", i, 0, "pgm", image);
-            // copy_vui8vector_ui8matrix(vuint8* vect, long nrl, long nrh, long ncl, long nch, uint8** mat);
-            // SavePGM_ui8matrix(Vt, *nrl, *nrh, *ncl, *nch, image);
-        generate_filename_k_ndigit_extension("test_SIMD/Mt_", i, 0, "pgm", image);
+        generate_filename_k_ndigit_extension("images_SIMD/Mt_", i, 0, "pgm", image);
         copy_vui8vector_ui8matrix(Mt, *nrl, *nrh, *ncl, *nch, Mt_ui8);
         SavePGM_ui8matrix(Mt_ui8, *nrl, *nrh, *ncl, *nch, image);
 
-        generate_filename_k_ndigit_extension("test_SIMD/Ot_", i, 0, "pgm", image);
+        generate_filename_k_ndigit_extension("images_SIMD/Ot_", i, 0, "pgm", image);
         copy_vui8vector_ui8matrix(Ot, *nrl, *nrh, *ncl, *nch, Ot_ui8);
         SavePGM_ui8matrix(Ot_ui8, *nrl, *nrh, *ncl, *nch, image);
         //
-        generate_filename_k_ndigit_extension("test_SIMD/Vt_", i, 0, "pgm", image);
+        generate_filename_k_ndigit_extension("images_SIMD/Vt_", i, 0, "pgm", image);
         copy_vui8vector_ui8matrix(Vt, *nrl, *nrh, *ncl, *nch, Vt_ui8);
         SavePGM_ui8matrix(Vt_ui8, *nrl, *nrh, *ncl, *nch, image);
 
-        generate_filename_k_ndigit_extension("test_SIMD/Et_", i, 0, "pgm", image);
+        generate_filename_k_ndigit_extension("images_SIMD/Et_", i, 0, "pgm", image);
         copy_vui8vector_ui8matrix(Et, *nrl, *nrh, *ncl, *nch, Et_ui8);
         SavePGM_ui8matrix(Et_ui8, *nrl, *nrh, *ncl, *nch, image);
 

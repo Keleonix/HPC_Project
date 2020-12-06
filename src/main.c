@@ -75,12 +75,12 @@ int main(int argc, char const *argv[]){
             tests_mouvement();
             tests_mouvement_SIMD();
             //tests_mouvement_OPTIM();
-            tests_erosion_OPTIM();
+            //tests_erosion_OPTIM();
             break;
         case 1:
             /*Fonctions de test des chaînes complètes */
-            chaine_complete();
-            // chaine_complete_SIMD();
+            //chaine_complete();
+            chaine_complete_SIMD();
             // chaine_complete_OPTIM();
             break;
 
@@ -248,10 +248,8 @@ void chaine_complete_SIMD(){
 
         //Chargement de l'image
         imagemat = LoadPGM_ui8matrix(image, nrl, nrh, ncl, nch);
-        // printf("nrl = %d\nnrh = %d\nncl = %d\nnch = %d\n", *nrl, *nrh, *ncl, *nch);
 
         copy_ui8matrix_vui8vector(imagemat, *nrl, *nrh, *ncl, *nch, It);
-        //TODO: Le mode SinCity c'est quand je copiais l'image dans Mt_1 au lieu de It
 
         SigmaDelta_step1_SIMD(It, Mt_1, Mt, nbVuint8);
         SigmaDelta_step2_SIMD(It, Mt, Ot, nbVuint8);

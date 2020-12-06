@@ -80,8 +80,10 @@ void test1_step1_OK(){
     //La deuxieme ligne doit être égale à Mt
     //La troisième ligne doit être à Mt-1
     //Si on detecte une erreur, on renvoie la fonction
+
     for(i = nrl; i <= nrh; i++){
         for(j = ncl; j <= nch; j++){
+
             if(i == 0){
                 if(Mt[i][j] != Mt_1[i][j]+1){
                     printf("test1_step1_OK faux, KO\n");
@@ -101,6 +103,7 @@ void test1_step1_OK(){
                 }
             }
         }
+
     }
 
     free_ui8matrix(It, nrl, nrh, ncl, nch);
@@ -437,8 +440,6 @@ void test3_step2_OK(){
             else if(i == 2){//It > Mt sur la troisieme ligne
                 It[i][j] -= ecart;
             }
-
-            ecart++;
 
         }
     }
@@ -780,11 +781,11 @@ void test1_step4_OK(){
                 }
             }
             else if(i == 2){//On descend de 1 sur la dernière ligne
-                if(j < 8 && Et[i][j] != 0){
+                if(j <= 7 && Et[i][j] != 0){
                     printf("test1_step4_OK faux, KO\n");
                     return;
                 }
-                else if(j > 8 && Et[i][j] != 0){
+                else if(j > 7 && Et[i][j] != 1){
                     printf("test1_step4_OK faux, KO\n");
                     return;
                 }
