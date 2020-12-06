@@ -27,26 +27,27 @@ void SigmaDelta_step0_SIMD(uint8** Io, vuint8* Mt_1, vuint8* Vt_1, int* nrl, int
 //Etape 1 : estimation de l'image de fond (version SIMD)
 void SigmaDelta_step1_SIMD(vuint8* It, vuint8* Mt_1, vuint8* Mt, int nbVuint8){
 
-        vuint8 pixelsIm, pixelsM, C1, C2, K1, K2, K, M;
-        vuint8 pixelsIm_127, pixelsM_127;
+        vuint8 vect_It, vect_Mt_1;
+        vuint8 C1, C2, K1, K2, K, M;
+        vuint8 vect_It_127, vect_Mt_1_127;
         for(int i = 0; i < nbVuint8; i++){
-            pixelsIm = vec_load(&It[i]);
-            pixelsM = vec_load(&Mt_1[i]);
+            vect_It = vec_load(&It[i]);
+            vect_Mt_1 = vec_load(&Mt_1[i]);
 
             //Les fonctions de comparaisons considerent que les entiers sont
             //signés, MSB est considéré comme le signe et les 7 LSB sont comparés
             //129 < 127, car 129 = 1000 0001b et 127 = 0111 1111b
             //On va alors soustraire 127 aux vecteurs avant la comparaison
 
-            pixelsIm_127 = vec_sub(pixelsIm, init_vuint8(127));
-            pixelsM_127 = vec_sub(pixelsM, init_vuint8(127));
-            C1 = vec_gt (pixelsIm_127, pixelsM_127); //Sont mis à 1 tout pixel où It > main
-            C2 = vec_gt (pixelsM_127, pixelsIm_127); //On fait deux comparaisons pour s'assurer que les pixels égaux donnent 0
+            vect_It_127 = vec_sub(vect_It, init_vuint8(127));
+            vect_Mt_1_127 = vec_sub(vect_Mt_1, init_vuint8(127));
+            C1 = vec_gt (vect_It_127, vect_Mt_1_127); //Sont mis à 1 tout pixel où It > main
+            C2 = vec_gt (vect_Mt_1_127, vect_It_127); //On fait deux comparaisons pour s'assurer que les pixels égaux donnent 0
             K1 = init_vuint8(1);
             K2 = init_vuint8(-1);
             K = vec_or(vec_and(C1, K1), vec_and(C2, K2));//+1 où It > M et -1 où It < M
 
-            M = vec_add(K, pixelsM);
+            M = vec_add(K, vect_Mt_1);
             vec_store(&Mt[i], M);
         }
 }
@@ -54,14 +55,14 @@ void SigmaDelta_step1_SIMD(vuint8* It, vuint8* Mt_1, vuint8* Mt, int nbVuint8){
 //Etape 2 : Ot, difference entre image source et moyenne
 void SigmaDelta_step2_SIMD(vuint8* It,  vuint8* Mt, vuint8* Ot, int nbVuint8){
 
-    vuint8 pixelsIm, pixelsM, pixelsO;
+    vuint8 vect_It, vect_Mt, vect_Ot;
     for(int i = 0; i < nbVuint8; i++){
-        pixelsIm = vec_load(&It[i]);
-        pixelsM = vec_load(&Mt[i]);
+        vect_It = vec_load(&It[i]);
+        vect_Mt = vec_load(&Mt[i]);
 
-        pixelsO = vec_sub(pixelsM, pixelsIm); //Mt - It
-        pixelsO = vi8_abs(pixelsO); //abs( )
-        vec_store(&Ot[i], pixelsO);
+        vect_Ot = vec_sub(vect_Mt, vect_It); //Mt - It
+        vect_Ot = vi8_abs(vect_Ot); //abs( )
+        vec_store(&Ot[i], vect_Ot);
     }
 }
 
@@ -69,28 +70,29 @@ void SigmaDelta_step2_SIMD(vuint8* It,  vuint8* Mt, vuint8* Ot, int nbVuint8){
 void SigmaDelta_step3_SIMD(vuint8* Ot, vuint8* Vt_1, vuint8* Vt, int nbVuint8){
 
     vuint8 vectN = init_vuint8(N);
-    vuint8 pixelsO, pixelsOtxN, pixelsVt_1, D1, D2, L, V;
-    vuint8 pixelsOtxN_127, pixelsVt_1_127;
+    vuint8 vect_Ot, vect_OtxN, vect_Vt_1;
+    vuint8 D1, D2, L, V;
+    vuint8 vect_OtxN_127, vect_Vt_1_127;
     for(int i = 0; i < nbVuint8; i++){
         pixelsO = vec_load(&Ot[i]);
 
-        pixelsOtxN = vi8_mul(pixelsO, init_vuint8(N));
-        pixelsVt_1 = vec_load(&Vt_1[i]);
+        vect_OtxN = vi8_mul(pixelsO, init_vuint8(N));
+        vect_Vt_1 = vec_load(&Vt_1[i]);
 
         //Les fonctions de comparaisons considerent que les entiers sont
         //signés, MSB est considéré comme le signe et les 7 LSB sont comparés
         //129 < 127, car 129 = 1000 0001b et 127 = 0111 1111b
         //On va alors soustraire 127 aux vecteurs avant la comparaison
 
-        pixelsOtxN_127 = vec_sub(pixelsOtxN, init_vuint8(127));
-        pixelsVt_1_127 = vec_sub(pixelsVt_1, init_vuint8(127));
+        vect_OtxN_127 = vec_sub(vect_OtxN, init_vuint8(127));
+        vect_Vt_1_127 = vec_sub(vect_Vt_1, init_vuint8(127));
 
-        D1 = vec_gt(pixelsOtxN_127, pixelsVt_1_127); //Sont mis à 1 tout pixel où N*Ot > Vt
-        D2 = vec_gt(pixelsVt_1_127, pixelsOtxN_127); //On fait deux comparaisons pour s'assurer que les pixels égaux donnent 0
+        D1 = vec_gt(vect_OtxN_127, vect_Vt_1_127); //Sont mis à 1 tout pixel où N*Ot > Vt
+        D2 = vec_gt(vect_Vt_1_127, vect_OtxN_127); //On fait deux comparaisons pour s'assurer que les pixels égaux donnent 0
 
         L = vec_or(vec_and(D1, init_vuint8(1)), vec_and(D2, init_vuint8(-1)));
 
-        V = vec_add(L, pixelsVt_1);
+        V = vec_add(L, vect_Vt_1);
         V = vec_max(vec_min(V, init_vuint8(VMAX)), init_vuint8(VMIN));
         vec_store(&Vt[i], V);
     }
@@ -99,22 +101,22 @@ void SigmaDelta_step3_SIMD(vuint8* Ot, vuint8* Vt_1, vuint8* Vt, int nbVuint8){
 //Etape 4 : Estimation de l'image d'etiquettes binaires Et
 void SigmaDelta_step4_SIMD(vuint8* Ot, vuint8* Vt, vuint8* Et, int nbVuint8){
 
-    vuint8 pixelsVt, pixelsOt, C, E;
-    vuint8 pixelsVt_127, pixelsOt_127;
+    vuint8 vect_Vt, vect_Ot, C, E;
+    vuint8 vect_Vt_127, vect_Ot_127;
 
     for(int i = 0; i < nbVuint8; i++){
-        pixelsVt = vec_load(&Vt[i]);
-        pixelsOt = vec_load(&Ot[i]);
+        vect_Vt = vec_load(&Vt[i]);
+        vect_Ot = vec_load(&Ot[i]);
 
         //Les fonctions de comparaisons considerent que les entiers sont
         //signés, MSB est considéré comme le signe et les 7 LSB sont comparés
         //129 < 127, car 129 = 1000 0001b et 127 = 0111 1111b
         //On va alors soustraire 127 aux vecteurs avant la comparaison
 
-        pixelsOt_127 = vec_sub(pixelsOt, init_vuint8(127));
-        pixelsVt_127 = vec_sub(pixelsVt, init_vuint8(127));
+        vect_Ot_127 = vec_sub(vect_Ot, init_vuint8(127));
+        vect_Vt_127 = vec_sub(vect_Vt, init_vuint8(127));
 
-        C = vec_lt(pixelsOt_127, pixelsVt_127); //A 0, Ot >= Vt et à 0xFF, Ot < Vt
+        C = vec_lt(vect_Ot_127, vect_Vt_127); //A 0, Ot >= Vt et à 0xFF, Ot < Vt
         E = vec_andnot(C, init_vuint8(1)); //A 0, Ot >= Vt et à VMAX, Ot < Ot
 
         vec_store(&Et[i], E);
