@@ -1,25 +1,18 @@
 #include "morpho_optim.h"
 
 #define R 1                                     // On défini le rayon R pour l'espace B de convolution ici R = 1
-#define DEROULAGE_BORDS 3
 #define BORD 1
 
-//TODO: A revoir, a l'air lent
-vuint8** bords_OPTIM(uint8** im, int nrl, int hauteur, int ncl, int largeur, int val_Bords){
 
-    //1ERE SOLUTION, PEUT ETRE AMELIOREE
+vuint8** bords_OPTIM(uint8** im, int nrl, int hauteur, int ncl, int largeur, int val_Bords){
     //Creer une vui8matrix avec des bords
     //Initialiser les bords à 0, tout en dupliquant les données de l'image à
     //l'interieur
     //liberer la memoire lié à l'image de base
     //Renvoyer la nouvelle image
 
-    //METHODE NAIVE
-    int bord = 1;
-
-
     //Matrice avec bords
-    vuint8** im_mat = vui8matrix(nrl-bord, hauteur+bord, ncl-bord, largeur+bord);
+    vuint8** im_mat = vui8matrix(nrl-BORD, hauteur+BORD, ncl-BORD, largeur+BORD);
     //printf("Matrice avec bords\n");
 
     //Matrice avec l'image
@@ -28,10 +21,10 @@ vuint8** bords_OPTIM(uint8** im, int nrl, int hauteur, int ncl, int largeur, int
     //printf("Matrice avec l'image\n");
 
     //Premiere ligne et derniere ligne
-    for(int i = ncl-bord; i <= largeur+bord; i++){
+    for(int i = ncl-BORD; i <= largeur+BORD; i++){
 
-        vec_store(&im_mat[nrl-bord][i], init_vuint8(val_Bords));
-        vec_store(&im_mat[hauteur+bord][i], init_vuint8(val_Bords));
+        vec_store(&im_mat[nrl-BORD][i], init_vuint8(val_bords));
+        vec_store(&im_mat[hauteur+BOR][i], init_vuint8(val_Bords));
     }
     //printf("Premiere ligne et derniere ligne de la matrice avec bords\n");
 
@@ -39,7 +32,7 @@ vuint8** bords_OPTIM(uint8** im, int nrl, int hauteur, int ncl, int largeur, int
     for(int j = nrl; j <= hauteur; j++){
 
         //Bord gauche
-        im_mat[j][ncl-bord] = init_vuint8(val_Bords);
+        im_mat[j][ncl-BOR] = init_vuint8(val_Bords);
 
         //On duplique cette ligne de l'image dans le im_mat
         // dup_vui8vector(im_vect[j], ncl, largeur, im_mat[j]);
@@ -50,7 +43,7 @@ vuint8** bords_OPTIM(uint8** im, int nrl, int hauteur, int ncl, int largeur, int
         }
 
         //Bord droit
-        im_mat[j][largeur+bord] = init_vuint8(val_Bords);
+        im_mat[j][largeur+BOR] = init_vuint8(val_Bords);
 
     }
 
@@ -73,7 +66,6 @@ uint8** erosion_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
     //Dimensions :
     //hauteur : -b à nrh+b
     //largeur : -b à nbVuint8+b
-    int bord = 1;
     int hauteur = nrh;
     int largeur = nbVuint8;
 
@@ -100,14 +92,6 @@ uint8** erosion_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
 
    //On crée une matrice vuint8** comprenant l'image avec des bords
    vuint8** im_mat = bords_OPTIM(im, nrl, hauteur, ncl, largeur, 1);
-   //printf("Matrice d'image avec bords\n\n");
-   // for(int i = nrl-BORD; i <= hauteur+BORD; i++){
-   //     for(int j = ncl-BORD; j <= largeur+BORD; j++){
-   //         //printf("Vecteur [%d][%d] : ", i, j);
-   //         display_vuint8(im_mat[i][j], "%d ", NULL);
-   //         //printf("\n");
-   //     }
-   // }
 
    //On cree une matrice qui va contenir le résultat de notre erosion
    vuint8** erosion_mat = vui8matrix(nrl, hauteur, ncl, largeur);
@@ -213,7 +197,6 @@ uint8** dilatation_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
     //Dimensions :
     //hauteur : -b à nrh+b
     //largeur : -b à nbVuint8+b
-    int bord = 1;
     int hauteur = nrh;
     int largeur = nbVuint8;
 
