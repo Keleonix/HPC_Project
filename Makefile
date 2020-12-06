@@ -46,7 +46,7 @@ CFLAGS = $(C_CC_FLAGS) $(C_OPTIMISATION_FLAGS) $(C_ARCH_FLAGS) $(C_OS_FLAGS) $(C
 LDFLAGS = $(C_CC_FLAGS) $(C_OPTIMISATION_FLAGS) $(C_ARCH_FLAGS) $(C_OS_FLAGS) $(C_CONFIG_FLAGS) $(C_INC_FLAGS) $(LIB_LIB_PATH)
 
 # -- Final product ----------
-PRODUCT   = chaine.exe
+PRODUCT   = main.exe
 
 # -- src and obj List ----------
 #SRC = $(addprefix ${SRC_PATH}/, $(FILE))
