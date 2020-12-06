@@ -33,7 +33,7 @@ void chrono_erosion(int n){
     for(int essai = 0; essai < n; essai++){
         temps_sequence = 0;
 
-        for(int i = INDEX_BASE_IM; i <= INDEX_BASE_IM+NOMBRE_IMAGE; i++){
+        for(int i = INDEX_BASE_IM; i <= INDEX_BASE_IM+NOMBRE_IMAGE-1; i++){
             generate_filename_k_ndigit_extension("images_scalaire/Et_", i, 0, "pgm", image);
             mat_test = LoadPGM_ui8matrix(image, &nrl, &nrh, &ncl, &nch);
 
@@ -93,7 +93,7 @@ void chrono_erosion_SIMD(int n){
     //On appelle maintenant la fonction erosion
     for(int essai = 0; essai < n; essai++){
         temps_sequence = 0;
-        for(int i = INDEX_BASE_IM; i <= INDEX_BASE_IM+NOMBRE_IMAGE; i++){
+        for(int i = INDEX_BASE_IM; i <= INDEX_BASE_IM+NOMBRE_IMAGE-1; i++){
             generate_filename_k_ndigit_extension("images_scalaire/Et_", i, 0, "pgm", image);
             mat_test = LoadPGM_ui8matrix(image, &nrl, &nrh, &ncl, &nch);
 
@@ -154,7 +154,7 @@ void chrono_erosion_OPTIM(int n){
     //On appelle maintenant la fonction erosion
     for(int essai = 0; essai < n; essai++){
         temps_sequence = 0;
-        for(int i = INDEX_BASE_IM; i <= INDEX_BASE_IM+NOMBRE_IMAGE; i++){
+        for(int i = INDEX_BASE_IM; i <= INDEX_BASE_IM+NOMBRE_IMAGE-1; i++){
 
             generate_filename_k_ndigit_extension("images_scalaire/Et_", i, 0, "pgm", image);
             mat_test = LoadPGM_ui8matrix(image, &nrl, &nrh, &ncl, &nch);
@@ -216,7 +216,7 @@ void chrono_dilatation(int n){
     //On appelle maintenant la fonction erosion
     for(int essai = 0; essai < n; essai++){
         temps_sequence = 0;
-        for(int i = INDEX_BASE_IM; i <= INDEX_BASE_IM+NOMBRE_IMAGE; i++){
+        for(int i = INDEX_BASE_IM; i <= INDEX_BASE_IM+NOMBRE_IMAGE-1; i++){
             generate_filename_k_ndigit_extension("images_scalaire/Et_", i, 0, "pgm", image);
             mat_test = LoadPGM_ui8matrix(image, &nrl, &nrh, &ncl, &nch);
 
@@ -277,7 +277,7 @@ void chrono_dilatation_SIMD(int n){
     //On appelle maintenant la fonction erosion
     for(int essai = 0; essai < n; essai++){
         temps_sequence = 0;
-        for(int i = INDEX_BASE_IM; i <= INDEX_BASE_IM+NOMBRE_IMAGE; i++){
+        for(int i = INDEX_BASE_IM; i <= INDEX_BASE_IM+NOMBRE_IMAGE-1; i++){
             generate_filename_k_ndigit_extension("images_scalaire/Et_", i, 0, "pgm", image);
             mat_test = LoadPGM_ui8matrix(image, &nrl, &nrh, &ncl, &nch);
 
@@ -338,7 +338,7 @@ void chrono_dilatation_OPTIM(int n){
     //On appelle maintenant la fonction erosion
     for(int essai = 0; essai < n; essai++){
         temps_sequence = 0;
-        for(int i = INDEX_BASE_IM; i <= INDEX_BASE_IM+NOMBRE_IMAGE; i++){
+        for(int i = INDEX_BASE_IM; i <= INDEX_BASE_IM+NOMBRE_IMAGE-1; i++){
             generate_filename_k_ndigit_extension("images_scalaire/Et_", i, 0, "pgm", image);
             mat_test = LoadPGM_ui8matrix(image, &nrl, &nrh, &ncl, &nch);
 
