@@ -89,7 +89,7 @@ uint8** erosion_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
     vuint8** erosion_mat = vui8matrix(nrl, hauteur, ncl, largeur);
 
     //On libère la mémoire lié à l'image
-    free_ui8matrix(im, nrl, nrh, ncl, nch);
+    // free_ui8matrix(im, nrl, nrh, ncl, nch);
 
 
     //On parcourt l'image de vecteur en vecteur
@@ -159,15 +159,15 @@ uint8** dilatation_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch){
     vuint8 or_3emeligne;
     vuint8 or_noyau;
 
-   //On crée une matrice vuint8** comprenant l'image avec des bords
-   //TODO: trouver un meilleur
-   vuint8** im_mat = bords_SIMD(im, nrl, hauteur, ncl, largeur, 0);
+    //On crée une matrice vuint8** comprenant l'image avec des bords
+    //TODO: trouver un meilleur
+    vuint8** im_mat = bords_SIMD(im, nrl, hauteur, ncl, largeur, 0);
 
-   //On cree une matrice qui va contenir le résultat de notre erosion
-   vuint8** dilatation_mat = vui8matrix(nrl, hauteur, ncl, largeur);
+    //On cree une matrice qui va contenir le résultat de notre erosion
+    vuint8** dilatation_mat = vui8matrix(nrl, hauteur, ncl, largeur);
 
-   //On libère la mémoire lié à l'image
-   free_ui8matrix(im, nrl, nrh, ncl, nch);
+    //On libère la mémoire lié à l'image
+    // free_ui8matrix(im, nrl, nrh, ncl, nch);
 
 
     //On parcourt l'image de vecteur en vecteur
