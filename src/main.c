@@ -45,16 +45,6 @@
 #define N 3
 #define NOMBRE_IMAGE 199
 
-// void info(void)
-// {
-// #ifdef ENABLE_BENCHMARK
-//     puts("mode Benchmark ON");
-//     puts("DEBUG OFF");
-// #else
-//     puts("mode Benchmark OFF");
-//     puts("DEBUG ON");
-// #endif
-// }
 
 //Applique l'algorithme SigmaDelta, puis la morphologie aux images de la séquence
 void chaine_complete();
@@ -82,6 +72,9 @@ int main(int argc, char const *argv[]){
     switch(mode){
         case 0:
             /*Fonctions appelant tous les tests unitaires */
+            tests_mouvement();
+            tests_mouvement_SIMD();
+            //tests_mouvement_OPTIM();
             tests_erosion_OPTIM();
             break;
         case 1:
@@ -111,7 +104,7 @@ int main(int argc, char const *argv[]){
             // chrono_erosion(n);
             // chrono_erosion_SIMD(n);
             // chrono_erosion_OPTIM(n);
-            
+
             // chrono_dilatation(n);
             chrono_dilatation_SIMD(n);
             chrono_dilatation_OPTIM(n);

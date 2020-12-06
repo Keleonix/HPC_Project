@@ -9,6 +9,31 @@
 //Deux images par fonction
 //Taille 3x16
 
+#include "test_mouvement.h"
+
+void tests_mouvement(){
+    //Tests pour l'etape 1
+    test1_step1_OK();
+    test2_step1_OK();
+    test3_step1_OK();
+
+    //Tests pour l'etape 2
+    test1_step2_OK();
+    test2_step2_OK();
+    test3_step2_OK();
+
+    //Tests pour l'etape 3
+    test1_step3_OK();
+    test2_step3_OK();
+    test3_step3_OK();
+
+    //Tests pour l'etape 4
+    test1_step4_OK();
+    test2_step4_OK();
+    test3_step4_OK();
+}
+
+
 void test1_step1_OK(){
     int i, j;
     int nrl = 0;
@@ -260,7 +285,7 @@ void test1_step2_OK(){
     int debut = 50;
     for(i = nrl; i <= nrh; i++){
         for(j = ncl; j <= nch; j++){
-            Mt_1[i][j] = debut;
+            Mt[i][j] = debut;
             if(debut < 255) debut++;
         }
     }
@@ -326,7 +351,7 @@ void test2_step2_OK(){
     int debut = 100;
     for(i = nrl; i <= nrh; i++){
         for(j = ncl; j <= nch; j++){
-            Mt_1[i][j] = debut;
+            Mt[i][j] = debut;
             if(debut < 255) debut++;
         }
     }
@@ -392,7 +417,7 @@ void test3_step2_OK(){
     int debut = 200;
     for(i = nrl; i <= nrh; i++){
         for(j = ncl; j <= nch; j++){
-            Mt_1[i][j] = debut;
+            Mt[i][j] = debut;
         }
     }
 

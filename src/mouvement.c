@@ -10,11 +10,6 @@
 // mouvement}
 // x : le pixel courant de coordonnées (i,j)
 
-#define VMIN 1
-#define VMAX 254
-#define N 3
-#define NOMBRE_IMAGE 199
-
 //Premiere étape de l'algorithme SigmaDelta
 void SigmaDelta_step0(uint8** Io, uint8** Mt_1, uint8** Vt_1, \
     int* nrl, int* nrh, \
