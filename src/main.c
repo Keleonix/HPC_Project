@@ -66,8 +66,8 @@ int main(int argc, char const *argv[]){
     //1 pour le traitement, fait la chaine complète et enregistre les images traitées
     //2 pour les benchmarks
 
-    int mode = 0;
-    int n = 5;
+    int mode = 2;
+    int n = 300;
 
     switch(mode){
         case 0:
@@ -112,7 +112,7 @@ int main(int argc, char const *argv[]){
 
             chrono_dilatation(n);
             chrono_dilatation_SIMD(n);
-            chrono_dilatation_OPTIM(n);
+            // chrono_dilatation_OPTIM(n);
 
             /* Chrono chaine complète*/
             chrono_chaine(n);
