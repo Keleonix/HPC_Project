@@ -74,9 +74,9 @@ void SigmaDelta_step3_SIMD(vuint8* Ot, vuint8* Vt_1, vuint8* Vt, int nbVuint8){
     vuint8 D1, D2, L, V;
     vuint8 vect_OtxN_127, vect_Vt_1_127;
     for(int i = 0; i < nbVuint8; i++){
-        pixelsO = vec_load(&Ot[i]);
+        vect_Ot = vec_load(&Ot[i]);
 
-        vect_OtxN = vi8_mul(pixelsO, init_vuint8(N));
+        vect_OtxN = vi8_mul(vect_Ot, init_vuint8(N));
         vect_Vt_1 = vec_load(&Vt_1[i]);
 
         //Les fonctions de comparaisons considerent que les entiers sont
