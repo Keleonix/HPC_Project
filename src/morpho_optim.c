@@ -3,7 +3,6 @@
 
 #define R 1                                     // On défini le rayon R pour l'espace B de convolution ici R = 1
 #define BORD 1
-#define NUM_THREADS 4
 
 
 vuint8** bords_OPTIM(uint8** im, int nrl, int hauteur, int ncl, int largeur, int val_Bords){
@@ -45,13 +44,9 @@ vuint8** bords_OPTIM(uint8** im, int nrl, int hauteur, int ncl, int largeur, int
 
     }
 
-    // free_vui8matrix(im_vect)
-
     return im_mat;
 }
 
-
-//TODO: A ajouter loop unrolling et 1 bit si on a le temps
 uint8** erosion_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
 
     //Nombre de pixels de l'image
@@ -180,12 +175,13 @@ uint8** erosion_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
         }
     }
 
+    // free_vui8matrix(im_mat, nrl, nrh, ncl, nch);
+
     //On retourne la matrice sous sa forme scalaire
     //TODO: Utiliser une fonction convertissant dans le cas où le nombre de pixels par
     //ligne n'est pas multiple de 16 ?
     return (uint8**)erosion_mat;
 }
-
 
 uint8** dilatation_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
 
@@ -314,6 +310,8 @@ uint8** dilatation_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
 
         }
     }
+
+    // free_vui8matrix(im_mat, nrl, nrh, ncl, nch);
 
     //On retourne la matrice sous sa forme scalaire
     return (uint8**)dilatation_mat;

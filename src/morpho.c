@@ -2,7 +2,7 @@
 
 #define R 1                                     // On défini le rayon R pour l'espace B de convolution
 
-uint8** bords(uint8** im, int nrl, int nrh, int ncl, int nch){
+uint8** bords(uint8** im, int nrl, int nrh, int ncl, int nch, int val_Bords){
     int i, j;
     uint8** bordsIm;
 
@@ -11,7 +11,7 @@ uint8** bords(uint8** im, int nrl, int nrh, int ncl, int nch){
     for(i = nrl - R; i <= nrh + R; i++){                                                    // On crée une image avec des bords initialisés à 0
         for(j = ncl - R; j <= nch + R; j++){                                                // Les bords sont placés à une distance R autour de l'image
             if(i >= nrl && i <= nrh && j >= ncl && j <= nch) bordsIm[i][j] = im[i][j];
-            else bordsIm[i][j] = 0;
+            else bordsIm[i][j] = val_Bords;
         }
     }
     return bordsIm;
@@ -26,7 +26,7 @@ uint8** erosion(uint8** im, int nrl, int nrh, int ncl, int nch){
     res = ui8matrix(nrl, nrh, ncl, nch);
     bordsIm = ui8matrix(nrl - R, nrh + R, ncl - R, nch + R);   // Future image de taille [nrl+nrh+2*R, ncl+nch+2*R]
 
-    bordsIm = bords(im, nrl, nrh, ncl, nch);                  // Création de bords
+    bordsIm = bords(im, nrl, nrh, ncl, nch, 1);                  // Création de bords
 
     for(i = nrl; i <= nrh; i++){                                // On parcour toute l'image pour faire une convolution pixel par pixel
         for(j = ncl; j <= nch; j++){
@@ -58,7 +58,7 @@ uint8** dilatation(uint8** im, int nrl, int nrh, int ncl, int nch){
     res = ui8matrix(nrl, nrh, ncl, nch);
     bordsIm = ui8matrix(nrl - R, nrh + R, ncl - R, nch + R);       // Future image de taille [nrl+nrh+2*R, ncl+nch+2*R]
 
-    bordsIm = bords(im, nrl, nrh, ncl, nch);                      // Création de bords
+    bordsIm = bords(im, nrl, nrh, ncl, nch, 0);                      // Création de bords
 
     for(i = nrl; i <= nrh; i++){                                    // On parcour toute l'image pour faire une convolution pixel par pixel
         for(j = ncl; j <= nch; j++){
