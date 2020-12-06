@@ -109,7 +109,7 @@ void chrono_erosion_SIMD(int n){
         fclose(fichier_csv);
     }
 
-    free_ui8matrix(mat_test, nrl, nrh, ncl, nch);
+    //free_ui8matrix(mat_test, nrl, nrh, ncl, nch);
     free_ui8matrix(resultat, nrl, nrh, ncl, nch);
 
 }

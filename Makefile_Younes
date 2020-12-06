@@ -69,8 +69,8 @@ clean:
 	rm -f $(OBJ)
 	rm -f ${EXE_PATH}/${PRODUCT}
 	rm -f images_OPTIM/*
-	rm -f test_SIMD/*
-	rm -f test/*
+	rm -f images_SIMD/*
+	rm -f images_scalaire/*
 
 tar:
 	tar -cvf deriche_SSE.tar Makefile src include

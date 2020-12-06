@@ -46,7 +46,6 @@ vuint8** bords_SIMD(uint8** im, int nrl, int hauteur, int ncl, int largeur, int 
         im_mat[j][largeur+bord] = init_vuint8(val_Bords);
 
     }
-    display_vuint8(im_mat[nrl-bord][nrl-bord], "%d", "bhg = \n");
 
     return im_mat;
 }
