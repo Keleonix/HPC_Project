@@ -30,7 +30,7 @@
 #include "dtime.h"
 #include "test_mouvement.h"
 #include "test_mouvement_SIMD.h"
-// #include "test_mouvement_optim.h"
+#include "test_mouvement_optim.h"
 
 #include "test_morpho.h"
 #include "test_morpho_SIMD.h"
@@ -72,10 +72,15 @@ int main(int argc, char const *argv[]){
     switch(mode){
         case 0:
             /*Fonctions appelant tous les tests unitaires */
-            // tests_mouvement();
-            // tests_mouvement_SIMD();
-            // tests_mouvement_OPTIM();
-            // tests_erosion_OPTIM();
+            tests_mouvement();
+            tests_mouvement_SIMD();
+            tests_mouvement_OPTIM();
+            tests_erosion_OPTIM();
+            tests_dilatation_OPTIM();
+            tests_erosion_SIMD();
+            tests_dilatation_SIMD();
+            tests_erosion();
+            tests_dilatation();
             break;
         case 1:
             /*Fonctions de test des chaînes complètes */
@@ -86,33 +91,33 @@ int main(int argc, char const *argv[]){
 
         case 2:
             /*Chrono étapes SD */
-            // chrono_SD_step1(n);
-            // chrono_SD_step2(n);
-            // chrono_SD_step3(n);
-            // chrono_SD_step4(n);
+            chrono_SD_step1(n);
+            chrono_SD_step2(n);
+            chrono_SD_step3(n);
+            chrono_SD_step4(n);
 
             /*Chrono étapes SD SIMD*/
-            // chrono_SD_step1_SIMD(n);
-            // chrono_SD_step2_SIMD(n);
-            // chrono_SD_step3_SIMD(n);
-            // chrono_SD_step4_SIMD(n);
+            chrono_SD_step1_SIMD(n);
+            chrono_SD_step2_SIMD(n);
+            chrono_SD_step3_SIMD(n);
+            chrono_SD_step4_SIMD(n);
 
             /*Chrono SD optimisé*/
-            // chrono_SD_steps_OPTIM(n);
-            
+            chrono_SD_steps_OPTIM(n);
+
             /*Chrono morpho */
             chrono_erosion(n);
             chrono_erosion_SIMD(n);
-            // chrono_erosion_OPTIM(n);
+            chrono_erosion_OPTIM(n);
 
             chrono_dilatation(n);
             chrono_dilatation_SIMD(n);
             // chrono_dilatation_OPTIM(n);
 
             /* Chrono chaine complète*/
-            // chrono_chaine(n);
-            // chrono_chaine_SIMD(n);
-            // chrono_chaine_OPTIM(n);
+            chrono_chaine(n);
+            chrono_chaine_SIMD(n);
+            chrono_chaine_OPTIM(n);
             break;
     }
 
@@ -248,10 +253,8 @@ void chaine_complete_SIMD(){
 
         //Chargement de l'image
         imagemat = LoadPGM_ui8matrix(image, nrl, nrh, ncl, nch);
-        // printf("nrl = %d\nnrh = %d\nncl = %d\nnch = %d\n", *nrl, *nrh, *ncl, *nch);
 
         copy_ui8matrix_vui8vector(imagemat, *nrl, *nrh, *ncl, *nch, It);
-        //TODO: Le mode SinCity c'est quand je copiais l'image dans Mt_1 au lieu de It
 
         SigmaDelta_step1_SIMD(It, Mt_1, Mt, nbVuint8);
         SigmaDelta_step2_SIMD(It, Mt, Ot, nbVuint8);

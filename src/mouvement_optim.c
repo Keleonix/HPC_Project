@@ -83,15 +83,12 @@ void SigmaDelta_steps_OPTIM(vuint8* It, vuint8* Mt_1, vuint8* Mt,\
         vec_store(&Mt[i], vect_Mt);
 
         //ETAPE 2
-        // vect_It = vec_load(&It[i]); TODO: A retirer
-        // vect_Mt = vec_load(&Mt[i]); TODO: A retirer
 
         vect_Ot = vec_sub(vect_Mt, vect_It); // Ot = Mt - It
         vect_Ot = vi8_abs(vect_Ot); //ABS(Ot)
         vec_store(&Ot[i], vect_Ot);
 
         //ETAPE 3
-        // vect_Ot = vec_load(&Ot[i]); TODO: A retirer
 
         vect_OtxN = vi8_mul(vect_Ot, init_vuint8(N));
         vect_Vt_1 = vec_load(&Vt_1[i]);
@@ -121,8 +118,6 @@ void SigmaDelta_steps_OPTIM(vuint8* It, vuint8* Mt_1, vuint8* Mt,\
 
 
         //ETAPE 4
-        // vect_Vt = vec_load(&Vt[i]); TODO: A retirer
-        // vect_Ot = vec_load(&Ot[i]); TODO: A retirer
 
         //Les fonctions de comparaisons considerent que les entiers sont
         //signés, MSB est considéré comme le signe et les 7 LSB sont comparés
