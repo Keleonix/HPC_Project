@@ -1,190 +1,1165 @@
 #include "test_mouvement_SIMD.h"
 
-//TODO: Faut que je nettoie et fasse des vrais tests
+//Deux images par fonction
+//Taille 3x16
 
-//On va etudier le resultat du step1 pour voir, c'est quoi le souci avec les Mt
-void test1_step1_SIMD(){
-    int* nrl = malloc(sizeof(int));
-    int* nrh = malloc(sizeof(int));
-    int* ncl = malloc(sizeof(int));
-    int* nch = malloc(sizeof(int));
-    char image0[] = "car3/car_3000.pgm";
+void tests_mouvement_SIMD(){
+    //Tests pour l'etape 1
+    test1_step1_SIMD_OK();
+    test2_step1_SIMD_OK();
+    test3_step1_SIMD_OK();
 
-    //Chargement de la 1ere image
-    uint8** Io = LoadPGM_ui8matrix(image0, nrl, nrh, ncl, nch);
+    //Tests pour l'etape 2
+    test1_step2_SIMD_OK();
+    test2_step2_SIMD_OK();
+    test3_step2_SIMD_OK();
 
-    int nbPixels = (*nrh+1)*(*nch+1);
+    //Tests pour l'etape 3
+    test1_step3_SIMD_OK();
+    test2_step3_SIMD_OK();
+    test3_step3_SIMD_OK();
+
+    //Tests pour l'etape 4
+    test1_step4_SIMD_OK();
+    test2_step4_SIMD_OK();
+    test3_step4_SIMD_OK();
+}
+
+
+void test1_step1_SIMD_OK(){
+    int i, j;
+    int nrl = 0;
+    int nrh = 2;
+    int ncl = 0;
+    int nch = 15;
+
+    //On cree une ui8matrix pour Mt_1
+    uint8** Mt_1 = ui8matrix(nrl, nrh, ncl, nch);
+
+    //On la remplit avec des données
+    int debut = 0;
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            Mt_1[i][j] = debut;
+            if(debut < 255) debut++;
+        }
+    }
+
+    //On copie dans une autre matrice
+    uint8** It = ui8matrix(nrl, nrh, ncl, nch);
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            It[i][j] = Mt_1[i][j];
+
+            if(i == 0){ //On augmente de 1 sur la premiere ligne
+                It[i][j] += 1;
+            }
+            //On ne fait pas de changement sur la ligne du milieu
+
+            else if(i == 2){//On descend de 1 sur la dernière ligne
+                It[i][j] -= 1;
+            }
+
+        }
+    }
+
+    //On copie dans un vuint8 *
+    int nbPixels = (nrh+1)*(nch+1);
 
     //Calcule du nombre de vecteurs nécessaires pour l'image
     int nbVuint8 = nbPixels/16+1;
 
-    vuint8* Mt_1 = vui8vector(0, nbPixels);
-    vuint8* Mt = vui8vector(0, nbPixels);
-    vuint8* Vt_1 = vui8vector(0, nbPixels);
-    //Initialisation de Mt_1 et Vt_1
-    SigmaDelta_step0_SIMD(Io, Mt_1, Vt_1, nrl, nrh, ncl, nch, nbVuint8);
+    vuint8* Mt_1_vect = vui8vector(0, nbPixels);
+    vuint8* Mt_vect = vui8vector(0, nbPixels);
+    vuint8* It_vect = vui8vector(0, nbPixels);
 
-    //Allocation de It
-    uint8** imagemat = ui8matrix(*nrl, *nrh, *ncl, *nch);
-    vuint8* It = vui8vector(0, nbPixels);
+    copy_ui8matrix_vui8vector(It, nrl, nrh, ncl, nch, It_vect);
+    copy_ui8matrix_vui8vector(Mt_1, nrl, nrh, ncl, nch, Mt_1_vect);
 
-    char* image = malloc(sizeof(char)*48);
-    // uint8** Mt_ui8 = ui8matrix(*nrl, *nrh, *ncl, *nch);
 
-    for(int j = 3001; j <= 3100; j++){
+    SigmaDelta_step1_SIMD(It_vect, Mt_1_vect, Mt_vect, nbVuint8);
 
-        //Generation du nom de fichier de l'image suivante
-        generate_filename_k_ndigit_extension("car3/car_", j, 0, "pgm", image);
+    uint8** Mt = ui8matrix(nrl, nrh, ncl, nch);
+    copy_vui8vector_ui8matrix(Mt_vect, nrl, nrh, ncl, nch, Mt);
 
-        //Chargement de l'image
-        imagemat = LoadPGM_ui8matrix(image, nrl, nrh, ncl, nch);
-        // printf("nrl = %d\nnrh = %d\nncl = %d\nnch = %d\n", *nrl, *nrh, *ncl, *nch);
-
-        copy_ui8matrix_vui8vector(imagemat, *nrl, *nrh, *ncl, *nch, It);
-        vuint8 pixelsIm, pixelsM, C1, C2, K1, K2, K, M;
-
-        for(int i = 0; i < nbVuint8; i++){
-            pixelsIm = vec_load(&It[i]);
-            pixelsM = vec_load(&Mt_1[i]);
-
-            C1 = vec_gt (pixelsIm, pixelsM); //Sont mis à 1 tout pixel où It > main
-            C2 = vec_gt (pixelsM, pixelsIm); //On fait deux comparaisons pour s'assurer que les pixels égaux donnent 0
-            K1 = init_vuint8(1);
-            K2 = init_vuint8(-1);
-            K = vec_or(vec_and(C1, K1), vec_and(C2, K2));
-
-            M = vec_add(K, pixelsM);
-            vec_store(&Mt[i], M);
-            if(j > 50 && j < 55 && i > 50 && i < 95){
-
-                printf("Vecteur %i \n\n", i);
-
-                       printf("It ");
-                       display_vuint8(pixelsIm,"%d ", NULL);
-                       printf("\n");
-
-                       printf("Mo ");
-                       display_vuint8(pixelsM, "%d ", NULL);
-                       printf("\n");
-
-                       printf("C1 ");
-                       display_vuint8(C1,"%d ", NULL);
-                       printf("\n");
-
-                       printf("C2 ");
-                       display_vuint8(C2,"%d ", NULL);
-                       printf("\n");
-
-                       printf("K1 ");
-                       display_vuint8(K1,"%d ", NULL);
-                       printf("\n");
-
-                       printf("K2 ");
-                       display_vuint8(K2,"%d ", NULL);
-                       printf("\n");
-
-                       printf("K ");
-                       display_vuint8(K,"%d ", NULL);
-                       printf("\n");
-
-                       printf("M ");
-                       display_vuint8(M,"%d ", NULL);
-                       printf("\n");
-
-                       printf("Mt ");
-                       display_vuint8(Mt[i],"%d ", NULL);
-                       printf("\n");
+    //Nous verifions maintenant le résultat
+    //La première ligne doit être égale à Mt+1
+    //La deuxieme ligne doit être égale à Mt
+    //La troisième ligne doit être à Mt-1
+    //Si on detecte une erreur, on renvoie la fonction
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            if(i == 0){
+                if(Mt[i][j] != Mt_1[i][j]+1){
+                    printf("test1_step1_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+            else if(i == 1){
+                if(Mt[i][j] != Mt_1[i][j]){
+                    printf("test1_step1_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+            else if(i == 2){//On descend de 1 sur la dernière ligne
+                if(Mt[i][j] != Mt_1[i][j]-1){
+                    printf("test1_step1_SIMD_OK faux, KO\n");
+                    return;
+                }
             }
         }
-
-        // generate_filename_k_ndigit_extension("test_SIMD/Mt_", i, 0, "pgm", image);
-        // copy_vui8vector_ui8matrix(Mt, *nrl, *nrh, *ncl, *nch, Mt_ui8);
-        // SavePGM_ui8matrix(Mt_ui8, *nrl, *nrh, *ncl, *nch, image);
-    }
-}
-
-//Test de Load, Save et des fonctions copy de vnrutil
-void test_imagePGM(){
-
-    printf("Début du programme principal.\n");
-    int* nrl = malloc(sizeof(int));
-    int* nrh = malloc(sizeof(int));
-    int* ncl = malloc(sizeof(int));
-    int* nch = malloc(sizeof(int));
-    char image0[] = "car3/car_3000.pgm";
-
-    //Chargement de la 1ere image
-    uint8** Io = LoadPGM_ui8matrix(image0, nrl, nrh, ncl, nch);
-    printf("Chargement de l'image.\n");
-    printf("nrl = %d\nnrh = %d\nncl = %d\nnch = %d\n", *nrl, *nrh, *ncl, *nch);
-    int nbPixels = (*nrh+1)*(*nch+1);
-
-    char* image = malloc(sizeof(char)*48); //17 caractères dans le chemin relatif de l'image
-    uint8** imagemat = ui8matrix(*nrl, *nrh, *ncl, *nch);
-    vuint8* It = vui8vector(0, nbPixels);
-    uint8** Et_ui8 = ui8matrix(*nrl, *nrh, *ncl, *nch);
-
-    //Generation du nom de fichier de l'image suivante
-    for(int i = 3001; i < 3100; i++){
-        generate_filename_k_ndigit_extension("car3/car_", i, 0, "pgm", image);
-        imagemat = LoadPGM_ui8matrix(image, nrl, nrh, ncl, nch);
-        copy_ui8matrix_vui8vector(imagemat, *nrl, *nrh, *ncl, *nch, It);
-        copy_vui8vector_ui8matrix(It, *nrl, *nrh, *ncl, *nch, Et_ui8);
-        generate_filename_k_ndigit_extension("retest/_", i, 0, "pgm", image);
-
-        SavePGM_ui8matrix(Et_ui8, *nrl, *nrh, *ncl, *nch, image);
     }
 
+    free_ui8matrix(It, nrl, nrh, ncl, nch);
+    free_ui8matrix(Mt, nrl, nrh, ncl, nch);
+    free_ui8matrix(Mt_1, nrl, nrh, ncl, nch);
+    free_vui8vector(It_vect, 0, nbPixels);
+    free_vui8vector(Mt_1_vect, 0, nbPixels);
+    free_vui8vector(Mt_vect, 0, nbPixels);
+
+    printf("test1_step1_SIMD_OK validé, OK\n");
 }
 
-//On teste l'algorithme de comparaison dans la boucle de SigmaDelta_step1_SIMD
-//sur deux vuint8
-//0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15)
-//15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0
-//Ici, on veut donc que
-//0 0 0 0 0 0 0 0 2 2 2 2 2 2 2 2
+void test2_step1_SIMD_OK(){
+    int i, j;
+    int nrl = 0;
+    int nrh = 2;
+    int ncl = 0;
+    int nch = 15;
 
-void test_algo_step1_OK_1(){
-    vuint8 a = init_vuint8_all(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15);
-    vuint8 b = init_vuint8_all(15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0);
-    vuint8 M = init_vuint8(1);
+    //On cree une ui8matrix pour Mt_1
+    uint8** Mt_1 = ui8matrix(nrl, nrh, ncl, nch);
 
-    vuint8 C1, C2, K1, K2, K;
+    //On la remplit avec des données
+    int debut = 50;
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            Mt_1[i][j] = debut;
+            if(debut < 255) debut++;
+        }
+    }
 
-    C1 = vec_gt (a, b); //Sont mis à 1 tout pixel où It > main
-    C2 = vec_gt (b, a); //On fait deux comparaisons pour s'assurer que les pixels égaux donnent 0
-    K1 = init_vuint8(1);
-    K2 = init_vuint8(-1);
-    K = vec_or(vec_and(C1, K1), vec_and(C2, K2));
+    //On copie dans une autre matrice
+    uint8** It = ui8matrix(nrl, nrh, ncl, nch);
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            It[i][j] = Mt_1[i][j];
 
-    M = vec_add(K, M);
+            if(i == 0){ //On augmente de 1 sur la premiere ligne
+                It[i][j] += 1;
+            }
+            //On ne fait pas de changement sur la ligne du milieu
 
-    printf("\n\n");
+            else if(i == 2){//On descend de 1 sur la dernière ligne
+                It[i][j] -= 1;
+            }
 
-    display_vuint8(a,"%d ", "a ");
-    printf("\n");
+        }
+    }
 
-    display_vuint8(b, "%d ", "b ");
-    printf("\n");
+    //On copie dans un vuint8 *
+    int nbPixels = (nrh+1)*(nch+1);
 
-    display_vuint8(C1,"%d ", "C1 ");
-    printf("\n");
+    //Calcule du nombre de vecteurs nécessaires pour l'image
+    int nbVuint8 = nbPixels/16+1;
 
-    display_vuint8(C2,"%d ", "C2 ");
-    printf("\n");
+    vuint8* Mt_1_vect = vui8vector(0, nbPixels);
+    vuint8* Mt_vect = vui8vector(0, nbPixels);
+    vuint8* It_vect = vui8vector(0, nbPixels);
 
-    display_vuint8(K1,"%d ", "K1 ");
-    printf("\n");
+    copy_ui8matrix_vui8vector(It, nrl, nrh, ncl, nch, It_vect);
+    copy_ui8matrix_vui8vector(Mt_1, nrl, nrh, ncl, nch, Mt_1_vect);
 
-    display_vuint8(K2,"%d ", "K2 ");
-    printf("\n");
 
-    display_vuint8(K,"%d ", "K ");
-    printf("\n");
+    SigmaDelta_step1_SIMD(It_vect, Mt_1_vect, Mt_vect, nbVuint8);
 
-    display_vuint8(M,"%d ", "M ");
-    printf("\n");
+    uint8** Mt = ui8matrix(nrl, nrh, ncl, nch);
+    copy_vui8vector_ui8matrix(Mt_vect, nrl, nrh, ncl, nch, Mt);
 
-    printf("\n\n");
+    //Nous verifions maintenant le résultat
+    //La première ligne doit être égale à Mt+1
+    //La deuxieme ligne doit être égale à Mt
+    //La troisième ligne doit être à Mt-1
+    //Si on detecte une erreur, on renvoie la fonction
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            if(i == 0){
+                if(Mt[i][j] != Mt_1[i][j]+1){
+                    printf("test2_step1_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+            else if(i == 1){
+                if(Mt[i][j] != Mt_1[i][j]){
+                    printf("test2_step1_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+            else if(i == 2){//On descend de 1 sur la dernière ligne
+                if(Mt[i][j] != Mt_1[i][j]-1){
+                    printf("test2_step1_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+        }
+    }
 
+    free_ui8matrix(It, nrl, nrh, ncl, nch);
+    free_ui8matrix(Mt, nrl, nrh, ncl, nch);
+    free_ui8matrix(Mt_1, nrl, nrh, ncl, nch);
+    free_vui8vector(It_vect, 0, nbPixels);
+    free_vui8vector(Mt_1_vect, 0, nbPixels);
+    free_vui8vector(Mt_vect, 0, nbPixels);
+
+    printf("test2_step1_SIMD_OK validé, OK\n");
+}
+
+void test3_step1_SIMD_OK(){
+    int i, j;
+    int nrl = 0;
+    int nrh = 2;
+    int ncl = 0;
+    int nch = 15;
+
+    //On cree une ui8matrix pour Mt_1
+    uint8** Mt_1 = ui8matrix(nrl, nrh, ncl, nch);
+
+    //On la remplit avec des données
+    int debut = 100;
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            Mt_1[i][j] = debut;
+            if(debut < 255) debut++;
+        }
+    }
+
+    //On copie dans une autre matrice
+    uint8** It = ui8matrix(nrl, nrh, ncl, nch);
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            It[i][j] = Mt_1[i][j];
+
+            if(i == 0){ //On augmente de 1 sur la premiere ligne
+                It[i][j] += 1;
+            }
+            //On ne fait pas de changement sur la ligne du milieu
+
+            else if(i == 2){//On descend de 1 sur la dernière ligne
+                It[i][j] -= 1;
+            }
+
+        }
+    }
+
+    //On copie dans un vuint8 *
+    int nbPixels = (nrh+1)*(nch+1);
+
+    //Calcule du nombre de vecteurs nécessaires pour l'image
+    int nbVuint8 = nbPixels/16+1;
+
+    vuint8* Mt_1_vect = vui8vector(0, nbPixels);
+    vuint8* Mt_vect = vui8vector(0, nbPixels);
+    vuint8* It_vect = vui8vector(0, nbPixels);
+
+    copy_ui8matrix_vui8vector(It, nrl, nrh, ncl, nch, It_vect);
+    copy_ui8matrix_vui8vector(Mt_1, nrl, nrh, ncl, nch, Mt_1_vect);
+
+
+    SigmaDelta_step1_SIMD(It_vect, Mt_1_vect, Mt_vect, nbVuint8);
+
+    uint8** Mt = ui8matrix(nrl, nrh, ncl, nch);
+    copy_vui8vector_ui8matrix(Mt_vect, nrl, nrh, ncl, nch, Mt);
+
+    //Nous verifions maintenant le résultat
+    //La première ligne doit être égale à Mt+1
+    //La deuxieme ligne doit être égale à Mt
+    //La troisième ligne doit être à Mt-1
+    //Si on detecte une erreur, on renvoie la fonction
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            if(i == 0){
+                if(Mt[i][j] != Mt_1[i][j]+1){
+                    printf("test3_step1_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+            else if(i == 1){
+                if(Mt[i][j] != Mt_1[i][j]){
+                    printf("test3_step1_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+            else if(i == 2){//On descend de 1 sur la dernière ligne
+                if(Mt[i][j] != Mt_1[i][j]-1){
+                    printf("test3_step1_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+        }
+    }
+
+    free_ui8matrix(It, nrl, nrh, ncl, nch);
+    free_ui8matrix(Mt, nrl, nrh, ncl, nch);
+    free_ui8matrix(Mt_1, nrl, nrh, ncl, nch);
+    free_vui8vector(It_vect, 0, nbPixels);
+    free_vui8vector(Mt_1_vect, 0, nbPixels);
+    free_vui8vector(Mt_vect, 0, nbPixels);
+
+    printf("test3_step1_SIMD_OK validé, OK\n");
+}
+
+
+void test1_step2_SIMD_OK(){
+    //L'etape 2 consiste à faire Ot = abs(Mt - It)
+    //On veut que Mt - It donne des resultats negatifs sur la premiere ligne
+    //positifs sur la deuxieme
+    //et negatifs sur la troisième
+    //afin de verifier que l'operation abs est bien réalisée
+
+    int i, j;
+    int nrl = 0;
+    int nrh = 2;
+    int ncl = 0;
+    int nch = 15;
+
+    //On cree des ui8matrix pour Mt, It, Ot
+    uint8** Mt = ui8matrix(nrl, nrh, ncl, nch);
+    uint8** It = ui8matrix(nrl, nrh, ncl, nch);
+
+    //On la remplit avec des données
+    int debut = 50;
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            Mt[i][j] = debut;
+            if(debut < 255) debut++;
+        }
+    }
+
+    int ecart = 10; //L'ecart entre It et Mt
+
+    //On copie dans la matrice It
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            It[i][j] = Mt[i][j];
+
+            if(i == 0){ //It > Mt sur la premiere ligne
+                It[i][j] += ecart;
+            }
+            else if(i == 1){//It < Mt sur la deuxieme ligne
+                It[i][j] -= ecart;
+            }
+            else if(i == 2){//It > Mt sur la troisieme ligne
+                It[i][j] += ecart;
+            }
+
+        }
+    }
+    //On copie dans un vuint8 *
+    int nbPixels = (nrh+1)*(nch+1);
+
+    //Calcule du nombre de vecteurs nécessaires pour l'image
+    int nbVuint8 = nbPixels/16+1;
+
+    vuint8* Mt_vect = vui8vector(0, nbPixels);
+    vuint8* It_vect = vui8vector(0, nbPixels);
+    vuint8* Ot_vect = vui8vector(0, nbPixels);
+
+    copy_ui8matrix_vui8vector(It, nrl, nrh, ncl, nch, It_vect);
+    copy_ui8matrix_vui8vector(Mt, nrl, nrh, ncl, nch, Mt_vect);
+
+    SigmaDelta_step2_SIMD(It_vect, Mt_vect, Ot_vect, nbVuint8);
+
+    uint8** Ot = ui8matrix(nrl, nrh, ncl, nch);
+    copy_vui8vector_ui8matrix(Ot_vect, nrl, nrh, ncl, nch, Ot);
+
+    //Nous verifions maintenant le résultat
+    //On doit avoir ecart sur chaque pixel partout
+
+    //Si on detecte une erreur, on renvoie la fonction
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            if(Ot[i][j] != ecart){
+                    printf("test1_step2_SIMD_OK faux, KO\n");
+                    return;
+            }
+        }
+    }
+
+    free_ui8matrix(It, nrl, nrh, ncl, nch);
+    free_ui8matrix(Mt, nrl, nrh, ncl, nch);
+    free_ui8matrix(Ot, nrl, nrh, ncl, nch);
+    free_vui8vector(It_vect, 0, nbPixels);
+    free_vui8vector(Mt_vect, 0, nbPixels);
+    free_vui8vector(Ot_vect, 0, nbPixels);
+
+    printf("test1_step2_SIMD_OK validé, OK\n");
+}
+
+void test2_step2_SIMD_OK(){
+    //L'etape 2 consiste à faire Ot = abs(Mt - It)
+    //On veut que Mt - It donne des resultats positifs sur la premiere ligne
+    //negatifs sur la deuxieme
+    //et positifs sur la troisième
+    //afin de verifier que l'operation abs est bien réalisée
+
+    int i, j;
+    int nrl = 0;
+    int nrh = 2;
+    int ncl = 0;
+    int nch = 15;
+
+    //On cree des ui8matrix pour Mt, It, Ot
+    uint8** Mt = ui8matrix(nrl, nrh, ncl, nch);
+    uint8** It = ui8matrix(nrl, nrh, ncl, nch);
+
+    //On la remplit avec des données
+    int debut = 100;
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            Mt[i][j] = debut;
+            if(debut < 255) debut++;
+        }
+    }
+
+    int ecart = 20; //L'ecart entre It et Mt
+
+    //On copie dans la matrice It
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            It[i][j] = Mt[i][j];
+
+            if(i == 0){ //It > Mt sur la premiere ligne
+                It[i][j] -= ecart;
+            }
+            else if(i == 1){//It < Mt sur la deuxieme ligne
+                It[i][j] += ecart;
+            }
+            else if(i == 2){//It > Mt sur la troisieme ligne
+                It[i][j] -= ecart;
+            }
+
+        }
+    }
+
+    //On copie dans un vuint8 *
+    int nbPixels = (nrh+1)*(nch+1);
+
+    //Calcule du nombre de vecteurs nécessaires pour l'image
+    int nbVuint8 = nbPixels/16+1;
+
+    vuint8* Mt_vect = vui8vector(0, nbPixels);
+    vuint8* It_vect = vui8vector(0, nbPixels);
+    vuint8* Ot_vect = vui8vector(0, nbPixels);
+
+    copy_ui8matrix_vui8vector(It, nrl, nrh, ncl, nch, It_vect);
+    copy_ui8matrix_vui8vector(Mt, nrl, nrh, ncl, nch, Mt_vect);
+
+
+    SigmaDelta_step2_SIMD(It_vect, Mt_vect, Ot_vect, nbVuint8);
+
+    uint8** Ot = ui8matrix(nrl, nrh, ncl, nch);
+    copy_vui8vector_ui8matrix(Ot_vect, nrl, nrh, ncl, nch, Ot);
+
+    //Nous verifions maintenant le résultat
+    //On doit avoir ecart sur chaque pixel partout
+
+    //Si on detecte une erreur, on renvoie la fonction
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            if(Ot[i][j] != ecart){
+                    printf("test2_step2_SIMD_OK faux, KO\n");
+                    return;
+            }
+        }
+    }
+
+    free_ui8matrix(It, nrl, nrh, ncl, nch);
+    free_ui8matrix(Mt, nrl, nrh, ncl, nch);
+    free_ui8matrix(Ot, nrl, nrh, ncl, nch);
+    free_vui8vector(It_vect, 0, nbPixels);
+    free_vui8vector(Mt_vect, 0, nbPixels);
+    free_vui8vector(Ot_vect, 0, nbPixels);
+
+    printf("test2_step2_SIMD_OK validé, OK\n");
+}
+
+void test3_step2_SIMD_OK(){
+    //L'etape 2 consiste à faire Ot = abs(Mt - It)
+    //On veut que Mt - It donne des resultats negatifs sur la premiere ligne
+    //positifs sur la deuxieme
+    //et negatifs sur la troisième
+    //afin de verifier que l'operation abs est bien réalisée
+
+    int i, j;
+    int nrl = 0;
+    int nrh = 2;
+    int ncl = 0;
+    int nch = 15;
+
+    //On cree des ui8matrix pour Mt, It, Ot
+    uint8** Mt = ui8matrix(nrl, nrh, ncl, nch);
+    uint8** It = ui8matrix(nrl, nrh, ncl, nch);
+
+    //On la remplit avec des données
+    int debut = 200;
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            Mt[i][j] = debut;
+        }
+    }
+
+    int ecart = 1; //L'ecart entre It et Mt
+
+    //On copie dans la matrice It
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            It[i][j] = Mt[i][j];
+
+            if(i == 0){ //It > Mt sur la premiere ligne
+                It[i][j] -= ecart;
+            }
+            else if(i == 1){//It < Mt sur la deuxieme ligne
+                It[i][j] += ecart;
+            }
+            else if(i == 2){//It > Mt sur la troisieme ligne
+                It[i][j] -= ecart;
+            }
+
+            ecart++;
+
+        }
+    }
+
+    //On copie dans un vuint8 *
+    int nbPixels = (nrh+1)*(nch+1);
+
+    //Calcule du nombre de vecteurs nécessaires pour l'image
+    int nbVuint8 = nbPixels/16+1;
+
+    vuint8* Mt_vect = vui8vector(0, nbPixels);
+    vuint8* It_vect = vui8vector(0, nbPixels);
+    vuint8* Ot_vect = vui8vector(0, nbPixels);
+
+    copy_ui8matrix_vui8vector(It, nrl, nrh, ncl, nch, It_vect);
+    copy_ui8matrix_vui8vector(Mt, nrl, nrh, ncl, nch, Mt_vect);
+
+
+    SigmaDelta_step2_SIMD(It_vect, Mt_vect, Ot_vect, nbVuint8);
+
+    uint8** Ot = ui8matrix(nrl, nrh, ncl, nch);
+    copy_vui8vector_ui8matrix(Ot_vect, nrl, nrh, ncl, nch, Ot);
+
+    //Nous verifions maintenant le résultat
+    //On doit avoir 1 [...] 15 sur la première ligne
+    //16 [..] 31 sur la deuxieme
+    //32 [...]47 sur la troisieme
+
+    //Si on detecte une erreur, on renvoie la fonction
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            if(Ot[i][j] != ecart){
+                    printf("test3_step2_SIMD_OK faux, KO\n");
+                    return;
+            }
+        }
+    }
+
+    free_ui8matrix(It, nrl, nrh, ncl, nch);
+    free_ui8matrix(Mt, nrl, nrh, ncl, nch);
+    free_ui8matrix(Ot, nrl, nrh, ncl, nch);
+    free_vui8vector(It_vect, 0, nbPixels);
+    free_vui8vector(Mt_vect, 0, nbPixels);
+    free_vui8vector(Ot_vect, 0, nbPixels);
+
+    printf("test3_step2_SIMD_OK validé, OK\n");
+}
+
+void test1_step3_SIMD_OK(){
+    //L'etape 3 compare les pixels de Vt_1 et ceux de Ot multiplié
+    //par un facteur N = 3, avant d'utiliser les macros MIN et MAX afin que
+    //Vt soit toujours compris entre 1 et 254
+
+    int i, j;
+    int nrl = 0;
+    int nrh = 2;
+    int ncl = 0;
+    int nch = 15;
+
+    //On cree des ui8matrix pour Vt_1, Ot, Vt
+    uint8** Vt_1 = ui8matrix(nrl, nrh, ncl, nch);
+    uint8** Ot = ui8matrix(nrl, nrh, ncl, nch);
+
+    //On teste si les valeurs restent comprises entre
+    //Vmin et Vmax
+
+    //On met tous les pixels de Ot à 0
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            Ot[i][j] = 0;
+        }
+    }
+
+    //On copie dans une autre matrice
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+
+            if(i == 0){ //On met la ligne à 1
+                Vt_1[i][j] = 1;
+            }
+
+            else if(i == 0){//On met la ligne à 0
+                Vt_1[i][j] = 0;
+            }
+            else if(i == 2){//On met la ligne à 124
+                Vt_1[i][j] = 124;
+            }
+
+        }
+    }
+
+    //On copie dans un vuint8 *
+    int nbPixels = (nrh+1)*(nch+1);
+
+    //Calcule du nombre de vecteurs nécessaires pour l'image
+    int nbVuint8 = nbPixels/16+1;
+
+    vuint8* Ot_vect = vui8vector(0, nbPixels);
+    vuint8* Vt_1_vect = vui8vector(0, nbPixels);
+    vuint8* Vt_vect = vui8vector(0, nbPixels);
+
+    copy_ui8matrix_vui8vector(Ot, nrl, nrh, ncl, nch, Ot_vect);
+    copy_ui8matrix_vui8vector(Vt_1, nrl, nrh, ncl, nch, Vt_1_vect);
+
+    //On teste la fonction
+    SigmaDelta_step3_SIMD(Ot_vect, Vt_1_vect, Vt_vect, nbVuint8);
+
+    uint8** Vt = ui8matrix(nrl, nrh, ncl, nch);
+    copy_vui8vector_ui8matrix(Vt_vect, nrl, nrh, ncl, nch, Vt);
+
+
+
+    //Nous verifions maintenant le résultat
+    //La première ligne doit être égale à VMIN
+    //La deuxieme ligne doit être égale à VMIN
+    //La troisième ligne doit être égale à 123
+    //Si on detecte une erreur, on renvoie la fonction
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            if(i == 0){
+                if(Vt[i][j] != VMIN){
+                    printf("test1_step3_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+            else if(i == 1){
+                if(Vt[i][j] != VMIN){
+                    printf("test1_step3_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+            else if(i == 2){//On descend de 1 sur la dernière ligne
+                if(Vt[i][j] != 123){
+                    printf("test1_step3_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+        }
+    }
+
+    free_ui8matrix(Vt, nrl, nrh, ncl, nch);
+    free_ui8matrix(Ot, nrl, nrh, ncl, nch);
+    free_ui8matrix(Vt_1, nrl, nrh, ncl, nch);
+    free_vui8vector(Vt_vect, 0, nbPixels);
+    free_vui8vector(Ot_vect, 0, nbPixels);
+    free_vui8vector(Vt_1_vect, 0, nbPixels);
+    printf("test1_step3_SIMD_OK validé, OK\n");
+
+}
+
+void test2_step3_SIMD_OK(){
+    //L'etape 3 compare les pixels de Vt_1 et ceux de Ot multiplié
+    //par un facteur N = 3, avant d'utiliser les macros MIN et MAX afin que
+    //Vt soit toujours compris entre 1 et 254
+
+    int i, j;
+    int nrl = 0;
+    int nrh = 2;
+    int ncl = 0;
+    int nch = 15;
+
+    //On cree des ui8matrix pour Vt_1, Ot, Vt
+    uint8** Vt_1 = ui8matrix(nrl, nrh, ncl, nch);
+    uint8** Ot = ui8matrix(nrl, nrh, ncl, nch);
+
+    //On teste si les valeurs restent comprises entre
+    //Vmin et Vmax
+
+    //On met tous les pixels de Ot à 85
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            Ot[i][j] = 85;
+        }
+    }
+    //Comme N = 3, tous les elements d'Ot seront à 255
+
+    //On copie dans une autre matrice
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+
+            if(i == 0){ //On met la ligne à 254
+                Vt_1[i][j] = 254;
+            }
+
+            else if(i == 1){//On met la ligne à 0
+                Vt_1[i][j] = 0;
+            }
+            else if(i == 2){//On met la ligne à 255
+                Vt_1[i][j] = 255;
+            }
+
+        }
+    }
+
+    //On copie dans un vuint8 *
+    int nbPixels = (nrh+1)*(nch+1);
+
+    //Calcule du nombre de vecteurs nécessaires pour l'image
+    int nbVuint8 = nbPixels/16+1;
+
+    vuint8* Ot_vect = vui8vector(0, nbPixels);
+    vuint8* Vt_1_vect = vui8vector(0, nbPixels);
+    vuint8* Vt_vect = vui8vector(0, nbPixels);
+
+    copy_ui8matrix_vui8vector(Ot, nrl, nrh, ncl, nch, Ot_vect);
+    copy_ui8matrix_vui8vector(Vt_1, nrl, nrh, ncl, nch, Vt_1_vect);
+
+    //On teste la fonction
+    SigmaDelta_step3_SIMD(Ot_vect, Vt_1_vect, Vt_vect, nbVuint8);
+
+    uint8** Vt = ui8matrix(nrl, nrh, ncl, nch);
+    copy_vui8vector_ui8matrix(Vt_vect, nrl, nrh, ncl, nch, Vt);
+
+
+    //Nous verifions maintenant le résultat
+    //La première ligne doit être égale à VMAX
+    //La deuxieme ligne doit être égale à VMIN
+    //La troisième ligne doit être égale à VMAX
+    //Si on detecte une erreur, on renvoie la fonction
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            if(i == 0){
+                if(Vt[i][j] != VMAX){
+                    printf("test2_step3_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+            else if(i == 1){
+                if(Vt[i][j] != VMIN){
+                    printf("test2_step3_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+            else if(i == 2){//On descend de 1 sur la dernière ligne
+                if(Vt[i][j] != VMAX){
+                    printf("test2_step3_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+        }
+    }
+
+    free_ui8matrix(Vt, nrl, nrh, ncl, nch);
+    free_ui8matrix(Ot, nrl, nrh, ncl, nch);
+    free_ui8matrix(Vt_1, nrl, nrh, ncl, nch);
+    free_vui8vector(Vt_vect, 0, nbPixels);
+    free_vui8vector(Ot_vect, 0, nbPixels);
+    free_vui8vector(Vt_1_vect, 0, nbPixels);
+
+    printf("test2_step3_SIMD_OK validé, OK\n");
+}
+
+void test3_step3_SIMD_OK(){
+    //L'etape 3 compare les pixels de Vt_1 et ceux de Ot multiplié
+    //par un facteur N = 3, avant d'utiliser les macros MIN et MAX afin que
+    //Vt soit toujours compris entre 1 et 254
+
+    int i, j;
+    int nrl = 0;
+    int nrh = 2;
+    int ncl = 0;
+    int nch = 15;
+
+    //On cree des ui8matrix pour Vt_1, Ot
+    uint8** Vt_1 = ui8matrix(nrl, nrh, ncl, nch);
+    uint8** Ot = ui8matrix(nrl, nrh, ncl, nch);
+
+    //On teste si les valeurs restent comprises entre
+    //Vmin et Vmax
+
+    //On met tous les pixels de Ot à 43
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            Ot[i][j] = 43;
+        }
+    }
+    //Comme N = 3, tous les elements d'Ot seront à 129
+
+    //On copie dans une autre matrice
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+
+            if(i == 0){ //On met la ligne à 127
+                Vt_1[i][j] = 127;
+            }
+
+            else if(i == 1){//On met la ligne à 63
+                Vt_1[i][j] = 63;
+            }
+            else if(i == 2){//On met la ligne à 200
+                Vt_1[i][j] = 200;
+            }
+
+        }
+    }
+
+    //On copie dans un vuint8 *
+    int nbPixels = (nrh+1)*(nch+1);
+
+    //Calcule du nombre de vecteurs nécessaires pour l'image
+    int nbVuint8 = nbPixels/16+1;
+
+    vuint8* Ot_vect = vui8vector(0, nbPixels);
+    vuint8* Vt_1_vect = vui8vector(0, nbPixels);
+    vuint8* Vt_vect = vui8vector(0, nbPixels);
+
+    copy_ui8matrix_vui8vector(Ot, nrl, nrh, ncl, nch, Ot_vect);
+    copy_ui8matrix_vui8vector(Vt_1, nrl, nrh, ncl, nch, Vt_1_vect);
+
+    //On teste la fonction
+    SigmaDelta_step3_SIMD(Ot_vect, Vt_1_vect, Vt_vect, nbVuint8);
+
+    uint8** Vt = ui8matrix(nrl, nrh, ncl, nch);
+    copy_vui8vector_ui8matrix(Vt_vect, nrl, nrh, ncl, nch, Vt);
+
+    //Nous verifions maintenant le résultat
+    //La première ligne doit être égale à VMAX
+    //La deuxieme ligne doit être égale à VMIN
+    //La troisième ligne doit être égale à VMAX
+    //Si on detecte une erreur, on renvoie la fonction
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            if(i == 0){
+                if(Vt[i][j] != 128){
+                    printf("test3_step3_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+            else if(i == 1){
+                if(Vt[i][j] != 64){
+                    printf("test3_step3_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+            else if(i == 2){//On descend de 1 sur la dernière ligne
+                if(Vt[i][j] != 199){
+                    printf("test3_step3_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+        }
+    }
+
+    free_ui8matrix(Vt, nrl, nrh, ncl, nch);
+    free_ui8matrix(Ot, nrl, nrh, ncl, nch);
+    free_ui8matrix(Vt_1, nrl, nrh, ncl, nch);
+    free_vui8vector(Vt_vect, 0, nbPixels);
+    free_vui8vector(Ot_vect, 0, nbPixels);
+    free_vui8vector(Vt_1_vect, 0, nbPixels);
+
+    printf("test3_step3_SIMD_OK validé, OK\n");
+}
+
+void test1_step4_SIMD_OK(){
+
+    int i, j;
+    int nrl = 0;
+    int nrh = 2;
+    int ncl = 0;
+    int nch = 15;
+
+    //On cree des ui8matrix pour Ot, Vt, Et
+    uint8** Ot = ui8matrix(nrl, nrh, ncl, nch);
+    uint8** Vt = ui8matrix(nrl, nrh, ncl, nch);
+
+    //On teste si les valeurs restent comprises entre
+    //Vmin et Vmax
+
+    //Ot [50, 97]
+    int debut = 50;
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            Ot[i][j] = debut;
+            debut++;
+        }
+    }
+
+
+    //On copie dans une autre matrice
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+
+            if(i == 0){ //On met la ligne à 100
+                Vt[i][j] = 100;
+            }
+
+            else if(i == 1){//On met la ligne à 40
+                Vt[i][j] = 40;
+            }
+            else if(i == 2){//On met la ligne à 90
+                Vt[i][j] = 90;
+            }
+
+        }
+    }
+
+    //On copie dans un vuint8 *
+    int nbPixels = (nrh+1)*(nch+1);
+
+    //Calcule du nombre de vecteurs nécessaires pour l'image
+    int nbVuint8 = nbPixels/16+1;
+
+    vuint8* Ot_vect = vui8vector(0, nbPixels);
+    vuint8* Vt_vect = vui8vector(0, nbPixels);
+    vuint8* Et_vect = vui8vector(0, nbPixels);
+
+    copy_ui8matrix_vui8vector(Ot, nrl, nrh, ncl, nch, Ot_vect);
+    copy_ui8matrix_vui8vector(Vt, nrl, nrh, ncl, nch, Vt_vect);
+
+    //On teste la fonction
+    SigmaDelta_step4_SIMD(Ot_vect, Vt_vect, Et_vect, nbVuint8);
+
+    uint8** Et = ui8matrix(nrl, nrh, ncl, nch);
+    copy_vui8vector_ui8matrix(Et_vect, nrl, nrh, ncl, nch, Et);
+
+
+    //Nous verifions maintenant le résultat
+    //La première ligne doit être égale à VMAX
+    //La deuxieme ligne doit être égale à VMIN
+    //La troisième ligne doit être égale à VMAX
+    //Si on detecte une erreur, on renvoie la fonction
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            if(i == 0){
+                if(Et[i][j] != 0){
+                    printf("test1_step4_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+            else if(i == 1){
+                if(Et[i][j] != 1){
+                    printf("test1_step4_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+            else if(i == 2){//On descend de 1 sur la dernière ligne
+                if(j < 8 && Et[i][j] != 0){
+                    printf("test1_step4_SIMD_OK faux, KO\n");
+                    return;
+                }
+                else if(j > 8 && Et[i][j] != 0){
+                    printf("test1_step4_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+        }
+    }
+
+    free_ui8matrix(Vt, nrl, nrh, ncl, nch);
+    free_ui8matrix(Ot, nrl, nrh, ncl, nch);
+    free_ui8matrix(Et, nrl, nrh, ncl, nch);
+    free_vui8vector(Vt_vect, 0, nbPixels);
+    free_vui8vector(Ot_vect, 0, nbPixels);
+    free_vui8vector(Et_vect, 0, nbPixels);
+
+    printf("test1_step4_SIMD_OK validé, OK\n");
+}
+
+void test2_step4_SIMD_OK(){
+    int i, j;
+    int nrl = 0;
+    int nrh = 2;
+    int ncl = 0;
+    int nch = 15;
+
+    //On cree des ui8matrix pour Ot, Vt, Et
+    uint8** Ot = ui8matrix(nrl, nrh, ncl, nch);
+    uint8** Vt = ui8matrix(nrl, nrh, ncl, nch);
+
+    //On teste si les valeurs restent comprises entre
+    //Vmin et Vmax
+
+    //Ot [50, 97]
+    int debut = 100;
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            Ot[i][j] = debut;
+            debut++;
+        }
+    }
+
+    //On copie dans une autre matrice
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            Vt[i][j] = Ot[i][j];
+
+            if((i*16+j)%3 == 0){
+                Vt[i][j]++; //Si Vt > Ot, Et = 0
+            }
+            else if((i*16+j)%3 == 1){
+                Vt[i][j]--; //Si Vt <= Ot, Et = 1
+            }
+
+        }
+    }
+
+    //On copie dans un vuint8 *
+    int nbPixels = (nrh+1)*(nch+1);
+
+    //Calcule du nombre de vecteurs nécessaires pour l'image
+    int nbVuint8 = nbPixels/16+1;
+
+    vuint8* Ot_vect = vui8vector(0, nbPixels);
+    vuint8* Vt_vect = vui8vector(0, nbPixels);
+    vuint8* Et_vect = vui8vector(0, nbPixels);
+
+    copy_ui8matrix_vui8vector(Ot, nrl, nrh, ncl, nch, Ot_vect);
+    copy_ui8matrix_vui8vector(Vt, nrl, nrh, ncl, nch, Vt_vect);
+
+    //On teste la fonction
+    SigmaDelta_step4_SIMD(Ot_vect, Vt_vect, Et_vect, nbVuint8);
+
+    uint8** Et = ui8matrix(nrl, nrh, ncl, nch);
+    copy_vui8vector_ui8matrix(Et_vect, nrl, nrh, ncl, nch, Et);
+
+    //Nous verifions maintenant le résultat
+    //La première ligne doit être égale à VMAX
+    //La deuxieme ligne doit être égale à VMIN
+    //La troisième ligne doit être égale à VMAX
+    //Si on detecte une erreur, on renvoie la fonction
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            if((i*16+j)%3 == 0){
+                if(Et[i][j] != 0){
+                    printf("test2_step4_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+            else if((i*16+j)%3 == 1){
+                if(Et[i][j] != 1){
+                    printf("test2_step4_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+            else{
+                if(Et[i][j] != 1){
+                    printf("test2_step4_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+        }
+    }
+
+    free_ui8matrix(Vt, nrl, nrh, ncl, nch);
+    free_ui8matrix(Ot, nrl, nrh, ncl, nch);
+    free_ui8matrix(Et, nrl, nrh, ncl, nch);
+    free_vui8vector(Vt_vect, 0, nbPixels);
+    free_vui8vector(Ot_vect, 0, nbPixels);
+    free_vui8vector(Et_vect, 0, nbPixels);
+
+    printf("test2_step4_SIMD_OK validé, OK\n");
+}
+
+void test3_step4_SIMD_OK(){
+    int i, j;
+    int nrl = 0;
+    int nrh = 2;
+    int ncl = 0;
+    int nch = 15;
+
+    //On cree des ui8matrix pour Ot, Vt, Et
+    uint8** Ot = ui8matrix(nrl, nrh, ncl, nch);
+    uint8** Vt = ui8matrix(nrl, nrh, ncl, nch);
+
+    //On teste si les valeurs restent comprises entre
+    //Vmin et Vmax
+
+    //Ot [50, 97]
+    int debut = 100;
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            Ot[i][j] = debut;
+            debut++;
+        }
+    }
+
+    //On copie dans une autre matrice
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            Vt[i][j] = Ot[i][j];
+
+            if(i == 20){
+                Vt[i][j]++; //Si Vt > Ot, Et = 0
+            }
+        }
+    }
+
+    //On copie dans un vuint8 *
+    int nbPixels = (nrh+1)*(nch+1);
+
+    //Calcule du nombre de vecteurs nécessaires pour l'image
+    int nbVuint8 = nbPixels/16+1;
+
+    vuint8* Ot_vect = vui8vector(0, nbPixels);
+    vuint8* Vt_vect = vui8vector(0, nbPixels);
+    vuint8* Et_vect = vui8vector(0, nbPixels);
+
+    copy_ui8matrix_vui8vector(Ot, nrl, nrh, ncl, nch, Ot_vect);
+    copy_ui8matrix_vui8vector(Vt, nrl, nrh, ncl, nch, Vt_vect);
+
+    //On teste la fonction
+    SigmaDelta_step4_SIMD(Ot_vect, Vt_vect, Et_vect, nbVuint8);
+
+    uint8** Et = ui8matrix(nrl, nrh, ncl, nch);
+    copy_vui8vector_ui8matrix(Et_vect, nrl, nrh, ncl, nch, Et);
+
+    //Nous verifions maintenant le résultat
+    //La première ligne doit être égale à VMAX
+    //La deuxieme ligne doit être égale à VMIN
+    //La troisième ligne doit être égale à VMAX
+    //Si on detecte une erreur, on renvoie la fonction
+    for(i = nrl; i <= nrh; i++){
+        for(j = ncl; j <= nch; j++){
+            if(i == 20){
+                if(Et[i][j] != 0){
+                    printf("test3_step4_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+            else{
+                if(Et[i][j] != 1){
+                    printf("test2_step4_SIMD_OK faux, KO\n");
+                    return;
+                }
+            }
+        }
+    }
+
+    free_ui8matrix(Vt, nrl, nrh, ncl, nch);
+    free_ui8matrix(Ot, nrl, nrh, ncl, nch);
+    free_ui8matrix(Et, nrl, nrh, ncl, nch);
+    free_vui8vector(Vt_vect, 0, nbPixels);
+    free_vui8vector(Ot_vect, 0, nbPixels);
+    free_vui8vector(Et_vect, 0, nbPixels);
+
+    printf("test2_step4_SIMD_OK validé, OK\n");
 }
