@@ -230,7 +230,7 @@ uint8** dilatation_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
     {
         //On crée une matrice vuint8** comprenant l'image avec des bords
         #pragma omp section
-        im_mat = bords_OPTIM(im, nrl, hauteur, ncl, largeur, 1);
+        im_mat = bords_OPTIM(im, nrl, hauteur, ncl, largeur, 0);
 
         //On cree une matrice qui va contenir le résultat de notre dilatation
         #pragma omp section
@@ -241,61 +241,75 @@ uint8** dilatation_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
     # pragma omp for schedule (dynamic) private(a1, b1)
     for(j = nrl; j <= hauteur; j++){
 
-        //On charge a1 et b1 pour le début de l'algorithme (fusion)
+        //On charge a(n) et b(n) pour le début de l'algorithme (fusion)
         #pragma omp sections
         {
+            #pragma omp section
+            a0 = vec_load(&im_mat[j-1][ncl-1]);
+            #pragma omp section
+            b0 = vec_load(&im_mat[j-1][ncl]);
             #pragma omp section
             a1 = vec_load(&im_mat[j  ][ncl-1]);
             #pragma omp section
             b1 = vec_load(&im_mat[j  ][ncl]);
+            #pragma omp section
+            a2 = vec_load(&im_mat[j+1][ncl-1]);
+            #pragma omp section
+            b2 = vec_load(&im_mat[j+1][ncl]);
         }
 
         # pragma omp for schedule (dynamic) shared(dilatation_mat) private(b0, b2, c1, aa1, cc1, or_2emeligne, or_3emeligne, or_noyau)
         for(int k = ncl; k <= largeur; k++){
 
-            //fusion
-            //Vertical
+            //fusion des loads et shifts
             #pragma omp sections
             {
                 #pragma omp section
-                b0 = vec_load(&im_mat[j-1][k]);
+                c0 = vec_load(&im_mat[j-1][k+1]);
                 #pragma omp section
-                b2 = vec_load(&im_mat[j+1][k]);
+                c1 = vec_load(&im_mat[j  ][k+1]);
+                #pragma omp section
+                c2 = vec_load(&im_mat[j+1][k+1]);
 
-                //Horizontal
                 #pragma omp section
-                c1 = vec_load(&im_mat[j ][k+1]);
+                aa0 = vec_left1(a0, b0);
+                #pragma omp section
+                aa1 = vec_left1(a1, b1);
+                #pragma omp section
+                aa2 = vec_left1(a2, b2);
             }
-            //Shifts
 
             //or Horizontal
             #pragma omp sections
             {
-                aa1 = vec_left1(a1, b1);
+                #pragma omp section
+                cc0 = vec_right1(b0, c0);
+                #pragma omp section
                 cc1 = vec_right1(b1, c1);
+                #pragma omp section
+                cc2 = vec_right1(b2, c2);
             }
 
             #pragma omp sections
             {
                 #pragma omp section
-                or_2emeligne = vec_or3(aa1, b1, cc1);
-
-                //or Vertical
+                or_1ereligne = vec_or3(aa0, b0, cc0);
                 #pragma omp section
-                or_3emeligne = vec_or3(b0, b1, b2);
+                or_2emeligne = vec_or3(aa1, b1, cc1);
+                #pragma omp section
+                or_3emeligne = vec_or3(aa2, b2, cc2);
             }
 
             //or du noyau
-            or_noyau = vec_or(or_2emeligne, or_3emeligne);
+            or_noyau = vec_or3(or_1ereligne, or_2emeligne, or_3emeligne);
 
             //On place le résultat du or dans la matrice resultat
             vec_store(&dilatation_mat[j][k], or_noyau);
 
             //Rotation registres
-            //b0, b2, c1
-                    // b0 = c0;
+            a0 = b0; b0 = c0;
             a1 = b1; b1 = c1;
-                    // b2 = c2;
+            a2 = b2; b2 = c2;
 
         }
     }

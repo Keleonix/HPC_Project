@@ -76,18 +76,19 @@ int main(int argc, char const *argv[]){
     //1 pour le traitement, fait la chaine complète et enregistre les images traitées
     //2 pour les benchmarks
 
-    int mode = 2;
+    int mode = 0;
     int n = 5;
 
     switch(mode){
         case 0:
             /*Fonctions appelant tous les tests unitaires */
+            tests_erosion_OPTIM();
             break;
         case 1:
-
+            /*Fonctions de test des chaînes complètes */
             chaine_complete();
-            chaine_complete_SIMD();
-            chaine_complete_OPTIM();
+            // chaine_complete_SIMD();
+            // chaine_complete_OPTIM();
             break;
 
         case 2:
@@ -107,11 +108,11 @@ int main(int argc, char const *argv[]){
             // chrono_SD_steps_OPTIM(n);
             //
             /*Chrono morpho */
-            chrono_erosion(n);
-            chrono_erosion_SIMD(n);
-            chrono_erosion_OPTIM(n);
+            // chrono_erosion(n);
+            // chrono_erosion_SIMD(n);
+            // chrono_erosion_OPTIM(n);
             
-            chrono_dilatation(n);
+            // chrono_dilatation(n);
             chrono_dilatation_SIMD(n);
             chrono_dilatation_OPTIM(n);
 
