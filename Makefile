@@ -8,10 +8,10 @@
 
 # -- File list ----------
 FILE = nrutil.c vnrutil.c mutil.c my_vnrutil.c main.c mouvement.c \
-test_mouvement.c test_mouvement_SIMD.c test_morpho_SIMD.c morpho_SIMD.c\
- test_morpho.c mouvement_SIMD.c morpho.c dtime.c mouvement_optim.c\
-  morpho_optim.c test_morpho_optim.c bench_mouvement.c bench_morpho.c\
-  bench_chaine.c my_nrutil.c
+ test_mouvement.c test_mouvement_SIMD.c test_mouvement_optim.c \
+ test_morpho_SIMD.c morpho_SIMD.c test_morpho.c mouvement_SIMD.c \
+ morpho.c dtime.c mouvement_optim.c morpho_optim.c test_morpho_optim.c\
+ bench_mouvement.c bench_morpho.c bench_chaine.c my_nrutil.c
 
 # -- Paths ----------
 SRC_PATH = src

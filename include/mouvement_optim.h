@@ -22,18 +22,6 @@
 void SigmaDelta_step0_OPTIM(uint8** Io, vuint8* Mt_1, vuint8* Vt_1,\
      int* nrl, int* nrh, int* ncl, int* nch, int nbVuint8);
 
-//Etape 1 : estimation de l'image de fond (version OPTIM)
-void SigmaDelta_step1_OPTIM(vuint8* It, vuint8* Mt_1, vuint8* Mt, int nbVuint8);
-
-//Etape 2 : Ot, difference entre image source et moyenne (version OPTIM)
-void SigmaDelta_step2_OPTIM(vuint8* It,  vuint8* Mt, vuint8* Ot, int nbVuint8);
-
-//Etape 3 : Mise à jour de l'image de variance Vt (version OPTIM)
-void SigmaDelta_step3_OPTIM(vuint8* Ot, vuint8* Vt_1, vuint8* Vt, int nbVuint8);
-
-//Etape 4 : Estimation de l'image d'etiquettes binaires Et (version OPTIM)
-void SigmaDelta_step4_OPTIM(vuint8* Ot, vuint8* Vt, vuint8* Et, int nbVuint8);
-
 //Etapes de l'algoritme SigmaDelta
 //Etape 1 : estimation de l'image de fond (version SIMD)
 //Etape 2 : Ot, difference entre image source et moyenne (version SIMD)
