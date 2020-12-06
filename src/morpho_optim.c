@@ -1,11 +1,11 @@
 #include "morpho_optim.h"
 
 #define R 1                                     // On défini le rayon R pour l'espace B de convolution ici R = 1
-#define DEROULAGE_MARGE 3
+#define DEROULAGE_BORDS 3
 #define BORD 1
 
 //TODO: A revoir, a l'air lent
-vuint8** bords_OPTIM(uint8** im, int nrl, int hauteur, int ncl, int largeur){
+vuint8** bords_OPTIM(uint8** im, int nrl, int hauteur, int ncl, int largeur, int val_Bords){
 
     //1ERE SOLUTION, PEUT ETRE AMELIOREE
     //Creer une vui8matrix avec des bords
@@ -30,8 +30,8 @@ vuint8** bords_OPTIM(uint8** im, int nrl, int hauteur, int ncl, int largeur){
     //Premiere ligne et derniere ligne
     for(int i = ncl-bord; i <= largeur+bord; i++){
 
-        vec_store(&im_mat[nrl-bord][i], init_vuint8(0));
-        vec_store(&im_mat[hauteur+bord][i], init_vuint8(0));
+        vec_store(&im_mat[nrl-bord][i], init_vuint8(val_Bords));
+        vec_store(&im_mat[hauteur+bord][i], init_vuint8(val_Bords));
     }
     //printf("Premiere ligne et derniere ligne de la matrice avec bords\n");
 
@@ -39,7 +39,7 @@ vuint8** bords_OPTIM(uint8** im, int nrl, int hauteur, int ncl, int largeur){
     for(int j = nrl; j <= hauteur; j++){
 
         //Bord gauche
-        im_mat[j][ncl-bord] = init_vuint8(0);
+        im_mat[j][ncl-bord] = init_vuint8(val_Bords);
 
         //On duplique cette ligne de l'image dans le im_mat
         // dup_vui8vector(im_vect[j], ncl, largeur, im_mat[j]);
@@ -50,7 +50,7 @@ vuint8** bords_OPTIM(uint8** im, int nrl, int hauteur, int ncl, int largeur){
         }
 
         //Bord droit
-        im_mat[j][largeur+bord] = init_vuint8(0);
+        im_mat[j][largeur+bord] = init_vuint8(val_Bords);
 
     }
 
@@ -99,7 +99,7 @@ uint8** erosion_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
     vuint8 and_noyau;
 
    //On crée une matrice vuint8** comprenant l'image avec des bords
-   vuint8** im_mat = bords_OPTIM(im, nrl, hauteur, ncl, largeur);
+   vuint8** im_mat = bords_OPTIM(im, nrl, hauteur, ncl, largeur, 1);
    //printf("Matrice d'image avec bords\n\n");
    // for(int i = nrl-BORD; i <= hauteur+BORD; i++){
    //     for(int j = ncl-BORD; j <= largeur+BORD; j++){
@@ -235,7 +235,7 @@ uint8** dilatation_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
 
    //On crée une matrice vuint8** comprenant l'image avec des bords
    //TODO: trouver un meilleur
-   vuint8** im_mat = bords_OPTIM(im, nrl, hauteur, ncl, largeur);
+   vuint8** im_mat = bords_OPTIM(im, nrl, hauteur, ncl, largeur, 0);
 
    //On cree une matrice qui va contenir le résultat de notre erosion
    vuint8** dilatation_mat = vui8matrix(nrl, hauteur, ncl, largeur);
@@ -297,8 +297,8 @@ uint8** ouverture_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
 //     //Dupliquer les bords
 //
 //     n = *nrh + 2*R;                                                         // prologue 1
-//     r = n % DEROULAGE_MARGE;
-//     for(i = nrl; i < n-r; i += DEROULAGE_MARGE){                            //boucle 1
+//     r = n % DEROULAGE_BORDS;
+//     for(i = nrl; i < n-r; i += DEROULAGE_BORDS){                            //boucle 1
 //         marginIm[i][ncl   ] = 0; marginIm[i+1][ncl   ] = 0; marginIm[i+2][ncl     ] = 0;
 //         marginIm[i][*nch+R] = 0; marginIm[i+1][*nch+R] = 0; marginIm[i+2][*nch+2*R] = 0;
 //     }
@@ -314,8 +314,8 @@ uint8** ouverture_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
 //     }
 //
 //     n = *nch + 2*R;                                                         // prologue 2
-//     r = n % DEROULAGE_MARGE;
-//     for(i = ncl; i < n-r; i += DEROULAGE_MARGE){                            //boucle 2
+//     r = n % DEROULAGE_BORDS;
+//     for(i = ncl; i < n-r; i += DEROULAGE_BORDS){                            //boucle 2
 //         marginIm[nrl     ][j] = 0; marginIm[nrl     ][j+1] = 0; marginIm[nrl     ][j+2] = 0;
 //         marginIm[*nrh+2*R][j] = 0; marginIm[*nrh+2*R][j+1] = 0; marginIm[*nrh+2*R][j+2] = 0;
 //     }
@@ -331,7 +331,7 @@ uint8** ouverture_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
 //     }
 //
 //     n = *nrh;                                                               // prologue 3
-//     r = n % DEROULAGE_MARGE;
+//     r = n % DEROULAGE_BORDS;
 //     for(j = ncl; j < *nch; j++){                                            // boucle 3
 //         for(i = nrl; i < *nrh; i++){
 //             im0 = im[i+0][j];       im1 = im[i+1][j];       im2 = im[i+2][j];

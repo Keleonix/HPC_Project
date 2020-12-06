@@ -13,7 +13,7 @@
 #include "mutil.h"
 #include "simd_macro.h"
 
-vuint8** bords_SIMD(uint8** im, int nrl, int hauteur, int ncl, int largeur);
+vuint8** bords_SIMD(uint8** im, int nrl, int hauteur, int ncl, int largeur, int val_Bords);
 uint8** erosion_SIMD(uint8** im, int nrl, int nrh, int ncr, int nch);
 uint8** dilatation_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch);
 uint8** fermeture_SIMD(uint8** im, int nrl, int nrh, int ncl, int nch);
