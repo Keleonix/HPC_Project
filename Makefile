@@ -75,7 +75,6 @@ clean:
 	rm -f images_scalaire/*.pgm
 	rm -f test_SIMD/*
 	rm -f test/*
-	rm -rf bench_morpho/*.csv
 
 tar:
 	tar -cvf deriche_SSE.tar Makefile src include
