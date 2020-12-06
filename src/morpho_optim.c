@@ -71,9 +71,6 @@ uint8** erosion_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
     int j;
     int k;
 
-    //printf("Dimensions :\n");
-    //printf("hauteur : %d \n", hauteur);
-    //printf("largeur : %d \n", largeur);
     //TODO: Retirer les variables inutiles/non-utilisés
     //TODO: Une fonction par optimisation ou
     //Vecteurs dans lesquels nos pixels seront chargés
@@ -86,7 +83,7 @@ uint8** erosion_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
     vuint8 aa1, cc1;
     vuint8 aa2, cc2;
 
-    //Vecteurs pour nos opérations AND
+    //Vecteurs pour nos opérations and
     vuint8 and_1ereligne;
     vuint8 and_2emeligne;
     vuint8 and_3emeligne;
@@ -110,71 +107,75 @@ uint8** erosion_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
     # pragma omp for schedule (dynamic) private(a1, b1)
     for(j = nrl; j <= hauteur; j++){
 
-        //On charge les deux
-        // a0 = vec_load(&im_mat[j-1][ncl-1]); b0 = vec_load(&im_mat[j-1][ncl]);
-        // a1 = vec_load(&im_mat[j  ][ncl-1]); b1 = vec_load(&im_mat[j  ][ncl]);
-        // a2 = vec_load(&im_mat[j+1][ncl-1]); b2 = vec_load(&im_mat[j+1][ncl]);
-
-        //On charge a1 et b1 pour le début de l'algorithme (fusion)
+        //On charge a(n) et b(n) pour le début de l'algorithme (fusion)
         #pragma omp sections
         {
+            #pragma omp section
+            a0 = vec_load(&im_mat[j-1][ncl-1]);
+            #pragma omp section
+            b0 = vec_load(&im_mat[j-1][ncl]);
             #pragma omp section
             a1 = vec_load(&im_mat[j  ][ncl-1]);
             #pragma omp section
             b1 = vec_load(&im_mat[j  ][ncl]);
+            #pragma omp section
+            a2 = vec_load(&im_mat[j+1][ncl-1]);
+            #pragma omp section
+            b2 = vec_load(&im_mat[j+1][ncl]);
         }
 
         # pragma omp for schedule (dynamic) shared(erosion_mat) private(b0, b2, c1, aa1, cc1, and_2emeligne, and_3emeligne, and_noyau)
         for(int k = ncl; k <= largeur; k++){
 
-            // c0 = vec_load(&im_mat[j-1][k+1]);
-            // c1 = vec_load(&im_mat[j ][k+1]);
-            // c2 = vec_load(&im_mat[j+1][k+1]);
-
-            //fusion
-            //Vertical
+            //fusion des loads et shifts
             #pragma omp sections
             {
                 #pragma omp section
-                b0 = vec_load(&im_mat[j-1][k]);
+                c0 = vec_load(&im_mat[j-1][k+1]);
                 #pragma omp section
-                b2 = vec_load(&im_mat[j+1][k]);
-
-                //Horizontal
+                c1 = vec_load(&im_mat[j  ][k+1]);
                 #pragma omp section
-                c1 = vec_load(&im_mat[j ][k+1]);
-            }
-            //Shifts
+                c2 = vec_load(&im_mat[j+1][k+1]);
 
-            //AND Horizontal
-            #pragma omp sections
-            {
+                #pragma omp section
+                aa0 = vec_left1(a0, b0);
+                #pragma omp section
                 aa1 = vec_left1(a1, b1);
+                #pragma omp section
+                aa2 = vec_left1(a2, b2);
+            }
+
+            //and Horizontal
+            #pragma omp sections
+            {
+                #pragma omp section
+                cc0 = vec_right1(b0, c0);
+                #pragma omp section
                 cc1 = vec_right1(b1, c1);
+                #pragma omp section
+                cc2 = vec_right1(b2, c2);
             }
 
             #pragma omp sections
             {
+                #pragma omp section
+                and_1ereligne = vec_and3(aa0, b0, cc0);
                 #pragma omp section
                 and_2emeligne = vec_and3(aa1, b1, cc1);
-
-                //AND Vertical
                 #pragma omp section
-                and_3emeligne = vec_and3(b0, b1, b2);
+                and_3emeligne = vec_and3(aa2, b2, cc2);
             }
 
-            //AND du noyau
-            and_noyau = vec_and(and_2emeligne, and_3emeligne);
+            //and du noyau
+            and_noyau = vec_and3(and_1ereligne, and_2emeligne, and_3emeligne);
 
-            //On place le résultat du AND dans la matrice resultat
+            //On place le résultat du and dans la matrice resultat
             vec_store(&erosion_mat[j][k], and_noyau);
 
             //Rotation registres
-            //b0, b2, c1
-                    // b0 = c0;
+            a0 = b0; b0 = c0;
             a1 = b1; b1 = c1;
-                    // b2 = c2;
-
+            a2 = b2; b2 = c2;
 
         }
     }
@@ -185,7 +186,7 @@ uint8** erosion_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
     return (uint8**)erosion_mat;
 }
 
-//TODO: Copier les optimisations d'erosion_SIMD dans celle-ci
+
 uint8** dilatation_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
 
     //Nombre de pixels de l'image
