@@ -180,8 +180,8 @@ void chrono_chaine_SIMD(int n){
 
             copy_vui8vector_ui8matrix(Et, *nrl, *nrh, *ncl, *nch, Et_ui8);
 
-            Et_ui8 = ouverture(Et_ui8, *nrl, *nrh, *ncl, *nch);
-            Et_ui8 = fermeture(Et_ui8, *nrl, *nrh, *ncl, *nch);
+            Et_ui8 = ouverture_SIMD(Et_ui8, *nrl, *nrh, *ncl, *nch);
+            Et_ui8 = fermeture_SIMD(Et_ui8, *nrl, *nrh, *ncl, *nch);
 
             temps_frame = dtime() - temps_frame;
 
