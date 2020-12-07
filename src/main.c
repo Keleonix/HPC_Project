@@ -53,8 +53,6 @@ void chaine_complete_SIMD();
 //Applique l'algorithme SigmaDelta, puis la morphologie aux images de la séquence en SIMD optimisé
 void chaine_complete_OPTIM();
 
-
-//TODO: Pour l'agencement du main
 //Trois modes possibles,
 //Verif (Lance les tests unitaires et affiche donc les OK et les KO
 //Traitement (Fais la chaine complète normalement et enregistre les images traitées)
@@ -387,8 +385,6 @@ void chaine_complete_OPTIM(){
         //Changement de variables
         Mt_1 = Mt;
         Vt_1 = Vt;
-        // copy_vui8vector_vui8vector(Mt, nbVuint8, Mt_1);
-        // copy_vui8vector_vui8vector(Vt, nbVuint8, Vt_1);
     }
 
     //Algorithme SigmaDelta
@@ -397,8 +393,6 @@ void chaine_complete_OPTIM(){
     free_vui8vector(It, 0, nbPixels);
     free_vui8vector(Mt_1, 0, nbPixels);
     free_vui8vector(Vt_1, 0, nbPixels);
-    // free_vui8vector(Mt, 0, nbPixels);
-    // free_vui8vector(Vt, 0, nbPixels);
     free_vui8vector(Ot, 0, nbPixels);
     free_vui8vector(Et, 0, nbPixels);
     free(nrl);

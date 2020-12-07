@@ -3,9 +3,6 @@
 #define NB_TESTS_EROSION 7
 #define NB_TESTS_DILATATION 7
 
-//TODO: Faire les mêmes tests en changeant avec des valeurs différentes
-//TODO: Faire des macros pour chaque matrice pour augmenter le nombre de tests
-//unitaires
 //On testera l'erosion/dilatation sur une matrice uint8**
 void test_erosion_SIMD_1(){        // test de 1 solitaires
     int nrl = 0;
@@ -13,15 +10,6 @@ void test_erosion_SIMD_1(){        // test de 1 solitaires
     int ncl = 0;
     int nch = 15;
     uint8** mat_test = ui8matrix(nrl, nrh, ncl, nch);
-
-    //On fait une matrice avec des 1 et des 0 qui s'enchainent parce qu'il est
-    //tard et que j'ai pas d'autres idées
-
-    // for(int j = nrl; j <= nrh; j++){
-    //     for(int k = ncl; k <= nch; k++){
-    //         mat_test[j][k] = 1;
-    //     }
-    // }
 
     for(int j = nrl; j <= nrh; j++){
         for(int k = ncl; k <= nch; k++){
@@ -46,8 +34,6 @@ void test_erosion_SIMD_1(){        // test de 1 solitaires
     uint8** resultat = erosion_SIMD(mat_test, nrl, nrh, ncl, nch);
 
     //On affiche le resultat
-    //TODO: Remplacer par un test, qui envoie OK pour chaque ligne correcte
-    //et KO pour chaque ligne mauvaise
     // printf("Matrice résultat de l'erosion\n\n");
     // for(int i = nrl; i <= nrh; i++){
     //     display_ui8vector(resultat[i], ncl, nch, " %d", NULL);
@@ -103,8 +89,6 @@ void test_erosion_SIMD_2(){        // test de carrés de 1
     uint8** resultat = erosion_SIMD(mat_test, nrl, nrh, ncl, nch);
 
     //On affiche le resultat
-    //TODO: Remplacer par un test, qui envoie OK pour chaque ligne correcte
-    //et KO pour chaque ligne mauvaise
     // printf("Matrice résultat de l'erosion\n\n");
     // for(int i = nrl; i <= nrh; i++){
     //     display_ui8vector(resultat[i], ncl, nch, " %d", NULL);
@@ -160,8 +144,6 @@ void test_erosion_SIMD_3(){        // test de 1 par paires et en croix
     uint8** resultat = erosion_SIMD(mat_test, nrl, nrh, ncl, nch);
 
     //On affiche le resultat
-    //TODO: Remplacer par un test, qui envoie OK pour chaque ligne correcte
-    //et KO pour chaque ligne mauvaise
     // printf("Matrice résultat de l'erosion\n\n");
     // for(int i = nrl; i <= nrh; i++){
     //     display_ui8vector(resultat[i], ncl, nch, " %d", NULL);
@@ -230,12 +212,10 @@ void test_erosion_SIMD_4(){        // test des quatres coins
     //     printf("\n");
     // }
 
-    // //On appelle maintenant la fonction erosion
+    //On appelle maintenant la fonction erosion
     uint8** resultat = erosion_SIMD(mat_test, nrl, nrh, ncl, nch);
 
-    // //On affiche le resultat
-    // //TODO: Remplacer par un test, qui envoie OK pour chaque ligne correcte
-    // //et KO pour chaque ligne mauvaise
+    //On affiche le resultat
     // printf("Matrice résultat de l'erosion\n\n");
     // for(int i = nrl; i <= nrh; i++){
     //     display_ui8vector(resultat[i], ncl, nch, " %d", NULL);
@@ -295,12 +275,10 @@ void test_erosion_SIMD_5(){        // test de 1 solitaires dans les coins
     //     printf("\n");
     // }
 
-    // //On appelle maintenant la fonction erosion
+    //On appelle maintenant la fonction erosion
     uint8** resultat = erosion_SIMD(mat_test, nrl, nrh, ncl, nch);
 
-    // //On affiche le resultat
-    // //TODO: Remplacer par un test, qui envoie OK pour chaque ligne correcte
-    // //et KO pour chaque ligne mauvaise
+    // On affiche le resultat
     // printf("Matrice résultat de l'erosion\n\n");
     // for(int i = nrl; i <= nrh; i++){
     //     display_ui8vector(resultat[i], ncl, nch, " %d", NULL);
@@ -349,12 +327,11 @@ void test_erosion_SIMD_6(){        // test des bords de l'image = 2
     //     printf("\n");
     // }
 
-    // //On appelle maintenant la fonction erosion
+    //On appelle maintenant la fonction erosion
     uint8** resultat = erosion_SIMD(mat_test, nrl, nrh, ncl, nch);
 
-    // //On affiche le resultat
-    // //TODO: Remplacer par un test, qui envoie OK pour chaque ligne correcte
-    // //et KO pour chaque ligne mauvaise
+    //On affiche le resultat
+    
     // printf("Matrice résultat de l'erosion\n\n");
     // for(int i = nrl; i <= nrh; i++){
     //     display_ui8vector(resultat[i], ncl, nch, " %d", NULL);
@@ -405,12 +382,11 @@ void test_erosion_SIMD_7(){        // test ligne au centre
     //     printf("\n");
     // }
 
-    // //On appelle maintenant la fonction erosion
+    //On appelle maintenant la fonction erosion
     uint8** resultat = erosion_SIMD(mat_test, nrl, nrh, ncl, nch);
 
-    // //On affiche le resultat
-    // //TODO: Remplacer par un test, qui envoie OK pour chaque ligne correcte
-    // //et KO pour chaque ligne mauvaise
+    //On affiche le resultat
+    
     // printf("Matrice résultat de l'erosion\n\n");
     // for(int i = nrl; i <= nrh; i++){
     //     display_ui8vector(resultat[i], ncl, nch, " %d", NULL);
@@ -438,7 +414,10 @@ void test_erosion_SIMD_7(){        // test ligne au centre
 }
 
 void tests_erosion_SIMD(){
+    // On stovke toutes les fonctions de test dans un tableau de pointeur de fonctions
     void(*tests[NB_TESTS_EROSION])() = {test_erosion_SIMD_1, test_erosion_SIMD_2, test_erosion_SIMD_3, test_erosion_SIMD_4, test_erosion_SIMD_5, test_erosion_SIMD_6, test_erosion_SIMD_7};
+    
+    // On appelle chaque fonction une par une pour vérifier OK/KO
     for(int i = 0; i < NB_TESTS_EROSION; i++){
         printf("Test erosion %d\n", i+1);
         (tests[i])();
@@ -452,14 +431,7 @@ void test_dilatation_SIMD_1(){        // test de 1 solitaires
     int nch = 15;
     uint8** mat_test = ui8matrix(nrl, nrh, ncl, nch);
 
-    //On fait une matrice avec des 1 et des 0 qui s'enchainent parce qu'il est
-    //tard et que j'ai pas d'autres idées
-
-    // for(int j = nrl; j <= nrh; j++){
-    //     for(int k = ncl; k <= nch; k++){
-    //         mat_test[j][k] = 1;
-    //     }
-    // }
+    
 
     for(int j = nrl; j <= nrh; j++){
         for(int k = ncl; k <= nch; k++){
@@ -484,8 +456,7 @@ void test_dilatation_SIMD_1(){        // test de 1 solitaires
     uint8** resultat = dilatation_SIMD(mat_test, nrl, nrh, ncl, nch);
 
     //On affiche le resultat
-    //TODO: Remplacer par un test, qui envoie OK pour chaque ligne correcte
-    //et KO pour chaque ligne mauvaise
+    
     // printf("Matrice résultat de l'erosion\n\n");
     // for(int i = nrl; i <= nrh; i++){
     //     display_ui8vector(resultat[i], ncl, nch, " %d", NULL);
@@ -541,8 +512,7 @@ void test_dilatation_SIMD_2(){        // test de carrés de 1
     uint8** resultat = dilatation_SIMD(mat_test, nrl, nrh, ncl, nch);
 
     //On affiche le resultat
-    //TODO: Remplacer par un test, qui envoie OK pour chaque ligne correcte
-    //et KO pour chaque ligne mauvaise
+    
     // printf("Matrice résultat de l'erosion\n\n");
     // for(int i = nrl; i <= nrh; i++){
     //     display_ui8vector(resultat[i], ncl, nch, " %d", NULL);
@@ -598,8 +568,7 @@ void test_dilatation_SIMD_3(){        // test de 1 par paires et en croix
     uint8** resultat = dilatation_SIMD(mat_test, nrl, nrh, ncl, nch);
 
     //On affiche le resultat
-    //TODO: Remplacer par un test, qui envoie OK pour chaque ligne correcte
-    //et KO pour chaque ligne mauvaise
+    
     // printf("Matrice résultat de l'erosion\n\n");
     // for(int i = nrl; i <= nrh; i++){
     //     display_ui8vector(resultat[i], ncl, nch, " %d", NULL);
@@ -668,12 +637,11 @@ void test_dilatation_SIMD_4(){        // test des quatres coins
     //     printf("\n");
     // }
 
-    // //On appelle maintenant la fonction erosion
+    //On appelle maintenant la fonction erosion
     uint8** resultat = dilatation_SIMD(mat_test, nrl, nrh, ncl, nch);
 
-    // //On affiche le resultat
-    // //TODO: Remplacer par un test, qui envoie OK pour chaque ligne correcte
-    // //et KO pour chaque ligne mauvaise
+    //On affiche le resultat
+    
     // printf("Matrice résultat de l'erosion\n\n");
     // for(int i = nrl; i <= nrh; i++){
     //     display_ui8vector(resultat[i], ncl, nch, " %d", NULL);
@@ -733,12 +701,11 @@ void test_dilatation_SIMD_5(){        // test de 1 solitaires dans les coins
     //     printf("\n");
     // }
 
-    // //On appelle maintenant la fonction erosion
+    //On appelle maintenant la fonction erosion
     uint8** resultat = dilatation_SIMD(mat_test, nrl, nrh, ncl, nch);
 
-    // //On affiche le resultat
-    // //TODO: Remplacer par un test, qui envoie OK pour chaque ligne correcte
-    // //et KO pour chaque ligne mauvaise
+    //On affiche le resultat
+    
     // printf("Matrice résultat de l'erosion\n\n");
     // for(int i = nrl; i <= nrh; i++){
     //     display_ui8vector(resultat[i], ncl, nch, " %d", NULL);
@@ -787,12 +754,11 @@ void test_dilatation_SIMD_6(){        // test des bords de l'image = 1
     //     printf("\n");
     // }
 
-    // //On appelle maintenant la fonction erosion
+    //On appelle maintenant la fonction erosion
     uint8** resultat = dilatation_SIMD(mat_test, nrl, nrh, ncl, nch);
 
-    // //On affiche le resultat
-    // //TODO: Remplacer par un test, qui envoie OK pour chaque ligne correcte
-    // //et KO pour chaque ligne mauvaise
+    //On affiche le resultat
+    
     // printf("Matrice résultat de l'erosion\n\n");
     // for(int i = nrl; i <= nrh; i++){
     //     display_ui8vector(resultat[i], ncl, nch, " %d", NULL);
@@ -843,12 +809,11 @@ void test_dilatation_SIMD_7(){        // test ligne au centre
     //     printf("\n");
     // }
 
-    // //On appelle maintenant la fonction erosion
+    //On appelle maintenant la fonction erosion
     uint8** resultat = dilatation_SIMD(mat_test, nrl, nrh, ncl, nch);
 
-    // //On affiche le resultat
-    // //TODO: Remplacer par un test, qui envoie OK pour chaque ligne correcte
-    // //et KO pour chaque ligne mauvaise
+    //On affiche le resultat
+    
     // printf("Matrice résultat de l'erosion\n\n");
     // for(int i = nrl; i <= nrh; i++){
     //     display_ui8vector(resultat[i], ncl, nch, " %d", NULL);
@@ -876,7 +841,10 @@ void test_dilatation_SIMD_7(){        // test ligne au centre
 }
 
 void tests_dilatation_SIMD(){
+    // On stovke toutes les fonctions de test dans un tableau de pointeur de fonctions
     void(*tests[NB_TESTS_DILATATION])() = {test_dilatation_SIMD_1, test_dilatation_SIMD_2, test_dilatation_SIMD_3, test_dilatation_SIMD_4, test_dilatation_SIMD_5, test_dilatation_SIMD_6, test_dilatation_SIMD_7};
+    
+    // On appelle chaque fonction une par une pour vérifier OK/KO
     for(int i = 0; i < NB_TESTS_DILATATION; i++){
         printf("Test dilatation %d\n", i+1);
         (tests[i])();

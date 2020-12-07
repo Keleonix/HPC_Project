@@ -161,8 +161,6 @@ void main_mouvement(){
 
 
         //Changement de variables
-        // Mt_1 = Mt;
-        // Vt_1 = Vt;
         copy_ui8matrix_ui8matrix (Mt, *nrl, *nrh, *ncl, *nch, Mt_1);
         copy_ui8matrix_ui8matrix (Vt, *nrl, *nrh, *ncl, *nch, Vt_1);
     }

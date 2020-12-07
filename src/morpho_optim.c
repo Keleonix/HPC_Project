@@ -1,7 +1,7 @@
 #include "morpho_optim.h"
 #include <omp.h>
 
-#define R 1                                     // On défini le rayon R pour l'espace B de convolution ici R = 1
+#define R 1
 #define BORD 1
 
 
@@ -17,7 +17,6 @@ vuint8** bords_OPTIM(uint8** im, int nrl, int hauteur, int ncl, int largeur, int
 
     //Matrice avec l'image
     vuint8** im_vect = (vuint8**) im;
-    // omp_set_num_threads(NUM_THREADS);
 
     //Premiere ligne et derniere ligne
     //On parallélise le parcour des boucles, en donnant l'image en variable commune,
@@ -66,8 +65,6 @@ uint8** erosion_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
     int j;
     int k;
 
-    //TODO: Retirer les variables inutiles/non-utilisés
-    //TODO: Une fonction par optimisation ou
     //Vecteurs dans lesquels nos pixels seront chargés
     vuint8 a0, b0, c0;
     vuint8 a1, b1, c1;
@@ -175,11 +172,7 @@ uint8** erosion_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
         }
     }
 
-    // free_vui8matrix(im_mat, nrl, nrh, ncl, nch);
-
     //On retourne la matrice sous sa forme scalaire
-    //TODO: Utiliser une fonction convertissant dans le cas où le nombre de pixels par
-    //ligne n'est pas multiple de 16 ?
     return (uint8**)erosion_mat;
 }
 
@@ -202,8 +195,6 @@ uint8** dilatation_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
     int j;
     int k;
 
-    //TODO: Retirer les variables inutiles/non-utilisés
-    //TODO: Une fonction par optimisation ou
     //Vecteurs dans lesquels nos pixels seront chargés
     vuint8 a0, b0, c0;
     vuint8 a1, b1, c1;
@@ -311,8 +302,6 @@ uint8** dilatation_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
         }
     }
 
-    // free_vui8matrix(im_mat, nrl, nrh, ncl, nch);
-
     //On retourne la matrice sous sa forme scalaire
     return (uint8**)dilatation_mat;
 }
@@ -324,69 +313,3 @@ uint8** fermeture_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
 uint8** ouverture_OPTIM(uint8** im, int nrl, int nrh, int ncl, int nch){
     return dilatation_OPTIM(erosion_OPTIM(im, nrl, nrh, ncl, nch), nrl, nrh, ncl, nch);
 }
-
-// //TODO : A etudier par la suite pour l'optimisation
-// void bords_OPTIM_opti(uint8** im, int nrl, int* nrh, int ncl, int* nch){
-//     int i, j, n, r;
-//     vuint8 im0, im1, im2;
-//     vuint8** marginIm;
-//
-//     marginIm = vui8matrix(nrl - R, nrh + R, ncl - R, nch + R);
-//     //Slide 17 NRC
-//     //Prendre l'image, caster sur vuint8**
-//     //Dupliquer les bords
-//
-//     n = *nrh + 2*R;                                                         // prologue 1
-//     r = n % DEROULAGE_BORDS;
-//     for(i = nrl; i < n-r; i += DEROULAGE_BORDS){                            //boucle 1
-//         marginIm[i][ncl   ] = 0; marginIm[i+1][ncl   ] = 0; marginIm[i+2][ncl     ] = 0;
-//         marginIm[i][*nch+R] = 0; marginIm[i+1][*nch+R] = 0; marginIm[i+2][*nch+2*R] = 0;
-//     }
-//     switch(r){                                                              //epilogue 1
-//         case 2:
-//             marginIm[i+1][ncl     ] = 0;
-//             marginIm[i+1][*nch+2*R] = 0;
-//         case 1:
-//             marginIm[i][ncl     ] = 0;
-//             marginIm[i][*nch+2*R] = 0;
-//         default:
-//             break;
-//     }
-//
-//     n = *nch + 2*R;                                                         // prologue 2
-//     r = n % DEROULAGE_BORDS;
-//     for(i = ncl; i < n-r; i += DEROULAGE_BORDS){                            //boucle 2
-//         marginIm[nrl     ][j] = 0; marginIm[nrl     ][j+1] = 0; marginIm[nrl     ][j+2] = 0;
-//         marginIm[*nrh+2*R][j] = 0; marginIm[*nrh+2*R][j+1] = 0; marginIm[*nrh+2*R][j+2] = 0;
-//     }
-//     switch(r){                                                              //epilogue 2
-//         case 2:
-//             marginIm[nrl     ][j+1] = 0;
-//             marginIm[*nrh+2*R][j+1] = 0;
-//         case 1:
-//             marginIm[nrl     ][j] = 0;
-//             marginIm[*nrh+2*R][j] = 0;
-//         default:
-//             break;
-//     }
-//
-//     n = *nrh;                                                               // prologue 3
-//     r = n % DEROULAGE_BORDS;
-//     for(j = ncl; j < *nch; j++){                                            // boucle 3
-//         for(i = nrl; i < *nrh; i++){
-//             im0 = im[i+0][j];       im1 = im[i+1][j];       im2 = im[i+2][j];
-//             marginIm[i][j] = im0;   marginIm[i+1][j] = im1; marginIm[i+2][j] = im2;
-//         }
-//     }
-//     switch(r){                                                              // epilogue 3
-//         case 2:
-//             im1 = im[i+1][j];
-//             marginIm[i+1][j] = im1;
-//         case 1:
-//             im0 = im[i+0][j];
-//             marginIm[i][j] = im0;
-//         default:
-//             break;
-//     }
-//
-// }
