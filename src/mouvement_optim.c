@@ -195,19 +195,19 @@ void main_mouvement_OPTIM(){
 
         SigmaDelta_steps_OPTIM(It, Mt_1, Mt, Ot, Vt_1, Vt, Et, nbVuint8);
 
-        generate_filename_k_ndigit_extension("test_OPTIM/Mt_", i, 0, "pgm", image);
+        generate_filename_k_ndigit_extension("images_OPTIM/Mt_", i, 0, "pgm", image);
         copy_vui8vector_ui8matrix(Mt, *nrl, *nrh, *ncl, *nch, Mt_ui8);
         SavePGM_ui8matrix(Mt_ui8, *nrl, *nrh, *ncl, *nch, image);
 
-        generate_filename_k_ndigit_extension("test_OPTIM/Ot_", i, 0, "pgm", image);
+        generate_filename_k_ndigit_extension("images_OPTIM/Ot_", i, 0, "pgm", image);
         copy_vui8vector_ui8matrix(Ot, *nrl, *nrh, *ncl, *nch, Ot_ui8);
         SavePGM_ui8matrix(Ot_ui8, *nrl, *nrh, *ncl, *nch, image);
         //
-        generate_filename_k_ndigit_extension("test_OPTIM/Vt_", i, 0, "pgm", image);
+        generate_filename_k_ndigit_extension("images_OPTIM/Vt_", i, 0, "pgm", image);
         copy_vui8vector_ui8matrix(Vt, *nrl, *nrh, *ncl, *nch, Vt_ui8);
         SavePGM_ui8matrix(Vt_ui8, *nrl, *nrh, *ncl, *nch, image);
 
-        generate_filename_k_ndigit_extension("test_OPTIM/Et_", i, 0, "pgm", image);
+        generate_filename_k_ndigit_extension("images_OPTIM/Et_", i, 0, "pgm", image);
         copy_vui8vector_ui8matrix(Et, *nrl, *nrh, *ncl, *nch, Et_ui8);
         SavePGM_ui8matrix(Et_ui8, *nrl, *nrh, *ncl, *nch, image);
 

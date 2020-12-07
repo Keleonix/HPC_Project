@@ -73,8 +73,6 @@ clean:
 	rm -f images_OPTIM/*.pgm
 	rm -f images_SIMD/*.pgm
 	rm -f images_scalaire/*.pgm
-	rm -f test_SIMD/*
-	rm -f test/*
 
 tar:
 	tar -cvf deriche_SSE.tar Makefile src include

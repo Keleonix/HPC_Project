@@ -150,13 +150,13 @@ void main_mouvement(){
         SigmaDelta_step4(Ot, Vt, Et, nrl, nrh, ncl, nch);
 
 
-        generate_filename_k_ndigit_extension("test/Mt_", i, 0, "pgm", image);
+        generate_filename_k_ndigit_extension("images_scalaire/Mt_", i, 0, "pgm", image);
         SavePGM_ui8matrix(Mt, *nrl, *nrh, *ncl, *nch, image);
-        // generate_filename_k_ndigit_extension("test/Ot_", i, 0, "pgm", image);
+        // generate_filename_k_ndigit_extension("images_scalaire/Ot_", i, 0, "pgm", image);
         // SavePGM_ui8matrix(Ot, *nrl, *nrh, *ncl, *nch, image);
-        // generate_filename_k_ndigit_extension("test/Vt_", i, 0, "pgm", image);
+        // generate_filename_k_ndigit_extension("images_scalaire/Vt_", i, 0, "pgm", image);
         // SavePGM_ui8matrix(Vt, *nrl, *nrh, *ncl, *nch, image);
-        generate_filename_k_ndigit_extension("test/Et_", i, 0, "pgm", image);
+        generate_filename_k_ndigit_extension("images_scalaire/Et_", i, 0, "pgm", image);
         SavePGM_ui8matrix(Et, *nrl, *nrh, *ncl, *nch, image);
 
 

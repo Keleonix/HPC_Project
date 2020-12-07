@@ -13,15 +13,6 @@ void copy_ui8matrix_vui8vector(uint8** mat, long nrl, long nrh, long ncl, long n
             i++;
         }
     }
-    //TODO: Rajouter le cas où le nombre de pixels n'est pas un multiple de 16
-    //Pour ça, verifier i et sortir de la boucle quand on atteint le dernier
-    //vecteur, initialiser 16 uint8 à 0, et faire une boucle allant de 0 à nbPixels
-    //restants,
-    // uint8 dernier[16];
-    //init à 0
-    // for(int k = 0; k < nbPixRestants; i++){
-    //      dernier[k] = mat[nrh][k]:
-    // }
 }
 
 //Multiplie deux vuint8, a et b, entre eux et renvoie le produit c
@@ -63,7 +54,6 @@ vuint8 vi8_abs(vuint8 vect){
 }
 
 //Copie le contenu d'un tableau vui8vector dans une matrice ui8matrix
-//TODO: A revoir absolument, soit optimiser, soit trouver une autre solution
 void copy_vui8vector_ui8matrix(vuint8* vect, long nrl, long nrh, long ncl, long nch, uint8** mat){
 
     int i = 0;
@@ -72,7 +62,6 @@ void copy_vui8vector_ui8matrix(vuint8* vect, long nrl, long nrh, long ncl, long 
         for(int k = ncl; k <= nch; k++){
             mat[j][k] = p[i];
             i++;
-            //TODO: Rajouter un if controlant la valeur de i depasse le nombre de pixels
         }
     }
 }
