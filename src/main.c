@@ -82,40 +82,40 @@ int main(int argc, char const *argv[]){
             break;
         case 1:
             /*Fonctions de test des chaînes complètes */
-            chaine_complete();
-            chaine_complete_SIMD();
+            // chaine_complete();
+            // chaine_complete_SIMD();
             chaine_complete_OPTIM();
             break;
 
         case 2:
             /*Chrono étapes SD */
-            // chrono_SD_step1(n);
-            // chrono_SD_step2(n);
-            // chrono_SD_step3(n);
-            // chrono_SD_step4(n);
+            chrono_SD_step1(n);
+            chrono_SD_step2(n);
+            chrono_SD_step3(n);
+            chrono_SD_step4(n);
 
             /*Chrono étapes SD SIMD*/
-            // chrono_SD_step1_SIMD(n);
-            // chrono_SD_step2_SIMD(n);
-            // chrono_SD_step3_SIMD(n);
-            // chrono_SD_step4_SIMD(n);
+            chrono_SD_step1_SIMD(n);
+            chrono_SD_step2_SIMD(n);
+            chrono_SD_step3_SIMD(n);
+            chrono_SD_step4_SIMD(n);
 
             /*Chrono SD optimisé*/
-            // chrono_SD_steps_OPTIM(n);
+            chrono_SD_steps_OPTIM(n);
 
             /*Chrono morpho */
-            // chrono_erosion(n);
-            // chrono_erosion_SIMD(n);
-            // chrono_erosion_OPTIM(n);
+            chrono_erosion(n);
+            chrono_erosion_SIMD(n);
+            chrono_erosion_OPTIM(n);
 
-            // chrono_dilatation(n);
-            // chrono_dilatation_SIMD(n);
+            chrono_dilatation(n);
+            chrono_dilatation_SIMD(n);
             // chrono_dilatation_OPTIM(n);
 
             /* Chrono chaine complète*/
-            // chrono_chaine(n);
+            chrono_chaine(n);
             chrono_chaine_SIMD(n);
-            // chrono_chaine_OPTIM(n);
+            chrono_chaine_OPTIM(n);
             break;
     }
 
