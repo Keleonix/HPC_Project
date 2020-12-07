@@ -82,8 +82,8 @@ int main(int argc, char const *argv[]){
             break;
         case 1:
             /*Fonctions de test des chaînes complètes */
-            chaine_complete();
-            chaine_complete_SIMD();
+            // chaine_complete();
+            // chaine_complete_SIMD();
             chaine_complete_OPTIM();
             break;
 
